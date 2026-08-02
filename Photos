@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>📸 Photos | Adeeb Saifi</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <h1>📸 My Photo Gallery</h1>
+    <p>Captured Moments by Adeeb Saifi</p>
+</header>
+
+<nav>
+    <a href="index.html">🏠 Home</a>
+    <a href="Travel.html">🌍 Travel</a>
+    <a href="Blog.html">📝 Blog</a>
+    <a href="feature.html">⭐ Feature Hub</a>
+</nav>
+
+<main class="container">
+
+    <h2 class="gallery-title">
+        My Collection
+    </h2>
+
+    <!-- Gallery -->
+    <div id="gallery" class="gallery">
+        <!-- Photos automatically load here -->
+    </div>
+
+    <!-- Back Button -->
+    <div class="back-wrapper">
+        <a href="index.html" class="back-home">
+            ⬅ Back To Home
+        </a>
+    </div>
+
+</main>
+
+<footer>
+    © 2026 Adeeb Saifi | All Rights Reserved
+</footer>
+
+<!-- Lightbox -->
+
+<div id="lightbox">
+
+    <span id="closeLightbox">&times;</span>
+
+    <img id="lightboxImage">
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
