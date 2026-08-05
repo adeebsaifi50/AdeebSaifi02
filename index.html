@@ -123,7 +123,43 @@
                         <div class="hero-circle-container animate-float">
                             <div class="hero-circle-bg"></div>
                             <div class="hero-avatar">
-                                <span class="hero-avatar-placeholder">📸</span>
+                                <svg class="hero-avatar-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-label="Adeeb Saifi Portrait" role="img" style="width: 100%; height: 100%;">
+                                    <defs>
+                                        <linearGradient id="avatarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="var(--color-primary)" stop-opacity="0.3"/>
+                                            <stop offset="50%" stop-color="var(--color-accent)" stop-opacity="0.1"/>
+                                            <stop offset="100%" stop-color="var(--color-primary-glow)" stop-opacity="0.4"/>
+                                        </linearGradient>
+                                        <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="var(--color-primary)"/>
+                                            <stop offset="100%" stop-color="var(--color-accent)"/>
+                                        </linearGradient>
+                                        <filter id="avatarGlow" x="-20%" y="-20%" width="140%" height="140%">
+                                            <feGaussianBlur stdDeviation="6" result="blur" />
+                                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                        </filter>
+                                    </defs>
+
+                                    <!-- Rotating outer rings -->
+                                    <circle cx="100" cy="100" r="92" fill="none" stroke="url(#ringGrad)" stroke-width="1.5" stroke-dasharray="10 5 15 5" style="animation: spinSlow 15s linear infinite; transform-origin: center;" />
+                                    <circle cx="100" cy="100" r="84" fill="none" stroke="var(--border-color)" stroke-width="1" stroke-dasharray="2 4" style="animation: spinReverse 25s linear infinite; transform-origin: center;" />
+
+                                    <!-- Filled background -->
+                                    <circle cx="100" cy="100" r="78" fill="url(#avatarGrad)" stroke="var(--border-color)" stroke-width="1.5" />
+
+                                    <!-- Hexagonal network frame -->
+                                    <g transform="translate(10, 10)">
+                                        <polygon points="90,45 125,65 125,105 90,125 55,105 55,65" fill="none" stroke="var(--color-primary)" stroke-dasharray="3 3" stroke-width="1" opacity="0.6" />
+
+                                        <!-- Sleek core abstract geometric symbol (Arch shape) -->
+                                        <path d="M90 55 L115 105 H65 Z" fill="none" stroke="url(#ringGrad)" stroke-width="3" stroke-linejoin="round" filter="url(#avatarGlow)" />
+                                        <path d="M90 70 L105 105 H75 Z" fill="none" stroke="var(--text-primary)" stroke-width="1.5" stroke-linejoin="round" opacity="0.8" />
+                                        <circle cx="90" cy="85" r="4" fill="var(--color-accent)" filter="url(#avatarGlow)" />
+                                    </g>
+
+                                    <!-- Interactive horizontal scan light line -->
+                                    <line x1="20" y1="100" x2="180" y2="100" stroke="var(--color-primary)" stroke-width="1.5" opacity="0.4" style="animation: scanVertical 5s ease-in-out infinite; transform-origin: center;" />
+                                </svg>
                             </div>
                         </div>
                     </div>

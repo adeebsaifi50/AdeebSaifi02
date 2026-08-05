@@ -169,3 +169,22 @@
 .marker-ping {
     animation: markerPing 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
+
+/* SVG Avatar Custom Animations */
+@keyframes spinReverse {
+    from {
+        transform: rotate(360deg);
+    }
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+@keyframes scanVertical {
+    0%, 100% {
+        transform: translateY(-50px);
+    }
+    50% {
+        transform: translateY(50px);
+    }
+}
