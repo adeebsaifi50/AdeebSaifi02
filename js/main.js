@@ -74,6 +74,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 10. Service Worker PWA Setup
     initPwaRegistration();
+
+    // 11. Hacker Mode Unlock
+    initHackerUnlock();
 });
 
 /* ==========================================
@@ -588,4 +591,156 @@ function initPwaRegistration() {
                 });
         });
     }
+}
+
+/* ==========================================
+   11. HACKER MODE UNLOCK
+   ========================================== */
+function initHackerUnlock() {
+    // 1. Keyboard Shortcut: Ctrl + Shift + H
+    document.addEventListener("keydown", (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'h') {
+            e.preventDefault();
+            triggerHackerUnlock();
+        }
+    });
+
+    // 2. Mobile Taps and Long Presses
+    const logoEl = document.querySelector(".nav-brand");
+    const menuToggleEl = document.querySelector(".mobile-nav-toggle");
+
+    if (logoEl) {
+        // Tap 7 times quickly
+        let tapCount = 0;
+        let lastTapTime = 0;
+        logoEl.addEventListener("click", (e) => {
+            const now = Date.now();
+            if (now - lastTapTime < 1500) {
+                tapCount++;
+            } else {
+                tapCount = 1;
+            }
+            lastTapTime = now;
+
+            if (tapCount >= 7) {
+                e.preventDefault();
+                triggerHackerUnlock();
+                tapCount = 0;
+            } else if (tapCount > 1) {
+                // Prevent standard link navigation during consecutive fast taps
+                e.preventDefault();
+            }
+        });
+
+        // Long press logo for 5 seconds
+        let logoPressTimer = null;
+        const startLogoPress = (e) => {
+            logoPressTimer = setTimeout(() => {
+                triggerHackerUnlock();
+            }, 5000);
+        };
+        const endLogoPress = () => {
+            if (logoPressTimer) {
+                clearTimeout(logoPressTimer);
+                logoPressTimer = null;
+            }
+        };
+
+        logoEl.addEventListener("mousedown", startLogoPress);
+        logoEl.addEventListener("mouseup", endLogoPress);
+        logoEl.addEventListener("mouseleave", endLogoPress);
+        logoEl.addEventListener("touchstart", startLogoPress, { passive: true });
+        logoEl.addEventListener("touchend", endLogoPress);
+        logoEl.addEventListener("touchcancel", endLogoPress);
+    }
+
+    if (menuToggleEl) {
+        // Long press menu icon for 5 seconds
+        let menuPressTimer = null;
+        const startMenuPress = (e) => {
+            menuPressTimer = setTimeout(() => {
+                triggerHackerUnlock();
+            }, 5000);
+        };
+        const endMenuPress = () => {
+            if (menuPressTimer) {
+                clearTimeout(menuPressTimer);
+                menuPressTimer = null;
+            }
+        };
+
+        menuToggleEl.addEventListener("mousedown", startMenuPress);
+        menuToggleEl.addEventListener("mouseup", endMenuPress);
+        menuToggleEl.addEventListener("mouseleave", endMenuPress);
+        menuToggleEl.addEventListener("touchstart", startMenuPress, { passive: true });
+        menuToggleEl.addEventListener("touchend", endMenuPress);
+        menuToggleEl.addEventListener("touchcancel", endMenuPress);
+    }
+}
+
+function triggerHackerUnlock() {
+    if (window.__hackerUnlocking) return;
+    window.__hackerUnlocking = true;
+
+    // Show a premium glassmorphism notification modal/toast
+    const toast = document.createElement("div");
+    toast.style.position = "fixed";
+    toast.style.top = "50%";
+    toast.style.left = "50%";
+    toast.style.transform = "translate(-50%, -50%) scale(0.9)";
+    toast.style.background = "rgba(10, 10, 12, 0.95)";
+    toast.style.border = "2px solid #10b981"; // Neon green border
+    toast.style.borderRadius = "16px";
+    toast.style.padding = "2rem 3rem";
+    toast.style.color = "#10b981";
+    toast.style.fontFamily = "ui-monospace, SFMono-Regular, SF Pro Mono, Menlo, monospace";
+    toast.style.fontSize = "1.5rem";
+    toast.style.fontWeight = "bold";
+    toast.style.textAlign = "center";
+    toast.style.boxShadow = "0 0 50px rgba(16, 185, 129, 0.4)";
+    toast.style.zIndex = "1000000";
+    toast.style.backdropFilter = "blur(20px)";
+    toast.style.transition = "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s";
+    toast.style.opacity = "0";
+    toast.style.textShadow = "0 0 10px rgba(16, 185, 129, 0.5)";
+
+    toast.innerHTML = `
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🔓</div>
+        <div style="letter-spacing: 0.1em; text-transform: uppercase;">Developer Mode Unlocked</div>
+        <div style="font-size: 0.9rem; color: #9ca3af; margin-top: 1rem; font-weight: normal;">Initializing secure sandbox bypass...</div>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Animate in
+    requestAnimationFrame(() => {
+        toast.style.transform = "translate(-50%, -50%) scale(1)";
+        toast.style.opacity = "1";
+    });
+
+    // Optional audio trigger for feedback
+    try {
+        const context = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = context.createOscillator();
+        const gainNode = context.createGain();
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(880, context.currentTime); // A5 note
+        oscillator.frequency.exponentialRampToValueAtTime(1760, context.currentTime + 0.3); // A6 note
+        gainNode.gain.setValueAtTime(0.1, context.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.5);
+        oscillator.connect(gainNode);
+        gainNode.connect(context.destination);
+        oscillator.start();
+        oscillator.stop(context.currentTime + 0.5);
+    } catch (e) {
+        // Browser block/lack of support
+    }
+
+    setTimeout(() => {
+        toast.style.transform = "translate(-50%, -50%) scale(0.9)";
+        toast.style.opacity = "0";
+        setTimeout(() => {
+            window.location.href = "hacker.html";
+        }, 300);
+    }, 1500);
 }

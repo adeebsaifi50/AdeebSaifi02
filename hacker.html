@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="https://adeebsaifi.github.io/hacker.html">
+    <title>CYBERNETIC_TERMINAL_V4.9 // CODENAME: SAIFI</title>
+
+    <!-- Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/hacker.css">
+</head>
+<body class="theme-matrix">
+    <!-- CRT Effects -->
+    <div class="crt-overlay"></div>
+    <div class="scanlines"></div>
+    <div class="noise-overlay"></div>
+
+    <!-- Matrix Rain Mode Canvas -->
+    <canvas id="matrix-canvas" class="matrix-bg-canvas"></canvas>
+
+    <!-- Glowing Grid Background -->
+    <div class="cyber-grid"></div>
+
+    <!-- Particle Layer -->
+    <div id="particle-container" class="particles"></div>
+
+    <!-- Top Status Bar -->
+    <header class="top-status-bar">
+        <div class="status-left">
+            <span class="blinking-node">●</span>
+            <span class="host-label">HOST: CORE_TERMINAL_V4.9</span>
+            <span class="divider">|</span>
+            <span id="current-theme-label" class="status-highlight">THEME: MATRIX_GREEN</span>
+        </div>
+        <div class="status-center">
+            <span class="disclaimer-alert">⚠️ SIMULATION ONLY — NO REAL ACTIONS PERFORMED</span>
+        </div>
+        <div class="status-right">
+            <button id="mute-btn" class="status-btn" title="Toggle audio feedback">🔊 AUDIO_ON</button>
+            <span class="divider">|</span>
+            <span id="system-clock">00:00:00 UTC</span>
+            <span class="divider">|</span>
+            <a href="index.html" class="status-btn exit-btn">EXIT_SYSTEM_HUB ↗</a>
+        </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <main class="workspace-grid">
+
+        <!-- Left Glassmorphic Side Panel: Real-time Telemetry Widgets -->
+        <section class="side-panel left-panel">
+            <div class="panel-header">
+                <h3>TELEMETRY_ENGINE</h3>
+                <span class="panel-status font-glow">ACTIVE</span>
+            </div>
+
+            <div class="widgets-container">
+                <!-- widget: CPU -->
+                <div class="widget-card">
+                    <div class="widget-row">
+                        <span class="widget-label">CPU_CORE_FREQ</span>
+                        <span id="cpu-value" class="widget-value font-glow">4.82 GHz</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="cpu-bar" class="progress-bar-fill" style="width: 48%;"></div>
+                    </div>
+                </div>
+
+                <!-- widget: RAM -->
+                <div class="widget-card">
+                    <div class="widget-row">
+                        <span class="widget-label">VIRT_RAM_HEAP</span>
+                        <span id="ram-value" class="widget-value font-glow">24.1 GB / 64GB</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="ram-bar" class="progress-bar-fill" style="width: 37%;"></div>
+                    </div>
+                </div>
+
+                <!-- widget: GPU -->
+                <div class="widget-card">
+                    <div class="widget-row">
+                        <span class="widget-label">GPU_PIXEL_LOAD</span>
+                        <span id="gpu-value" class="widget-value font-glow">12%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="gpu-bar" class="progress-bar-fill" style="width: 12%;"></div>
+                    </div>
+                </div>
+
+                <!-- widget: Temp -->
+                <div class="widget-card">
+                    <div class="widget-row">
+                        <span class="widget-label">CORE_TEMP_C</span>
+                        <span id="temp-value" class="widget-value font-glow">41°C</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="temp-bar" class="progress-bar-fill" style="width: 41%;"></div>
+                    </div>
+                </div>
+
+                <!-- widget: Storage -->
+                <div class="widget-card">
+                    <div class="widget-row">
+                        <span class="widget-label">SSD_CACHE_OPS</span>
+                        <span id="storage-value" class="widget-value font-glow">890 MB/s</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="storage-bar" class="progress-bar-fill" style="width: 55%;"></div>
+                    </div>
+                </div>
+
+                <!-- widget: Latency / Bandwidth -->
+                <div class="widget-grid-2">
+                    <div class="widget-card sub-card">
+                        <span class="widget-label">LATENCY</span>
+                        <span id="latency-value" class="widget-value font-glow">14 ms</span>
+                    </div>
+                    <div class="widget-card sub-card">
+                        <span class="widget-label">FPS_RATE</span>
+                        <span id="fps-value" class="widget-value font-glow">60.0 FPS</span>
+                    </div>
+                </div>
+
+                <!-- widget: Bandwidth / Uptime -->
+                <div class="widget-card">
+                    <div class="widget-row">
+                        <span class="widget-label">NET_BANDWIDTH</span>
+                        <span id="bandwidth-value" class="widget-value font-glow">84.2 Mb/s</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="bandwidth-bar" class="progress-bar-fill" style="width: 68%;"></div>
+                    </div>
+                </div>
+
+                <div class="widget-grid-2">
+                    <div class="widget-card sub-card">
+                        <span class="widget-label">UPTIME</span>
+                        <span id="uptime-value" class="widget-value font-glow">00h 02m 14s</span>
+                    </div>
+                    <div class="widget-card sub-card">
+                        <span class="widget-label">SYS_BUILD</span>
+                        <span class="widget-value font-glow">V4.9.0-RELEASE</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Center Workspace: Interactive Simulation Terminal -->
+        <section class="center-workspace">
+            <!-- Startup Boot Sequence Panel -->
+            <div id="boot-overlay" class="boot-sequence-container">
+                <div class="boot-header">
+                    <span class="boot-logo">▲ SYSTEM INITIALIZATION SEQUENCE v4.9 ▲</span>
+                    <span class="boot-version">BUILD_ID: 0x9AF48C</span>
+                </div>
+                <div id="boot-lines" class="boot-lines-content"></div>
+                <div class="boot-progress-container">
+                    <div id="boot-progress-bar" class="boot-progress-fill" style="width: 0%;"></div>
+                </div>
+                <div class="boot-footer">
+                    <span>SECURE_BOOT_STATE: ACTIVE</span>
+                    <span id="boot-pct">0%</span>
+                </div>
+            </div>
+
+            <!-- Fake Interactive Terminal -->
+            <div class="terminal-container">
+                <div class="terminal-header">
+                    <div class="window-dots">
+                        <span class="dot dot-red"></span>
+                        <span class="dot dot-yellow"></span>
+                        <span class="dot dot-green"></span>
+                    </div>
+                    <span class="terminal-title">bash --secure-shell-emulator@adeebsaifi</span>
+                    <span class="terminal-crypto-tag">AES_256_GCM</span>
+                </div>
+
+                <div class="terminal-body" id="terminal-screen">
+                    <div class="terminal-welcome">
+                        <pre class="terminal-ascii">
+ ██████╗██╗   ██╗██████╗ ███████╗██████╗
+██╔════╝╚██╗ ██╔╝██╔══██╗██╔════╝██╔══██╗
+██║      ╚████╔╝ ██████╔╝█████╗  ██████╔╝
+██║       ╚██╔╝  ██╔══██╗██╔══╝  ██╔══██╗
+╚██████╗   ██║   ██████╔╝███████╗██║  ██║
+ ╚═════╝   ╚═╝   ╚═════╝ ╚══════╝╚═╝  ╚═╝
+
+████████╗███████╗██████╗ ███╗   ███╗██╗███╗   ██╗ █████╗ ██╗
+╚══██╔══╝██╔════╝██╔══██╗████╗ ████║██║████╗  ██║██╔══██╗██║
+   ██║   █████╗  ██████╔╝██╔████╔██║██║██╔██╗ ██║███████║██║
+   ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║██║██║╚██╗██║██╔══██║██║
+   ██║   ███████╗██║  ██║██║ ╚═╝ ██║██║██║ ╚████║██║  ██║███████╗
+   ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝
+                                                                 </pre>
+                        <p class="welcome-text">WELCOME TO THE EXPERIMENTAL CYBERNETIC CODENAME: SAIFI CLIENT SIMULATOR.</p>
+                        <p class="welcome-subtext">Designed for ultra-premium visual immersion. Fictional, safe environment only.</p>
+                        <p class="welcome-hint">Type <span class="highlight-cmd">help</span> for a catalog of safe simulation routines.</p>
+                        <p>&nbsp;</p>
+                    </div>
+
+                    <!-- Line logs container -->
+                    <div id="terminal-history"></div>
+
+                    <!-- Command Line Input -->
+                    <div class="terminal-input-line">
+                        <span class="prompt-host">guest@quantum-terminal:~$</span>
+                        <div class="input-wrapper">
+                            <input type="text" id="terminal-input" autofocus autocomplete="off" spellcheck="false" aria-label="Terminal simulator input">
+                            <span id="custom-cursor" class="custom-terminal-cursor"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Glassmorphic Side Panel: Live Threat Simulation Logs -->
+        <section class="side-panel right-panel">
+            <div class="panel-header">
+                <h3>SIMULATED_PACKET_STREAM</h3>
+                <span class="panel-status font-glow-red alert-state">DANGER_HIGH</span>
+            </div>
+
+            <!-- Filter Options for stream (visual purely) -->
+            <div class="stream-categories">
+                <span class="stream-cat active">ALL_TRAFFIC</span>
+                <span class="stream-cat">FIREWALL</span>
+                <span class="stream-cat">K8S_PODS</span>
+                <span class="stream-cat">SQL_EVENTS</span>
+            </div>
+
+            <!-- Endless live container logs -->
+            <div id="packet-logs-stream" class="packet-logs-container">
+                <!-- Simulated rows are appended dynamically -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Permanent Safety & Compliance Disclaimer Overlay (Required by Instructions) -->
+    <footer class="compliance-footer">
+        <div class="disclaimer-grid">
+            <div class="disclaimer-item">
+                <span class="indicator-safe">🟢 COMPLIANT</span>
+                <span class="disclaimer-text">This is a <strong>purely visual cinema mockup simulation</strong>. No penetration testing, exploiting, network mapping, credential collection, or server interference is performed.</span>
+            </div>
+            <div class="disclaimer-status-nodes">
+                <span class="secure-node" data-label="devices">DEVICE_SANDBOX: SECURE</span>
+                <span class="secure-node" data-label="files">VIRTUAL_FILESYSTEM: READONLY</span>
+                <span class="secure-node" data-label="camera">VIDEO_CAMERA: OFFLINE</span>
+                <span class="secure-node" data-label="microphone">AUDIO_MIC: MUTED</span>
+                <span class="secure-node" data-label="network">LOCAL_NETWORK: LOOPBACK</span>
+                <span class="secure-node" data-label="Bluetooth">BLUETOOTH_BUS: DISABLED</span>
+                <span class="secure-node" data-label="USB">USB_PORT_CONTROLLER: ISOLATED</span>
+                <span class="secure-node" data-label="Wi-Fi">WIFI_RADIO: SHIELDED</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/hacker.js"></script>
+</body>
+</html>
