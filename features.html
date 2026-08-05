@@ -4,8 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Explore keyboard shortcuts, Developer mode dashboards, offline cached status, and active easter egg instructions for Adeeb Saifi portfolio.">
+    <meta name="keywords" content="Developer Sandbox, AI Playgrounds, SaaS Pricing, Payments Mock, API Keys, Adeeb Saifi, Portfolio">
+    <meta name="author" content="Adeeb Saifi">
     <link rel="canonical" href="https://adeebsaifi.github.io/features.html">
-    <title>Developer Hub & Easter Eggs | Adeeb Saifi</title>
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://adeebsaifi.github.io/features.html">
+    <meta property="og:title" content="Developer & Startup Hub | Adeeb Saifi">
+    <meta property="og:description" content="Interactive developer sandbox, AI neural generation, and SaaS startup pricing models designed inside premium frameworkless aesthetics.">
+    <meta property="og:image" content="https://picsum.photos/1200/630?random=features-og">
+
+    <!-- Schema.org JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Adeeb Saifi Developer & Startup Hub",
+      "url": "https://adeebsaifi.github.io/features.html",
+      "description": "Interactive developer sandboxes, client-side Canvas compressors, real-time AI agents, and SaaS analytics models.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "All"
+    }
+    </script>
+
+    <title>Developer Hub, AI & Startup Sandbox | Adeeb Saifi</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,12 +39,79 @@
     <link rel="stylesheet" href="css/animations.css">
 
     <style>
+        /* Modern Apple / Linear style tabs */
+        .hub-tabs {
+            display: flex;
+            justify-content: center;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 0.4rem;
+            border-radius: 9999px;
+            max-width: 750px;
+            margin: 0 auto 3rem auto;
+            gap: 0.25rem;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .hub-tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            flex: 1;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .hub-tab-btn:hover {
+            color: var(--text-primary);
+            background: var(--bg-accent);
+        }
+
+        .hub-tab-btn.active {
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            box-shadow: 0 4px 12px var(--color-primary-glow);
+        }
+
+        /* Panel visibility */
+        .hub-panel {
+            display: none;
+            animation: scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .hub-panel.active {
+            display: block;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2.5rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 968px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Specific style elements for dashboards */
         .kbd-guide-list {
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
-            margin-top: 2rem;
+            gap: 1.25rem;
+            margin-top: 1.5rem;
         }
 
         .kbd-guide-item {
@@ -29,36 +119,210 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 1rem;
+            padding-bottom: 0.75rem;
         }
 
         .kbd-combo {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
 
         kbd {
             background: var(--bg-accent-hover);
             border: 1px solid var(--border-color-hover);
-            border-radius: 8px;
-            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            padding: 0.3rem 0.6rem;
             font-family: var(--font-mono);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-primary);
-            box-shadow: 0 4px 0 var(--border-color);
+            box-shadow: 0 3px 0 var(--border-color);
         }
 
-        .features-grid {
+        /* Playground / Input styling */
+        .input-group-premium {
+            margin-bottom: 1.25rem;
+        }
+
+        .input-premium {
+            width: 100%;
+            padding: 0.8rem 1.25rem;
+            background: var(--bg-accent);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 0.95rem;
+            transition: all var(--transition-normal);
+        }
+
+        .input-premium:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            background: var(--bg-surface-solid);
+            box-shadow: 0 0 0 3px var(--color-primary-glow);
+        }
+
+        .sandbox-console {
+            background: #070709;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: #10b981;
+            height: 180px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Stripe-like pricing */
+        .pricing-toggle-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .switch-premium {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch-premium input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider-premium {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: var(--bg-accent-hover);
+            transition: .4s;
+            border-radius: 34px;
+            border: 1px solid var(--border-color);
+        }
+
+        .slider-premium:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--text-primary);
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider-premium {
+            background-color: var(--color-primary);
+        }
+
+        input:checked + .slider-premium:before {
+            transform: translateX(24px);
+        }
+
+        .pricing-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 3rem;
-            margin-top: 4rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
         }
 
-        @media (max-width: 768px) {
-            .features-grid {
+        @media (max-width: 968px) {
+            .pricing-grid {
                 grid-template-columns: 1fr;
             }
+        }
+
+        /* Canvas Image Compressor styles */
+        .compressor-dragzone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 2rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            background: var(--bg-accent);
+        }
+
+        .compressor-dragzone:hover, .compressor-dragzone.dragover {
+            border-color: var(--color-primary);
+            background: var(--color-primary-glow);
+        }
+
+        /* Custom Pure CSS Dashboard charts */
+        .analytics-bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 150px;
+            padding-top: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            gap: 0.5rem;
+        }
+
+        .chart-bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .chart-bar {
+            width: 100%;
+            background: linear-gradient(to top, var(--color-primary), var(--color-accent));
+            border-radius: 4px 4px 0 0;
+            transition: height 1s ease;
+            height: 0;
+        }
+
+        .chart-bar-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-family: var(--font-mono);
+        }
+
+        /* Check out Modal and Overlay styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 10, 12, 0.9);
+            backdrop-filter: blur(8px);
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: var(--bg-surface-solid);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: var(--glass-shadow);
+            transform: scale(0.9);
+            transition: transform var(--transition-normal);
+        }
+
+        .modal-overlay.show .modal-box {
+            transform: scale(1);
         }
     </style>
 </head>
@@ -101,69 +365,429 @@
 
     <main class="container" style="padding-top: 8rem; padding-bottom: 5rem;">
 
-        <div style="text-align: center; max-width: 700px; margin: 0 auto 3rem auto;">
+        <div style="text-align: center; max-width: 800px; margin: 0 auto 3rem auto;">
             <div class="hero-tag">
                 <div class="hero-tag-dot" style="background-color: var(--color-accent); box-shadow:0 0 8px var(--color-accent)"></div>
-                <span>CONSOLE CORE & PWA ENGINE</span>
+                <span>CONSOLE CORE & STARTUP ENGINE</span>
             </div>
-            <h1 class="hero-title" style="font-size: 3rem;">Developer <span>Hub</span></h1>
-            <p class="hero-desc">Interactive dashboard tracking shortcut commands, PWA installation metrics, and custom easter egg triggers.</p>
+            <h1 class="hero-title" style="font-size: 3rem;">Developer & <span>Startup Hub</span></h1>
+            <p class="hero-desc">Interactive dashboard exposing developer shortcuts, advanced web app simulators, live AI engines, and SaaS subscription metrics.</p>
         </div>
 
-        <div class="features-grid">
-            <!-- Shortcuts guide column -->
-            <div class="card reveal reveal-left">
-                <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">⌨️ Interactive Keybindings</h2>
-                <p>Maximize your navigation efficiency across this portfolio with custom key combinations:</p>
+        <!-- Premium Hub Navigation Tabs -->
+        <div class="hub-tabs" role="tablist" aria-label="Developer and Startup Hub Tabs">
+            <button class="hub-tab-btn active" role="tab" aria-selected="true" aria-controls="panel-dev" id="tab-dev">
+                🛠️ Dev Core
+            </button>
+            <button class="hub-tab-btn" role="tab" aria-selected="false" aria-controls="panel-sandbox" id="tab-sandbox">
+                📱 App Sandbox
+            </button>
+            <button class="hub-tab-btn" role="tab" aria-selected="false" aria-controls="panel-ai" id="tab-ai">
+                🤖 AI Playgrounds
+            </button>
+            <button class="hub-tab-btn" role="tab" aria-selected="false" aria-controls="panel-startup" id="tab-startup">
+                🚀 Startup Hub
+            </button>
+        </div>
 
-                <ul class="kbd-guide-list">
-                    <li class="kbd-guide-item">
-                        <span>Toggle Color Mode</span>
-                        <div class="kbd-combo">
-                            <kbd>Alt</kbd>
-                            <span>+</span>
-                            <kbd>T</kbd>
-                        </div>
-                    </li>
-                    <li class="kbd-guide-item">
-                        <span>Focus Live Search</span>
-                        <div class="kbd-combo">
-                            <kbd>/</kbd>
-                        </div>
-                    </li>
-                    <li class="kbd-guide-item">
-                        <span>Toggle Developer Stats</span>
-                        <div class="kbd-combo">
-                            <kbd>Ctrl</kbd>
-                            <span>+</span>
-                            <kbd>Shift</kbd>
-                            <span>+</span>
-                            <kbd>D</kbd>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+        <!-- ================= PANEL 1: DEV CORE ================= -->
+        <div class="hub-panel active" id="panel-dev" role="tabpanel" aria-labelledby="tab-dev">
+            <div class="features-grid">
+                <!-- Shortcuts guide column -->
+                <div class="card">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">⌨️ Interactive Keybindings</h2>
+                    <p>Maximize your navigation efficiency across this portfolio with custom key combinations:</p>
 
-            <!-- Easter Eggs and PWAs guide column -->
-            <div class="card reveal reveal-right">
-                <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">⭐️ Easter Eggs & App Sync</h2>
-
-                <p style="margin-bottom: 1.5rem;"><strong>The Konami Code:</strong> Try typing the legendary arcade cheat combo on any page of this site to launch the Galactic Developer celebration sequence:</p>
-                <div style="font-family: var(--font-mono); font-size: 0.85rem; background: var(--bg-accent); padding: 1rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--border-color); text-align: center;">
-                    ↑ ↑ ↓ ↓ ← → ← → B A
+                    <ul class="kbd-guide-list">
+                        <li class="kbd-guide-item">
+                            <span>Toggle Color Mode</span>
+                            <div class="kbd-combo">
+                                <kbd>Alt</kbd>
+                                <span>+</span>
+                                <kbd>T</kbd>
+                            </div>
+                        </li>
+                        <li class="kbd-guide-item">
+                            <span>Focus Live Search</span>
+                            <div class="kbd-combo">
+                                <kbd>/</kbd>
+                            </div>
+                        </li>
+                        <li class="kbd-guide-item">
+                            <span>Toggle Developer Stats</span>
+                            <div class="kbd-combo">
+                                <kbd>Ctrl</kbd>
+                                <span>+</span>
+                                <kbd>Shift</kbd>
+                                <span>+</span>
+                                <kbd>D</kbd>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
 
-                <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">📱 Progressive Web Application (PWA)</h3>
-                <p style="font-size: 0.95rem; margin-bottom: 1.5rem;">This site functions fully as an installable application. Save it to your phone home screen or desktop application list for deep offline caching support, custom icons, and fluid standalone system windowing.</p>
+                <!-- Easter Eggs and PWAs guide column -->
+                <div class="card">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">⭐️ Easter Eggs & App Sync</h2>
 
-                <button id="pwa-install-btn" class="btn btn-primary" style="width: 100%; display: none;">Install Web App to Device ↗</button>
-                <div id="pwa-installed-msg" style="text-align: center; color: var(--color-secondary); font-weight: 700; font-size: 0.95rem; display: none;">
-                    ✓ PWA installation detected! Running in standalone native execution mode.
+                    <p style="margin-bottom: 1.5rem;"><strong>The Konami Code:</strong> Try typing the legendary arcade cheat combo on any page of this site to launch the Galactic Developer celebration sequence:</p>
+                    <div style="font-family: var(--font-mono); font-size: 0.85rem; background: var(--bg-accent); padding: 1rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--border-color); text-align: center;">
+                        ↑ ↑ ↓ ↓ ← → ← → B A
+                    </div>
+
+                    <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">📱 Progressive Web Application (PWA)</h3>
+                    <p style="font-size: 0.95rem; margin-bottom: 1.5rem;">This site functions fully as an installable application with deep offline caching support, custom icons, and fluid native stand-alone system windows.</p>
+
+                    <button id="pwa-install-btn" class="btn btn-primary" style="width: 100%; display: none;">Install Web App to Device ↗</button>
+                    <div id="pwa-installed-msg" style="text-align: center; color: var(--color-secondary); font-weight: 700; font-size: 0.95rem; display: none;">
+                        ✓ PWA installation detected! Running in standalone native execution mode.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PANEL 2: APP SANDBOX (LEVEL 2) ================= -->
+        <div class="hub-panel" id="panel-sandbox" role="tabpanel" aria-labelledby="tab-sandbox">
+            <div class="features-grid">
+                <!-- Sandbox: Auth & Role Management -->
+                <div class="card">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">🔐 Auth & Role Management</h2>
+                    <p>Experience complete dashboard routing shells. Login below to configure your user profile details and test client-side Role Management.</p>
+
+                    <div id="auth-unlocked-section" style="display:none; margin-top:1.5rem;">
+                        <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; background:var(--bg-accent); padding:1rem; border-radius:12px;">
+                            <div style="width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg, var(--color-primary), var(--color-accent)); display:flex; align-items:center; justify-content:center; font-weight:bold; color:white;">
+                                JD
+                            </div>
+                            <div>
+                                <h4 style="margin:0;" id="auth-display-name">John Doe</h4>
+                                <p style="margin:0; font-size:0.85rem;" id="auth-display-email">john@stripe.com</p>
+                            </div>
+                        </div>
+
+                        <div class="input-group-premium">
+                            <label style="font-size:0.85rem; color:var(--text-secondary); display:block; margin-bottom:0.5rem;">Assign System Role</label>
+                            <select class="input-premium" id="sandbox-role-selector">
+                                <option value="guest">Guest (Read Only)</option>
+                                <option value="member">Member (Can Comment & Like)</option>
+                                <option value="admin">Administrator (Full Dashboard Controls)</option>
+                            </select>
+                        </div>
+
+                        <div style="padding:1rem; border-radius:12px; background:var(--color-primary-glow); border:1px solid var(--color-primary); font-size:0.85rem; color:var(--text-primary); margin-top:1rem;" id="role-feature-alert">
+                            <strong>Guest Mode:</strong> You have read-only privileges. Change role to unlock sandbox interactions.
+                        </div>
+
+                        <button class="btn btn-secondary" id="auth-logout-btn" style="margin-top:1.5rem; width:100%;">Log Out Secure Session</button>
+                    </div>
+
+                    <form id="sandbox-auth-form" style="margin-top:1.5rem;">
+                        <div class="input-group-premium">
+                            <input type="email" id="sandbox-auth-email" class="input-premium" placeholder="john@stripe.com" required>
+                        </div>
+                        <div class="input-group-premium">
+                            <input type="password" id="sandbox-auth-password" class="input-premium" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%;">Secure Login ↗</button>
+                    </form>
+                </div>
+
+                <!-- Sandbox: Client-side Image Compressor -->
+                <div class="card">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">🖼️ High-Performance Image Compressor</h2>
+                    <p>Handcrafted, sub-millisecond client-side compression. Upload an image to trigger local Canvas operations, reducing file payload instantly.</p>
+
+                    <div class="compressor-dragzone" id="compressor-dropzone">
+                        <span style="font-size: 2.5rem; display:block; margin-bottom:0.5rem;">📥</span>
+                        <span>Drag & drop or <strong style="color:var(--color-primary);">browse image</strong></span>
+                        <input type="file" id="compressor-file-input" style="display:none;" accept="image/*">
+                    </div>
+
+                    <div id="compressor-results" style="display:none; margin-top:1.5rem;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:1rem; font-family:var(--font-mono);">
+                            <div>Original: <span id="compressor-size-orig" style="color:var(--color-danger);">...</span></div>
+                            <div>Compressed: <span id="compressor-size-comp" style="color:var(--color-secondary);">...</span></div>
+                        </div>
+                        <a class="btn btn-primary" id="compressor-download-btn" style="width:100%;">Download Compressed Image</a>
+                    </div>
+                </div>
+
+                <!-- Sandbox: Comments Feed, Likes & Activity Logger -->
+                <div class="card" style="grid-column: span 2;">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">💬 Likes, Bookmarks & Interactive Comments</h2>
+                    <p>Fully secure sandbox. Use inputs below to comment on articles, trigger immediate state persistence, and inspect live activity events.</p>
+
+                    <div style="display:flex; gap:2rem; margin-top:1.5rem;">
+                        <div style="flex:1;">
+                            <h3 style="font-size:1.1rem; margin-bottom:1rem;">Card Interactive Hub</h3>
+                            <div style="background:var(--bg-accent); border:1px solid var(--border-color); border-radius:16px; padding:1.5rem;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                                    <span style="font-size:0.8rem; font-weight:bold; color:var(--color-primary);">MEMBER SHOWCASE</span>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <button class="btn btn-secondary" id="btn-mock-like" style="padding:0.4rem 0.8rem; font-size:0.8rem;">❤️ Like (<span id="count-mock-likes">12</span>)</button>
+                                        <button class="btn btn-secondary" id="btn-mock-bookmark" style="padding:0.4rem 0.8rem; font-size:0.8rem;">🔖 Bookmark</button>
+                                    </div>
+                                </div>
+                                <h4 style="margin-bottom:0.5rem;">Sub-Millisecond Rendering Architecture</h4>
+                                <p style="font-size:0.85rem; margin-bottom:0;">Experience pure CSS flexboxes and instant state caches delivering responsive frames at absolute limits.</p>
+                            </div>
+
+                            <form id="sandbox-comment-form" style="margin-top:1.5rem;">
+                                <div class="input-group-premium">
+                                    <input type="text" id="sandbox-comment-text" class="input-premium" placeholder="Write a secure comment..." required>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="sandbox-comment-submit" style="width:100%;">Post Sanitized Comment</button>
+                            </form>
+                        </div>
+
+                        <div style="flex:1; display:flex; flex-direction:column;">
+                            <h3 style="font-size:1.1rem; margin-bottom:1rem;">Live Comments & Security Logs</h3>
+                            <div class="sandbox-console" id="sandbox-comment-logs">
+                                [SYSTEM] Waiting for user actions...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PANEL 3: AI PLAYGROUNDS (LEVEL 3) ================= -->
+        <div class="hub-panel" id="panel-ai" role="tabpanel" aria-labelledby="tab-ai">
+            <div class="features-grid">
+                <!-- AI Chat Assistant -->
+                <div class="card">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">🤖 Interactive AI Chat Assistant</h2>
+                    <p>Ask our custom neural placeholder model questions about systems performance, design metrics, or blog generation.</p>
+
+                    <div class="sandbox-console" id="ai-chat-history" style="height:250px; margin-bottom:1.5rem;">
+                        [AI] Hello! I am Adeeb's elite AI Assistant. Ask me anything about high performance designs or request summaries!
+                    </div>
+
+                    <form id="ai-chat-form">
+                        <div style="display:flex; gap:0.5rem;">
+                            <input type="text" id="ai-chat-input" class="input-premium" placeholder="Ask about Lighthouse 100, travel suggestions, or summaries..." required>
+                            <button type="submit" class="btn btn-primary" style="padding: 0 1.5rem;">Send</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- AI Recommendations & Image Generator -->
+                <div class="card">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">🎨 AI Travel & Visual Generation</h2>
+
+                    <h3 style="font-size:1.1rem; margin-bottom:0.75rem; color:var(--text-primary)">AI Travel Planner</h3>
+                    <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem;">
+                        <input type="text" id="ai-travel-dest" class="input-premium" style="margin-bottom:0;" placeholder="Destination (e.g. Kyoto, London)">
+                        <button class="btn btn-secondary" id="ai-travel-btn">Plan ↗</button>
+                    </div>
+                    <div id="ai-travel-output" style="background:var(--bg-accent); padding:1rem; border-radius:12px; font-size:0.85rem; display:none; margin-bottom:2rem; border:1px solid var(--border-color);">
+                    </div>
+
+                    <h3 style="font-size:1.1rem; margin-bottom:0.75rem; color:var(--text-primary)">AI Instant Image Canvas</h3>
+                    <p style="font-size:0.85rem;">Input visual prompts to generate dynamic neon vector art calculated inside local device grids.</p>
+                    <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem;">
+                        <input type="text" id="ai-image-prompt" class="input-premium" style="margin-bottom:0;" placeholder="Prompt (e.g. cyberpunk tower, ocean sunset)">
+                        <button class="btn btn-primary" id="ai-image-btn">Generate</button>
+                    </div>
+                    <div style="display:flex; justify-content:center; background:#070709; border-radius:16px; padding:1rem; border:1px solid var(--border-color);">
+                        <canvas id="ai-image-canvas" width="300" height="150" style="width:100%; height:150px; border-radius:12px; background:#000;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PANEL 4: STARTUP HUB (LEVEL 4) ================= -->
+        <div class="hub-panel" id="panel-startup" role="tabpanel" aria-labelledby="tab-startup">
+            <!-- Subscription Pricing Section -->
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Flexible Scale Pricing</h2>
+                <p>Unlock enterprise systems architecture, continuous deployment pipelines, and custom designs.</p>
+
+                <div class="pricing-toggle-wrapper">
+                    <span>Monthly Billing</span>
+                    <label class="switch-premium">
+                        <input type="checkbox" id="billing-duration-toggle">
+                        <span class="slider-premium"></span>
+                    </label>
+                    <span style="color:var(--color-primary); font-weight:bold;">Annual Billing <span style="font-size:0.75rem; background:var(--color-primary-glow); padding:0.2rem 0.5rem; border-radius:9999px;">SAVE 20%</span></span>
+                </div>
+            </div>
+
+            <div class="pricing-grid">
+                <!-- Plan 1 -->
+                <div class="card card-glow" style="display:flex; flex-direction:column; justify-content:space-between;">
+                    <div>
+                        <span style="font-size:0.75rem; font-weight:bold; color:var(--text-muted); text-transform:uppercase;">INDIVIDUAL</span>
+                        <h3 style="font-size:1.75rem; margin:0.5rem 0 1rem 0;">Starter</h3>
+                        <div style="font-size:2.5rem; font-weight:800; color:var(--text-primary); margin-bottom:1.5rem;">
+                            $<span class="pricing-val" data-monthly="19" data-yearly="15">19</span><span style="font-size:1rem; font-weight:normal; color:var(--text-muted);">/mo</span>
+                        </div>
+                        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.75rem; font-size:0.9rem; color:var(--text-secondary); margin-bottom:2rem;">
+                            <li>✓ 5 Active Custom Projects</li>
+                            <li>✓ Standard Glassmorphism Shells</li>
+                            <li>✓ Lighthouse Optimization Core</li>
+                            <li>✓ Offline Support Service Worker</li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-secondary checkout-trigger" data-plan="Starter" style="width:100%;">Get Started Now</button>
+                </div>
+
+                <!-- Plan 2 (Premium Accent) -->
+                <div class="card card-glow" style="display:flex; flex-direction:column; justify-content:space-between; border-color: var(--color-primary);">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.75rem; font-weight:bold; color:var(--color-primary); text-transform:uppercase;">GROWING BUSINESS</span>
+                            <span style="font-size:0.7rem; background:var(--color-primary-glow); color:var(--color-primary); padding:0.2rem 0.6rem; border-radius:9999px; font-weight:bold;">POPULAR</span>
+                        </div>
+                        <h3 style="font-size:1.75rem; margin:0.5rem 0 1rem 0;">Professional</h3>
+                        <div style="font-size:2.5rem; font-weight:800; color:var(--text-primary); margin-bottom:1.5rem;">
+                            $<span class="pricing-val" data-monthly="49" data-yearly="39">49</span><span style="font-size:1rem; font-weight:normal; color:var(--text-muted);">/mo</span>
+                        </div>
+                        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.75rem; font-size:0.9rem; color:var(--text-secondary); margin-bottom:2rem;">
+                            <li>✓ Unlimited Portfolio Projects</li>
+                            <li>✓ Custom Interactive Vector Map Nodes</li>
+                            <li>✓ 100% Performance Audit Pipelines</li>
+                            <li>✓ Advanced API Access Credentials</li>
+                            <li>✓ 24/7 Priority Architecture Support</li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-primary checkout-trigger" data-plan="Professional" style="width:100%;">Get Pro Access ↗</button>
+                </div>
+
+                <!-- Plan 3 -->
+                <div class="card card-glow" style="display:flex; flex-direction:column; justify-content:space-between;">
+                    <div>
+                        <span style="font-size:0.75rem; font-weight:bold; color:var(--text-muted); text-transform:uppercase;">ENTERPRISE HUB</span>
+                        <h3 style="font-size:1.75rem; margin:0.5rem 0 1rem 0;">Ultimate</h3>
+                        <div style="font-size:2.5rem; font-weight:800; color:var(--text-primary); margin-bottom:1.5rem;">
+                            $<span class="pricing-val" data-monthly="129" data-yearly="99">129</span><span style="font-size:1rem; font-weight:normal; color:var(--text-muted);">/mo</span>
+                        </div>
+                        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.75rem; font-size:0.9rem; color:var(--text-secondary); margin-bottom:2rem;">
+                            <li>✓ Custom Domain API Hooks</li>
+                            <li>✓ Dedicated Serverless Deploy Engines</li>
+                            <li>✓ Team Collaboration Workspace</li>
+                            <li>✓ Whiteglove Brand Customizations</li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-secondary checkout-trigger" data-plan="Ultimate" style="width:100%;">Contact Sales</button>
+                </div>
+            </div>
+
+            <!-- Developer API System & Token Generator -->
+            <div class="features-grid" style="margin-top: 4rem;">
+                <div class="card">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">🔑 API Gateway & Token Generator</h2>
+                    <p>Integrate Adeeb's high-performance content engine directly into your pipelines using cryptographically secure access keys.</p>
+
+                    <div style="display:flex; gap:0.5rem; margin-top:1.5rem; margin-bottom:1.5rem;">
+                        <input type="text" id="api-token-display" class="input-premium" style="font-family:var(--font-mono); font-size:0.8rem; margin-bottom:0;" value="Click generate to create credentials..." readonly>
+                        <button class="btn btn-secondary" id="api-token-btn">Generate</button>
+                    </div>
+
+                    <button class="btn btn-primary" id="api-simulate-btn" style="width:100%;">Simulate API Payload Request ↗</button>
+                    <div class="sandbox-console" id="api-response-console" style="margin-top:1.5rem; height:180px;">
+                        [GATEWAY] Waiting for credentials...
+                    </div>
+                </div>
+
+                <!-- Admin Analytics Dashboard -->
+                <div class="card">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">📈 Admin Analytics Sandbox</h2>
+                    <p>Real-time system telemetry tracing active connections, load metrics, and customer conversion rates.</p>
+
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1rem; text-align:center; margin-top:1.5rem; margin-bottom:1.5rem;">
+                        <div style="background:var(--bg-accent); padding:0.75rem; border-radius:12px; border:1px solid var(--border-color);">
+                            <div style="font-size:0.7rem; font-weight:bold; color:var(--text-muted);">ACTIVE USERS</div>
+                            <div style="font-size:1.4rem; font-weight:800; color:var(--color-secondary);" id="analytics-active-users">412</div>
+                        </div>
+                        <div style="background:var(--bg-accent); padding:0.75rem; border-radius:12px; border:1px solid var(--border-color);">
+                            <div style="font-size:0.7rem; font-weight:bold; color:var(--text-muted);">MRR GROWTH</div>
+                            <div style="font-size:1.4rem; font-weight:800; color:var(--color-accent);">$14.2K</div>
+                        </div>
+                        <div style="background:var(--bg-accent); padding:0.75rem; border-radius:12px; border:1px solid var(--border-color);">
+                            <div style="font-size:0.7rem; font-weight:bold; color:var(--text-muted);">CONVERSION</div>
+                            <div style="font-size:1.4rem; font-weight:800; color:var(--color-primary);">4.21%</div>
+                        </div>
+                    </div>
+
+                    <h3 style="font-size:1.1rem; margin-bottom:0.75rem; color:var(--text-primary)">Performance Telemetry (Response Latency)</h3>
+                    <div class="analytics-bar-chart">
+                        <div class="chart-bar-wrapper">
+                            <div class="chart-bar" style="height: 80%;"></div>
+                            <span class="chart-bar-label">Mon</span>
+                        </div>
+                        <div class="chart-bar-wrapper">
+                            <div class="chart-bar" style="height: 45%;"></div>
+                            <span class="chart-bar-label">Tue</span>
+                        </div>
+                        <div class="chart-bar-wrapper">
+                            <div class="chart-bar" style="height: 65%;"></div>
+                            <span class="chart-bar-label">Wed</span>
+                        </div>
+                        <div class="chart-bar-wrapper">
+                            <div class="chart-bar" style="height: 90%;"></div>
+                            <span class="chart-bar-label">Thu</span>
+                        </div>
+                        <div class="chart-bar-wrapper">
+                            <div class="chart-bar" style="height: 35%;"></div>
+                            <span class="chart-bar-label">Fri</span>
+                        </div>
+                        <div class="chart-bar-wrapper">
+                            <div class="chart-bar" style="height: 100%;"></div>
+                            <span class="chart-bar-label">Sat</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
     </main>
+
+    <!-- Stripe-Style Premium Checkout Modal (Level 4 Integration) -->
+    <div id="stripe-checkout-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Secure Stripe-like Checkout">
+        <div class="modal-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid var(--border-color); padding-bottom:0.75rem;">
+                <h3 style="font-size:1.25rem; margin:0; display:flex; align-items:center; gap:0.5rem;">
+                    <span>💳</span> Stripe Secure Checkout
+                </h3>
+                <button id="checkout-modal-close" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.25rem;">&times;</button>
+            </div>
+
+            <div style="background:var(--bg-accent); padding:1rem; border-radius:12px; margin-bottom:1.5rem; border:1px solid var(--border-color);">
+                <div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-bottom:0.25rem;">
+                    <span style="color:var(--text-secondary);">Selected Plan:</span>
+                    <strong style="color:var(--color-primary);" id="checkout-plan-name">Starter</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.9rem;">
+                    <span style="color:var(--text-secondary);">Total Billing:</span>
+                    <strong style="color:var(--color-secondary);" id="checkout-plan-price">$19/mo</strong>
+                </div>
+            </div>
+
+            <form id="checkout-billing-form">
+                <div class="input-group-premium">
+                    <input type="text" id="checkout-card-name" class="input-premium" placeholder="Cardholder Name" required>
+                </div>
+                <div class="input-group-premium" style="position:relative;">
+                    <input type="text" id="checkout-card-num" class="input-premium" placeholder="Card Number (4242 •••• •••• ••••)" required max-length="19">
+                </div>
+                <div style="display:flex; gap:0.5rem;">
+                    <div class="input-group-premium" style="flex:2;">
+                        <input type="text" id="checkout-card-exp" class="input-premium" placeholder="MM/YY" required max-length="5">
+                    </div>
+                    <div class="input-group-premium" style="flex:1;">
+                        <input type="text" id="checkout-card-cvc" class="input-premium" placeholder="CVC" required max-length="3">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">Complete Secure Checkout ↗</button>
+            </form>
+
+            <div id="checkout-success-msg" style="display:none; text-align:center; padding:1rem; background:var(--color-secondary-glow); border:1px solid var(--color-secondary); color:var(--color-secondary); border-radius:12px; margin-top:1.5rem; font-size:0.9rem; font-weight:bold;">
+                🎉 Subscription Successfully Activated! Welcome to elite workspace.
+            </div>
+        </div>
+    </div>
 
     <!-- Back to Top -->
     <button class="back-to-top" aria-label="Scroll back to top" title="Scroll back to top">↑</button>
@@ -209,8 +833,9 @@
         </div>
     </footer>
 
-    <!-- Global scripts -->
+    <!-- Global scripts & custom features hub client logic -->
     <script src="js/main.js"></script>
+    <script src="js/features-hub.js"></script>
     <script>
         // Specialized logic to track install prompts for custom installation button
         let deferredPrompt;
@@ -218,20 +843,15 @@
         const installedMsg = document.getElementById("pwa-installed-msg");
 
         window.addEventListener("beforeinstallprompt", (e) => {
-            // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
-            // Stash the event so it can be triggered later.
             deferredPrompt = e;
-            // Update UI notify the user they can install the PWA
             if (installBtn) installBtn.style.display = "block";
         });
 
         if (installBtn) {
             installBtn.addEventListener("click", () => {
                 if (!deferredPrompt) return;
-                // Show the prompt
                 deferredPrompt.prompt();
-                // Wait for the user to respond to the prompt
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === "accepted") {
                         console.log("User accepted the install prompt");
@@ -244,7 +864,6 @@
             });
         }
 
-        // Detect if already installed / running as standalone
         if (window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone) {
             if (installedMsg) installedMsg.style.display = "block";
             if (installBtn) installBtn.style.display = "none";

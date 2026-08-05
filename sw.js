@@ -14,6 +14,7 @@ const ASSETS_TO_CACHE = [
     "./js/gallery.js",
     "./js/blog.js",
     "./js/contact.js",
+    "./js/features-hub.js",
     "./manifest.json",
     "./Images/photos.json"
 ];
@@ -62,7 +63,8 @@ self.addEventListener("fetch", (e) => {
                 return networkResponse;
             }).catch(() => {
                 // Fallback to offline page if available and matching HTML request
-                if (e.request.headers.get("accept").includes("text/html")) {
+                const acceptHeader = e.request.headers.get("accept");
+                if (acceptHeader && acceptHeader.includes("text/html")) {
                     return caches.match("./404.html");
                 }
             });
