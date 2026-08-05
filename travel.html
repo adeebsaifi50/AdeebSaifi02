@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore global travels and interactive vector journeys curated by Adeeb Saifi. Modern design meets travel photography.">
+    <meta name="keywords" content="Adeeb Saifi, Travel Map, World Travels, Minimalist Explorer">
+    <meta name="author" content="Adeeb Saifi">
+    <link rel="canonical" href="https://adeebsaifi.github.io/travel.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://adeebsaifi.github.io/travel.html">
+    <meta property="og:title" content="Travel Map | Adeeb Saifi">
+    <meta property="og:description" content="Explore beautiful travel nodes on a customized interactive vector world map.">
+    <meta property="og:image" content="https://picsum.photos/1200/630?random=travel-og">
+
+    <title>Travel Map & Expeditions | Adeeb Saifi</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+
+    <style>
+        /* Custom map styling */
+        .map-section-wrapper {
+            background: var(--bg-surface-solid);
+            border: 1px solid var(--border-color);
+            border-radius: 32px;
+            padding: 3rem 1.5rem;
+            margin-top: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .map-continent {
+            fill: var(--bg-accent);
+            stroke: var(--border-color);
+            stroke-width: 1.5;
+            transition: fill var(--transition-normal);
+        }
+
+        .map-continent:hover {
+            fill: var(--bg-accent-hover);
+        }
+
+        .map-route-line {
+            stroke: var(--color-primary);
+            stroke-width: 2.5;
+            stroke-dasharray: 8, 4;
+            animation: dash 30s linear infinite;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -1000;
+            }
+        }
+
+        /* Pin indicators */
+        .map-pin-core {
+            fill: var(--color-accent);
+            cursor: pointer;
+            transition: transform var(--transition-fast), fill var(--transition-fast);
+        }
+
+        .map-pin-ripple {
+            fill: none;
+            stroke: var(--color-accent);
+            stroke-width: 1.5;
+            transform-origin: center;
+            animation: markerPing 2.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+            pointer-events: none;
+        }
+
+        .map-pin-group:hover .map-pin-core {
+            fill: var(--color-primary);
+            transform: scale(1.3);
+        }
+
+        .map-pin-group:hover .map-pin-ripple {
+            stroke: var(--color-primary);
+        }
+
+        /* Travel grid layout */
+        .travel-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 968px) {
+            .travel-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 650px) {
+            .travel-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .travel-badge {
+            background: var(--color-primary-glow);
+            color: var(--color-primary);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.3rem 0.8rem;
+            border-radius: 9999px;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Scroll Progress -->
+    <div class="scroll-progress" aria-hidden="true"></div>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" aria-hidden="true"></div>
+    <div class="custom-cursor-dot" aria-hidden="true"></div>
+
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand" aria-label="Adeeb Saifi Home">
+                <div class="nav-brand-icon">A</div>
+                <span>Adeeb Saifi</span>
+            </a>
+
+            <nav aria-label="Main navigation">
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="index.html">Home</a></li>
+                    <li class="nav-item active"><a href="travel.html">Travel</a></li>
+                    <li class="nav-item"><a href="blog.html">Blog</a></li>
+                    <li class="nav-item"><a href="gallery.html">Gallery</a></li>
+                    <li class="nav-item"><a href="features.html">Developer Hub</a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="theme-toggle" aria-label="Toggle Dark/Light Mode" title="Toggle Mode">
+                    <svg class="sun-icon" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.01c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24"><path d="M12.3 22h-.1c-5.4 0-10-4.6-10-10 0-4.3 2.9-8.1 7.1-9.3.5-.1 1 .2 1.1.7.1.5-.2 1-.7 1.1-3.2.9-5.5 3.8-5.5 7.5 0 4.4 3.6 8 8 8 3.7 0 6.6-2.3 7.5-5.5.1-.5.6-.8 1.1-.7.5.1.8.6.7 1.1-1.2 4.2-5 7.1-9.3 7.1z"/></svg>
+                </button>
+                <button class="mobile-nav-toggle" aria-label="Open Navigation Menu" aria-expanded="false">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 8rem; padding-bottom: 5rem;">
+
+        <div style="text-align: center; max-width: 700px; margin: 0 auto 3rem auto;">
+            <div class="hero-tag">
+                <div class="hero-tag-dot" style="background-color: var(--color-accent); box-shadow:0 0 8px var(--color-accent)"></div>
+                <span>INTERACTIVE GLOBAL CORRESPONDENCE</span>
+            </div>
+            <h1 class="hero-title" style="font-size: 3rem;">Global <span>Expeditions</span></h1>
+            <p class="hero-desc">Interactive micro-vector routing map tracking key design, architecture, and exploration projects across international cities.</p>
+        </div>
+
+        <!-- Interactive Vector Map container -->
+        <div id="travel-map-container" class="map-section-wrapper reveal reveal-scale">
+            <!-- SVG map will be rendered by JS dynamically -->
+        </div>
+
+        <!-- Travels Card Grid -->
+        <div class="travel-grid">
+            <div class="card reveal reveal-up">
+                <span class="travel-badge">ASIA</span>
+                <h3>Tokyo, Japan</h3>
+                <p>Traversing tech cyberpunk and serene temple zen gardens in Kyoto, taking high-end microphotos of traditional bamboo trails.</p>
+                <a href="gallery.html" class="btn btn-secondary" style="margin-top: 1rem; width: 100%;">View Travel Photos →</a>
+            </div>
+
+            <div class="card reveal reveal-up" style="animation-delay: 0.1s;">
+                <span class="travel-badge">EUROPE</span>
+                <h3>London, UK</h3>
+                <p>Capturing the architectural transitions of heavy Gothic Big Ben arches into contemporary minimal layouts of Shard skyscrapers.</p>
+                <a href="gallery.html" class="btn btn-secondary" style="margin-top: 1rem; width: 100%;">View Travel Photos →</a>
+            </div>
+
+            <div class="card reveal reveal-up" style="animation-delay: 0.2s;">
+                <span class="travel-badge">MIDDLE EAST</span>
+                <h3>Dubai, UAE</h3>
+                <p>Riding glowing desert ridges, researching extreme architecture concepts and high-performance scale systems.</p>
+                <a href="gallery.html" class="btn btn-secondary" style="margin-top: 1rem; width: 100%;">View Travel Photos →</a>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Back to Top -->
+    <button class="back-to-top" aria-label="Scroll back to top" title="Scroll back to top">↑</button>
+
+    <!-- Footer -->
+    <footer class="premium-footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <div class="nav-brand" style="margin-bottom: 1rem;">
+                    <div class="nav-brand-icon">A</div>
+                    <span>Adeeb Saifi</span>
+                </div>
+                <p>Designing digital environments that combine high aesthetics with supreme engineering standards.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="travel.html">Travel Map</a></li>
+                    <li><a href="blog.html">Technical Blog</a></li>
+                    <li><a href="gallery.html">Visual Gallery</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Social Hub</h3>
+                <div class="social-links">
+                    <a href="https://github.com/adeebsaifi" class="social-link" aria-label="GitHub Profile">GH</a>
+                    <a href="#" class="social-link" aria-label="LinkedIn Profile">LN</a>
+                    <a href="#" class="social-link" aria-label="Twitter / X Profile">TW</a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Keyboard Shortcuts</h3>
+                <ul style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.8;">
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Alt + T</kbd> Theme Mode</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">/</kbd> Instant Search</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+D</kbd> Dev Mode</li>
+                </ul>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <p>© 2026 Adeeb Saifi. Made with ultimate engineering craftsmanship. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Global scripts & specialized map script -->
+    <script src="js/main.js"></script>
+    <script src="js/travel-map.js"></script>
+</body>
+</html>
