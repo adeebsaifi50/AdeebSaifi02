@@ -7,14 +7,17 @@ const ASSETS_TO_CACHE = [
     "./gallery.html",
     "./features.html",
     "./404.html",
+    "./hacker.html",
     "./css/main.css",
     "./css/animations.css",
+    "./css/hacker.css",
     "./js/main.js",
     "./js/travel-map.js",
     "./js/gallery.js",
     "./js/blog.js",
     "./js/contact.js",
     "./js/features-hub.js",
+    "./js/hacker.js",
     "./manifest.json",
     "./Images/photos.json"
 ];
