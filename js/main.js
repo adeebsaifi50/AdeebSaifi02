@@ -594,10 +594,90 @@ function initPwaRegistration() {
 }
 
 /* ==========================================
-   11. HACKER MODE UNLOCK
+   11. HACKER MODE UNLOCK & MOBILE LONG PRESS HANDLERS
    ========================================== */
+
+function showToast(message, type = "success") {
+    // Remove existing toast if any
+    const oldToast = document.querySelector(".cyber-secret-toast");
+    if (oldToast) oldToast.remove();
+
+    const toast = document.createElement("div");
+    toast.className = "cyber-secret-toast";
+    toast.style.position = "fixed";
+    toast.style.bottom = "12%";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%) translateY(30px)";
+    toast.style.background = "rgba(10, 10, 12, 0.96)";
+    toast.style.border = type === "success" ? "2px solid #10b981" : "2px solid var(--color-primary)";
+    toast.style.borderRadius = "12px";
+    toast.style.padding = "1rem 2rem";
+    toast.style.color = type === "success" ? "#10b981" : "var(--color-primary)";
+    toast.style.fontFamily = "ui-monospace, SFMono-Regular, SF Pro Mono, Menlo, monospace";
+    toast.style.fontSize = "1.1rem";
+    toast.style.fontWeight = "bold";
+    toast.style.textAlign = "center";
+    toast.style.boxShadow = type === "success" ? "0 0 30px rgba(16, 185, 129, 0.3)" : "0 0 30px rgba(139, 92, 246, 0.3)";
+    toast.style.zIndex = "10000000";
+    toast.style.backdropFilter = "blur(15px)";
+    toast.style.transition = "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s";
+    toast.style.opacity = "0";
+
+    toast.innerText = message;
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => {
+        toast.style.transform = "translateX(-50%) translateY(0)";
+        toast.style.opacity = "1";
+    });
+
+    // Audio Feedback using Web Audio API
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        if (type === "success") {
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.15);
+        } else {
+            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
+        }
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.4);
+    } catch (err) {}
+
+    setTimeout(() => {
+        toast.style.transform = "translateX(-50%) translateY(-20px)";
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+function triggerDevUnlock() {
+    showToast("Developer Mode Unlocked", "dev");
+    toggleDevMode();
+}
+
+function triggerHackerUnlock() {
+    if (window.__hackerUnlocking) return;
+    window.__hackerUnlocking = true;
+
+    showToast("Cyber Terminal Activated", "success");
+
+    setTimeout(() => {
+        window.__hackerUnlocking = false;
+        window.location.href = "hacker.html";
+    }, 1500);
+}
+
 function initHackerUnlock() {
-    // 1. Keyboard Shortcut: Ctrl + Shift + H
+    // 1. Keyboard Shortcut: Ctrl + Shift + H for Hacker Mode
     document.addEventListener("keydown", (e) => {
         if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'h') {
             e.preventDefault();
@@ -605,142 +685,109 @@ function initHackerUnlock() {
         }
     });
 
-    // 2. Mobile Taps and Long Presses
-    const logoEl = document.querySelector(".nav-brand");
-    const menuToggleEl = document.querySelector(".mobile-nav-toggle");
+    // 2. Mobile Long Press Handlers for Camera 📷 Icon
+    const cameraBtns = document.querySelectorAll(".camera-toggle");
+    if (cameraBtns.length === 0) return;
 
-    if (logoEl) {
-        // Tap 7 times quickly
-        let tapCount = 0;
-        let lastTapTime = 0;
-        logoEl.addEventListener("click", (e) => {
-            const now = Date.now();
-            if (now - lastTapTime < 1500) {
-                tapCount++;
-            } else {
-                tapCount = 1;
+    cameraBtns.forEach(btn => {
+        let pressTimer = null;
+        let elapsedMs = 0;
+        let startX = 0;
+        let startY = 0;
+        const driftThreshold = 10; // max drift px allowed
+
+        let devTriggered = false;
+        let hackerTriggered = false;
+
+        const startPress = (e) => {
+            // Only care about touch or left mouse button clicks
+            if (e.button !== undefined && e.button !== 0) return;
+
+            elapsedMs = 0;
+            devTriggered = false;
+            hackerTriggered = false;
+
+            const touch = e.touches ? e.touches[0] : e;
+            startX = touch.clientX;
+            startY = touch.clientY;
+
+            if (pressTimer) clearInterval(pressTimer);
+
+            pressTimer = setInterval(() => {
+                elapsedMs += 100;
+
+                // Visual countdown glow feedback on button
+                if (elapsedMs >= 5000 && elapsedMs < 10000) {
+                    btn.style.borderColor = "var(--color-primary)";
+                    btn.style.boxShadow = "0 0 12px var(--color-primary)";
+
+                    if (!devTriggered) {
+                        devTriggered = true;
+                        triggerDevUnlock();
+                    }
+                } else if (elapsedMs >= 10000) {
+                    btn.style.borderColor = "#10b981";
+                    btn.style.boxShadow = "0 0 20px #10b981";
+
+                    if (!hackerTriggered) {
+                        hackerTriggered = true;
+                        triggerHackerUnlock();
+                        clearInterval(pressTimer);
+                        pressTimer = null;
+                    }
+                }
+            }, 100);
+        };
+
+        const movePress = (e) => {
+            if (!pressTimer) return;
+            const touch = e.touches ? e.touches[0] : e;
+            const diffX = Math.abs(touch.clientX - startX);
+            const diffY = Math.abs(touch.clientY - startY);
+            if (diffX > driftThreshold || diffY > driftThreshold) {
+                cancelPress();
             }
-            lastTapTime = now;
+        };
 
-            if (tapCount >= 7) {
+        const endPress = (e) => {
+            if (devTriggered || hackerTriggered) {
                 e.preventDefault();
-                triggerHackerUnlock();
-                tapCount = 0;
-            } else if (tapCount > 1) {
-                // Prevent standard link navigation during consecutive fast taps
+            }
+            cancelPress();
+        };
+
+        const cancelPress = () => {
+            if (pressTimer) {
+                clearInterval(pressTimer);
+                pressTimer = null;
+            }
+            // Restore original styles
+            btn.style.borderColor = "";
+            btn.style.boxShadow = "";
+        };
+
+        // Pointer event bindings
+        btn.addEventListener("pointerdown", startPress);
+        btn.addEventListener("pointermove", movePress);
+        btn.addEventListener("pointerup", endPress);
+        btn.addEventListener("pointercancel", endPress);
+
+        // Touch event bindings for ultimate browser support (Safari iOS, Chrome Android, etc.)
+        btn.addEventListener("touchstart", startPress, { passive: true });
+        btn.addEventListener("touchmove", movePress, { passive: true });
+        btn.addEventListener("touchend", endPress);
+        btn.addEventListener("touchcancel", endPress);
+
+        // Block standard context menu balloon on mobile long-press
+        btn.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+        });
+
+        // Click wrapper guard: prevent navigation if a long press action was triggered
+        btn.addEventListener("click", (e) => {
+            if (devTriggered || hackerTriggered || elapsedMs >= 5000) {
                 e.preventDefault();
             }
         });
-
-        // Long press logo for 5 seconds
-        let logoPressTimer = null;
-        const startLogoPress = (e) => {
-            logoPressTimer = setTimeout(() => {
-                triggerHackerUnlock();
-            }, 5000);
-        };
-        const endLogoPress = () => {
-            if (logoPressTimer) {
-                clearTimeout(logoPressTimer);
-                logoPressTimer = null;
-            }
-        };
-
-        logoEl.addEventListener("mousedown", startLogoPress);
-        logoEl.addEventListener("mouseup", endLogoPress);
-        logoEl.addEventListener("mouseleave", endLogoPress);
-        logoEl.addEventListener("touchstart", startLogoPress, { passive: true });
-        logoEl.addEventListener("touchend", endLogoPress);
-        logoEl.addEventListener("touchcancel", endLogoPress);
-    }
-
-    if (menuToggleEl) {
-        // Long press menu icon for 5 seconds
-        let menuPressTimer = null;
-        const startMenuPress = (e) => {
-            menuPressTimer = setTimeout(() => {
-                triggerHackerUnlock();
-            }, 5000);
-        };
-        const endMenuPress = () => {
-            if (menuPressTimer) {
-                clearTimeout(menuPressTimer);
-                menuPressTimer = null;
-            }
-        };
-
-        menuToggleEl.addEventListener("mousedown", startMenuPress);
-        menuToggleEl.addEventListener("mouseup", endMenuPress);
-        menuToggleEl.addEventListener("mouseleave", endMenuPress);
-        menuToggleEl.addEventListener("touchstart", startMenuPress, { passive: true });
-        menuToggleEl.addEventListener("touchend", endMenuPress);
-        menuToggleEl.addEventListener("touchcancel", endMenuPress);
-    }
-}
-
-function triggerHackerUnlock() {
-    if (window.__hackerUnlocking) return;
-    window.__hackerUnlocking = true;
-
-    // Show a premium glassmorphism notification modal/toast
-    const toast = document.createElement("div");
-    toast.style.position = "fixed";
-    toast.style.top = "50%";
-    toast.style.left = "50%";
-    toast.style.transform = "translate(-50%, -50%) scale(0.9)";
-    toast.style.background = "rgba(10, 10, 12, 0.95)";
-    toast.style.border = "2px solid #10b981"; // Neon green border
-    toast.style.borderRadius = "16px";
-    toast.style.padding = "2rem 3rem";
-    toast.style.color = "#10b981";
-    toast.style.fontFamily = "ui-monospace, SFMono-Regular, SF Pro Mono, Menlo, monospace";
-    toast.style.fontSize = "1.5rem";
-    toast.style.fontWeight = "bold";
-    toast.style.textAlign = "center";
-    toast.style.boxShadow = "0 0 50px rgba(16, 185, 129, 0.4)";
-    toast.style.zIndex = "1000000";
-    toast.style.backdropFilter = "blur(20px)";
-    toast.style.transition = "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s";
-    toast.style.opacity = "0";
-    toast.style.textShadow = "0 0 10px rgba(16, 185, 129, 0.5)";
-
-    toast.innerHTML = `
-        <div style="font-size: 3rem; margin-bottom: 1rem;">🔓</div>
-        <div style="letter-spacing: 0.1em; text-transform: uppercase;">Developer Mode Unlocked</div>
-        <div style="font-size: 0.9rem; color: #9ca3af; margin-top: 1rem; font-weight: normal;">Initializing secure sandbox bypass...</div>
-    `;
-
-    document.body.appendChild(toast);
-
-    // Animate in
-    requestAnimationFrame(() => {
-        toast.style.transform = "translate(-50%, -50%) scale(1)";
-        toast.style.opacity = "1";
     });
-
-    // Optional audio trigger for feedback
-    try {
-        const context = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = context.createOscillator();
-        const gainNode = context.createGain();
-        oscillator.type = "sine";
-        oscillator.frequency.setValueAtTime(880, context.currentTime); // A5 note
-        oscillator.frequency.exponentialRampToValueAtTime(1760, context.currentTime + 0.3); // A6 note
-        gainNode.gain.setValueAtTime(0.1, context.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.5);
-        oscillator.connect(gainNode);
-        gainNode.connect(context.destination);
-        oscillator.start();
-        oscillator.stop(context.currentTime + 0.5);
-    } catch (e) {
-        // Browser block/lack of support
-    }
-
-    setTimeout(() => {
-        toast.style.transform = "translate(-50%, -50%) scale(0.9)";
-        toast.style.opacity = "0";
-        setTimeout(() => {
-            window.location.href = "hacker.html";
-        }, 300);
-    }, 1500);
 }

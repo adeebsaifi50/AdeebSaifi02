@@ -312,6 +312,34 @@ header.navbar.scrolled {
     border-color: var(--border-color-hover);
 }
 
+/* Camera Toggle / Mobile Secret Unlock Button */
+.camera-toggle {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    border: 1px solid var(--border-color);
+    text-decoration: none;
+    font-size: 1.25rem;
+    line-height: 1;
+    -webkit-touch-callout: none; /* Disable iOS default touch callouts */
+    -webkit-user-select: none;   /* Disable user selection */
+    user-select: none;           /* Disable user selection */
+}
+
+.camera-toggle:hover {
+    color: var(--text-primary);
+    background: var(--bg-accent-hover);
+    border-color: var(--border-color-hover);
+}
+
 .theme-toggle svg {
     width: 20px;
     height: 20px;

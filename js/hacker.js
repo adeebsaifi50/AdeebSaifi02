@@ -396,7 +396,7 @@
        ========================================== */
     const terminalInput = document.getElementById('terminal-input');
     const terminalHistory = document.getElementById('terminal-history');
-    const terminalScreen = document.getElementById('terminal-body');
+    const terminalScreen = document.getElementById('terminal-screen');
 
     // Sync input clicks anywhere in body
     document.addEventListener('click', (e) => {
