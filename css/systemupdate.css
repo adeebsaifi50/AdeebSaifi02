@@ -1,0 +1,596 @@
+/* ==========================================================================
+   SYSTEMUPDATE.CSS — CINEMATIC SIMULATION PERSISTENCE THEMES
+   ========================================================================== */
+
+/* OS Theme Variables (Dynamically adjusted by JS, default is MacOS metallic) */
+:root {
+    --os-accent-color: #3b82f6;
+    --os-glow-color: rgba(59, 130, 246, 0.4);
+    --os-bg-solid: #0d0d11;
+    --os-card-bg: rgba(22, 22, 29, 0.65);
+    --os-text-primary: #f3f4f6;
+}
+
+/* Simulated OS Specific Skins */
+.os-windows-skin {
+    --os-accent-color: #0078d4;
+    --os-glow-color: rgba(0, 120, 212, 0.5);
+    --os-bg-solid: #001f3f;
+    --os-card-bg: rgba(0, 20, 45, 0.7);
+    --os-text-primary: #ffffff;
+}
+
+.os-android-skin {
+    --os-accent-color: #3ddc84;
+    --os-glow-color: rgba(61, 220, 132, 0.4);
+    --os-bg-solid: #05140b;
+    --os-card-bg: rgba(12, 28, 18, 0.75);
+    --os-text-primary: #e3e3e3;
+}
+
+.os-ios-skin {
+    --os-accent-color: #af52de;
+    --os-glow-color: rgba(175, 82, 222, 0.5);
+    --os-bg-solid: #000000;
+    --os-card-bg: rgba(18, 18, 18, 0.8);
+    --os-text-primary: #ffffff;
+}
+
+.os-macos-skin {
+    --os-accent-color: #ff9f0a;
+    --os-glow-color: rgba(255, 159, 10, 0.45);
+    --os-bg-solid: #1c1c1e;
+    --os-card-bg: rgba(44, 44, 46, 0.6);
+    --os-text-primary: #f5f5f7;
+}
+
+.os-linux-skin {
+    --os-accent-color: #f15a24;
+    --os-glow-color: rgba(241, 90, 36, 0.5);
+    --os-bg-solid: #110011;
+    --os-card-bg: rgba(33, 0, 33, 0.7);
+    --os-text-primary: #00ff00; /* Terminal styling */
+}
+
+/* Reset / Body Specifics */
+body.update-simulation-body {
+    background-color: var(--os-bg-solid) !important;
+    color: var(--os-text-primary) !important;
+    font-family: var(--font-sans);
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 1s ease, color 0.5s ease;
+}
+
+/* Fullscreen Ambient Glows */
+.ambient-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(140px);
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 1;
+    transition: background 1s ease;
+}
+
+.bg-glow-1 {
+    top: -10%;
+    left: -10%;
+    width: 50vw;
+    height: 50vw;
+    background: radial-gradient(circle, var(--os-accent-color) 0%, transparent 80%);
+}
+
+.bg-glow-2 {
+    bottom: -10%;
+    right: -10%;
+    width: 50vw;
+    height: 50vw;
+    background: radial-gradient(circle, var(--os-accent-color) 0%, transparent 80%);
+}
+
+/* Main Viewport Container */
+.update-viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2.5rem 1.5rem;
+    z-index: 5;
+    box-sizing: border-box;
+}
+
+/* Header Controls */
+.update-header {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1.25rem;
+    z-index: 10;
+}
+
+.control-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #e5e7eb;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.25rem;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: background 0.25s, transform 0.25s, border-color 0.25s;
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.control-btn:active {
+    transform: translateY(0);
+}
+
+.close-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+/* OS Interface Core Wrapper */
+.os-interface-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.os-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+    width: 100%;
+    max-width: 520px;
+    animation: fadeScaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* OS Branding */
+.os-branding {
+    text-align: center;
+}
+
+.os-logo {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 0 15px var(--os-glow-color));
+    transition: filter 0.5s ease;
+}
+
+.os-logo svg {
+    width: 72px;
+    height: 72px;
+    fill: var(--os-accent-color);
+    transition: fill 0.5s ease;
+}
+
+.os-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0;
+    background: linear-gradient(to right, #ffffff, #9ca3af);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.os-subtitle {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    margin: 0.5rem 0 0 0;
+    font-weight: 400;
+}
+
+/* Glass Progress Card */
+.glass-card {
+    background: var(--os-card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 28px;
+    padding: 2.5rem;
+    width: 100%;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    transition: background 0.5s ease, border-color 0.5s ease;
+}
+
+/* Progress Ring Container */
+.progress-ring-container {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+}
+
+.progress-ring-circle {
+    transition: stroke-dashoffset 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-percentage-wrapper {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.progress-percentage {
+    font-family: var(--font-mono);
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.03em;
+    text-shadow: 0 0 20px var(--os-glow-color);
+}
+
+/* Progress Bar (Linear Fallback) */
+.progress-bar-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--os-accent-color), var(--os-glow-color));
+    border-radius: 9999px;
+    box-shadow: 0 0 12px var(--os-glow-color);
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Telemetry Information */
+.update-telemetry {
+    width: 100%;
+    text-align: center;
+}
+
+.update-stage-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.update-stage {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.loading-dots span {
+    animation: bounceDots 1.4s infinite both;
+    font-weight: bold;
+    font-size: 1.3rem;
+    line-height: 1;
+}
+
+.loading-dots span:nth-child(2) {
+    animation-delay: .2s;
+}
+
+.loading-dots span:nth-child(3) {
+    animation-delay: .4s;
+}
+
+.update-time-remaining {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Interaction Lock Notice */
+.interaction-lock-notice {
+    display: none; /* Injected / shown dynamically */
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.25rem;
+    width: 100%;
+    text-align: center;
+    animation: pulseLockBorder 2s infinite, scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.lock-pulse-icon {
+    font-size: 1.5rem;
+    animation: scaleHeartbeat 1.5s infinite;
+}
+
+.interaction-lock-notice kbd.update-kbd {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+    font-family: var(--font-mono);
+    color: #ffffff;
+    box-shadow: 0 2px 0 rgba(255,255,255,0.05);
+}
+
+.interaction-lock-notice p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #e5e7eb;
+}
+
+/* Responsive Lock Visibility Helpers */
+.desktop-only-text {
+    display: block;
+}
+
+.mobile-only-text {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .desktop-only-text {
+        display: none;
+    }
+    .mobile-only-text {
+        display: block;
+    }
+}
+
+/* Safety Simulation Footer Label */
+.simulation-footer {
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+}
+
+.simulation-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+/* ==========================================================================
+   ANIMATIONS & GPU ACCELERATION
+   ========================================================================== */
+
+@keyframes fadeScaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes scaleUp {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes bounceDots {
+    0%, 80%, 100% {
+        opacity: 0;
+        transform: translateY(0);
+    }
+    40% {
+        opacity: 1;
+        transform: translateY(-4px);
+    }
+}
+
+@keyframes pulseLockBorder {
+    0% {
+        border-color: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.02);
+    }
+    50% {
+        border-color: var(--os-accent-color);
+        box-shadow: 0 0 15px 0 rgba(255, 255, 255, 0.06);
+    }
+    100% {
+        border-color: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.02);
+    }
+}
+
+@keyframes scaleHeartbeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+/* Fade Out Transition Class */
+.fade-out-simulation {
+    opacity: 0 !important;
+    transform: scale(0.98) !important;
+    transition: opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1), transform 1.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN ADAPTATIONS
+   ========================================================================== */
+
+@media (max-width: 600px) {
+    .update-viewport {
+        padding: 1.5rem 1rem;
+    }
+
+    .os-layout {
+        gap: 2rem;
+    }
+
+    .os-logo svg {
+        width: 56px;
+        height: 56px;
+    }
+
+    .os-title {
+        font-size: 1.75rem;
+    }
+
+    .os-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .glass-card {
+        padding: 1.5rem;
+        gap: 1.5rem;
+        border-radius: 20px;
+    }
+
+    .progress-ring-container {
+        width: 180px;
+        height: 180px;
+    }
+
+    .progress-ring {
+        width: 180px;
+        height: 180px;
+    }
+
+    /* Recalculate dimensions for smaller SVG */
+    .progress-ring circle {
+        r: 76px;
+        cx: 90px;
+        cy: 90px;
+    }
+
+    .progress-percentage {
+        font-size: 2.75rem;
+    }
+
+    .update-stage {
+        font-size: 1rem;
+    }
+
+    .update-time-remaining {
+        font-size: 0.8rem;
+    }
+}
+
+/* Support Landscape layouts on low-height mobile devices */
+@media (max-height: 520px) {
+    .update-viewport {
+        padding: 0.75rem 1rem;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .update-header {
+        position: absolute;
+        top: 0.5rem;
+        right: 1rem;
+        width: auto;
+    }
+
+    .control-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    .os-layout {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        max-width: 800px;
+        gap: 1.5rem;
+    }
+
+    .os-branding {
+        text-align: left;
+        width: 35%;
+    }
+
+    .os-logo {
+        margin-bottom: 0.5rem;
+        justify-content: flex-start;
+    }
+
+    .os-logo svg {
+        width: 42px;
+        height: 42px;
+    }
+
+    .os-title {
+        font-size: 1.5rem;
+    }
+
+    .os-subtitle {
+        font-size: 0.85rem;
+    }
+
+    .glass-card {
+        width: 65%;
+        padding: 1.25rem;
+        gap: 1rem;
+    }
+
+    .progress-ring-container {
+        display: none; /* Hide circular on super short landscapes */
+    }
+
+    .simulation-footer {
+        position: absolute;
+        bottom: 0.5rem;
+        left: 1rem;
+        text-align: left;
+        width: auto;
+    }
+
+    .simulation-label {
+        font-size: 0.7rem;
+    }
+}

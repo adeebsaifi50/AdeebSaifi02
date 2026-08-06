@@ -281,6 +281,12 @@ function initInteractiveEasterEggs() {
             e.preventDefault();
             toggleDevMode();
         }
+
+        // System Update Shortcut: Ctrl + Shift + U
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'u') {
+            e.preventDefault();
+            window.location.href = "systemupdate.html";
+        }
     });
 
     // Konami Code Easter Egg: ArrowUp, ArrowUp, ArrowDown, ArrowDown, ArrowLeft, ArrowRight, ArrowLeft, ArrowRight, B, A

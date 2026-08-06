@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cinematic system update simulator of Adeeb Saifi portfolio. Completely fictional, safe, and realistic OS upgrade simulation.">
+    <meta name="keywords" content="Adeeb Saifi, System Update, OS Update Simulation, Premium UI">
+    <meta name="author" content="Adeeb Saifi">
+    <link rel="canonical" href="https://adeebsaifi.github.io/systemupdate.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://adeebsaifi.github.io/systemupdate.html">
+    <meta property="og:title" content="System Update Simulator | Adeeb Saifi">
+    <meta property="og:description" content="Premium, safe, cinematic and realistic operating system update simulator matching your current device.">
+    <meta property="og:image" content="https://picsum.photos/1200/630?random=update-og">
+
+    <title>System Update Core | Adeeb Saifi</title>
+
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/systemupdate.css">
+</head>
+<body class="update-simulation-body">
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" aria-hidden="true"></div>
+    <div class="custom-cursor-dot" aria-hidden="true"></div>
+
+    <!-- Cinematic Background Ambient Glows -->
+    <div class="ambient-glow bg-glow-1"></div>
+    <div class="ambient-glow bg-glow-2"></div>
+
+    <!-- Main Update Container -->
+    <main class="update-viewport" id="update-viewport">
+
+        <!-- Controls Header (Mute & Fullscreen & Back) -->
+        <header class="update-header">
+            <button class="control-btn" id="mute-toggle" aria-label="Toggle Sound" title="Toggle Sound">
+                <span class="sound-icon">🔊</span>
+            </button>
+            <button class="control-btn" id="fullscreen-toggle" aria-label="Toggle Fullscreen" title="Toggle Fullscreen">
+                <span class="fullscreen-icon">⛶</span>
+            </button>
+            <button class="control-btn" id="back-to-safety" aria-label="Cancel Update" title="Cancel & Return">
+                <span class="close-icon">&times;</span>
+            </button>
+        </header>
+
+        <!-- Dynamic OS Interface Wrapper -->
+        <div class="os-interface-wrapper" id="os-interface-container">
+            <!-- This content is dynamic, but fallback / structure is defined for SEO & fast loading -->
+            <div class="os-layout" id="os-layout">
+
+                <!-- OS Branding & Logo -->
+                <div class="os-branding">
+                    <div class="os-logo" id="os-logo-element">
+                        <!-- Dynamic OS Logo SVG will be injected here -->
+                    </div>
+                    <h1 class="os-title" id="os-title-text">System Core</h1>
+                    <p class="os-subtitle" id="os-subtitle-text">Verifying local architecture package metadata...</p>
+                </div>
+
+                <!-- Progress Section (Glass Card) -->
+                <div class="update-card glass-card">
+
+                    <!-- Progress Ring (SVG) -->
+                    <div class="progress-ring-container">
+                        <svg class="progress-ring" width="220" height="220">
+                            <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="transparent" r="96" cx="110" cy="110"/>
+                            <circle class="progress-ring-circle" id="progress-ring-bar" stroke="var(--os-accent-color, #3b82f6)" stroke-width="8" stroke-linecap="round" fill="transparent" r="96" cx="110" cy="110"/>
+                        </svg>
+                        <div class="progress-percentage-wrapper">
+                            <span class="progress-percentage" id="percentage-num">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar (Linear) -->
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                    </div>
+
+                    <!-- Stage and Telemetry Information -->
+                    <div class="update-telemetry">
+                        <div class="update-stage-wrapper">
+                            <span class="update-stage" id="update-stage-text">Preparing Update</span>
+                            <span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
+                        </div>
+                        <div class="update-time-remaining" id="time-remaining-text">Estimated time remaining: Calculating...</div>
+                    </div>
+
+                    <!-- Lock Interaction Notice (Hidden by default, shown at 99%) -->
+                    <div class="interaction-lock-notice" id="interaction-lock-notice">
+                        <div class="lock-pulse-icon">⚡</div>
+                        <p class="desktop-only-text">Press <kbd class="update-kbd">ENTER</kbd> twice to authorize installation finalize.</p>
+                        <p class="mobile-only-text">Double tap anywhere to authorize installation finalize.</p>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Safety Simulation Footer Label -->
+        <footer class="simulation-footer">
+            <p class="simulation-label">Simulation Mode — No real system update is being performed.</p>
+        </footer>
+
+    </main>
+
+    <!-- Core Javascript Modules -->
+    <script src="js/main.js"></script>
+    <script src="js/systemupdate.js"></script>
+</body>
+</html>
