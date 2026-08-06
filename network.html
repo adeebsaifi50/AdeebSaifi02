@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Futuristic Global Network Operations Center (NOC) simulator. Interactive real-time world network mapping, live telemetry streams, and multi-theme simulation environments.">
+    <meta name="keywords" content="Adeeb Saifi, Network Operations Center, NOC Simulator, Premium UI, Web Audio API, Canvas Animation">
+    <meta name="author" content="Adeeb Saifi">
+    <link rel="canonical" href="https://adeebsaifi.github.io/network.html">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://adeebsaifi.github.io/network.html">
+    <meta property="og:title" content="Global Network Operations Center | Adeeb Saifi">
+    <meta property="og:description" content="Immerse yourself in a state-of-the-art NASA-style network operations command hub with real-time vector flows and automated pipelines.">
+    <meta property="og:image" content="https://picsum.photos/1200/630?random=network-og">
+
+    <!-- PWA -->
+    <meta name="theme-color" content="#020205">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="images/icon-192.png">
+
+    <title>Global Network Operations Center | Adeeb Saifi</title>
+
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/network.css">
+</head>
+<body class="network-body theme-cyber-blue">
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" aria-hidden="true"></div>
+    <div class="custom-cursor-dot" aria-hidden="true"></div>
+
+    <!-- Header / Navbar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand" aria-label="Adeeb Saifi Home">
+                <div class="nav-brand-icon">A</div>
+                <span>Adeeb Saifi</span>
+            </a>
+
+            <nav aria-label="Main navigation">
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="index.html">Home</a></li>
+                    <li class="nav-item"><a href="travel.html">Travel</a></li>
+                    <li class="nav-item"><a href="blog.html">Blog</a></li>
+                    <li class="nav-item"><a href="gallery.html">Gallery</a></li>
+                    <li class="nav-item"><a href="features.html">Developer Hub</a></li>
+                    <li class="nav-item"><a href="systemupdate.html" class="nav-update-link">🔄 System Update <span class="update-badge">NEW</span></a></li>
+                    <li class="nav-item"><a href="firewall.html" class="nav-update-link">🛡 Firewall Defense <span class="update-badge">NEW</span></a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-actions">
+                <div class="nav-search" role="search">
+                    <span class="nav-search-icon">🔍</span>
+                    <input type="search" placeholder="Type '/' to search..." class="nav-search-input" aria-label="Search site">
+                </div>
+
+                <button class="theme-toggle" aria-label="Toggle Dark/Light Mode" title="Toggle Mode">
+                    <svg class="sun-icon" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.01c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24"><path d="M12.3 22h-.1c-5.4 0-10-4.6-10-10 0-4.3 2.9-8.1 7.1-9.3.5-.1 1 .2 1.1.7.1.5-.2 1-.7 1.1-3.2.9-5.5 3.8-5.5 7.5 0 4.4 3.6 8 8 8 3.7 0 6.6-2.3 7.5-5.5.1-.5.6-.8 1.1-.7.5.1.8.6.7 1.1-1.2 4.2-5 7.1-9.3 7.1z"/></svg>
+                </button>
+
+                <a href="gallery.html" class="camera-toggle" aria-label="Gallery" title="Gallery">📷</a>
+                <button class="mobile-nav-toggle" aria-label="Open Navigation Menu" aria-expanded="false">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN NOC DASHBOARD -->
+    <main class="noc-viewport">
+
+        <!-- Simulation Header Bar -->
+        <section class="noc-header-panel card">
+            <div class="noc-title-block">
+                <div class="noc-pulse-indicator"></div>
+                <div class="title-details">
+                    <h1 class="noc-title">GLOBAL NETWORK OPERATIONS CENTER</h1>
+                    <p class="noc-subtitle">NASA-Class Mission Command & Autonomous Transit Visualization Grid</p>
+                </div>
+            </div>
+
+            <!-- Global Action Controls -->
+            <div class="noc-control-deck">
+                <button id="btn-start" class="btn btn-primary control-btn">START</button>
+                <button id="btn-pause" class="btn btn-secondary control-btn">PAUSE</button>
+                <button id="btn-resume" class="btn btn-secondary control-btn">RESUME</button>
+                <button id="btn-reset" class="btn btn-secondary control-btn">RESET</button>
+                <button id="btn-fullscreen" class="btn btn-secondary control-btn">⛶ FULLSCREEN</button>
+            </div>
+
+            <!-- Theme Deck -->
+            <div class="noc-theme-deck">
+                <span class="theme-label">THEME MATRIX:</span>
+                <select id="theme-selector" class="theme-dropdown" aria-label="Select color palette theme">
+                    <option value="cyber-blue">Cyber Blue</option>
+                    <option value="matrix-green">Matrix Green</option>
+                    <option value="purple-neon">Purple Neon</option>
+                    <option value="red-alert">Red Alert</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Main Live Grid Layout -->
+        <div class="noc-layout-grid">
+
+            <!-- LEFT SIDEBAR: Live Dynamic Telemetry Widgets -->
+            <section class="noc-col-left" aria-label="Dynamic Telemetry Panel">
+                <div class="widgets-container">
+
+                    <div class="widget-card card">
+                        <div class="widget-header">
+                            <span class="icon">🌍</span>
+                            <div class="widget-meta">
+                                <span class="lbl">ACTIVE CONNECTIONS</span>
+                                <h3 id="stat-connections" class="val color-theme">14,250,119</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget-card card">
+                        <div class="widget-header">
+                            <span class="icon">🖥️</span>
+                            <div class="widget-meta">
+                                <span class="lbl">SERVERS ONLINE</span>
+                                <h3 id="stat-servers" class="val color-theme">254 / 254</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget-card card">
+                        <div class="widget-header">
+                            <span class="icon">📈</span>
+                            <div class="widget-meta">
+                                <span class="lbl">NETWORK TRAFFIC</span>
+                                <h3 id="stat-traffic" class="val color-theme">412.5 Gbps</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget-card card">
+                        <div class="widget-header">
+                            <span class="icon">⚡</span>
+                            <div class="widget-meta">
+                                <span class="lbl">GATEWAY LATENCY</span>
+                                <h3 id="stat-latency" class="val color-theme">12 ms</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget-card card">
+                        <div class="widget-header">
+                            <span class="icon">📦</span>
+                            <div class="widget-meta">
+                                <span class="lbl">PACKET RATE</span>
+                                <h3 id="stat-packets" class="val color-theme">1,420,150 p/s</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget-card card">
+                        <div class="widget-header">
+                            <span class="icon">📊</span>
+                            <div class="widget-meta">
+                                <span class="lbl">API REQUESTS</span>
+                                <h3 id="stat-api" class="val color-theme">45,120 /s</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget-card card">
+                        <div class="widget-header">
+                            <span class="icon">👥</span>
+                            <div class="widget-meta">
+                                <span class="lbl">ACTIVE USERS</span>
+                                <h3 id="stat-users" class="val color-theme">894,201</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget-card card">
+                        <div class="widget-header">
+                            <span class="icon">⏱️</span>
+                            <div class="widget-meta">
+                                <span class="lbl">NOC UPTIME</span>
+                                <h3 id="stat-uptime" class="val color-theme">14d 06h 42m</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Resource meters -->
+                    <div class="hardware-meters-box card">
+                        <h4>HARDWARE_TELEMETRY</h4>
+
+                        <div class="meter-row">
+                            <div class="lbls"><span>CPU LOAD</span><span id="meter-cpu">24%</span></div>
+                            <div class="bar-bg"><div id="cpu-fill" class="bar-fill" style="width: 24%"></div></div>
+                        </div>
+
+                        <div class="meter-row">
+                            <div class="lbls"><span>RAM USAGE</span><span id="meter-ram">8.4 GB</span></div>
+                            <div class="bar-bg"><div id="ram-fill" class="bar-fill" style="width: 52%"></div></div>
+                        </div>
+
+                        <div class="meter-row">
+                            <div class="lbls"><span>DISK BUFFER</span><span id="meter-disk">32%</span></div>
+                            <div class="bar-bg"><div id="disk-fill" class="bar-fill" style="width: 32%"></div></div>
+                        </div>
+
+                        <div class="meter-row">
+                            <div class="lbls"><span>FIREWALL STATUS</span><span id="meter-firewall" class="color-success">DEFENDING</span></div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- CENTER & RIGHT COMBINED AREA: World Map Vector Canvas & Scroll Logs & Languages Activity -->
+            <section class="noc-col-main">
+
+                <!-- 1. MAP VISUALIZER DOME -->
+                <div class="noc-map-theater card card-glow">
+                    <div class="theater-header-row">
+                        <div class="scanning-group">
+                            <span class="radar-ping"></span>
+                            <h3>REAL-TIME_GEOPOLITICAL_TRANSIT_GRID</h3>
+                        </div>
+                        <div class="legend-tags">
+                            <span class="legend-node node-active"></span> Server Coordinate
+                            <span class="legend-node node-packet"></span> Data Stream
+                        </div>
+                    </div>
+
+                    <div class="map-canvas-container">
+                        <canvas id="map-canvas"></canvas>
+                        <div class="map-coordinate-overlay pt-left">COORDS: LAT 34.05 // LNG -118.24</div>
+                        <div class="map-coordinate-overlay pt-right" id="map-hud-locations">LOCATIONS_MAPPED: 10/10</div>
+                        <div class="map-coordinate-overlay pb-left">SCAN_SWEEP_HZ: 0.85</div>
+                        <div class="map-coordinate-overlay pb-right">COMMUNICATION_STATUS: SECURE</div>
+                    </div>
+                </div>
+
+                <!-- 2. PROGRAMMING LANGUAGES PANEL -->
+                <div class="languages-activity-panel card">
+                    <div class="lang-header">
+                        <h3>COMPILATION_PIPELINE_TRANSIT_MONITOR</h3>
+                    </div>
+                    <div class="languages-grid" id="languages-grid-container">
+                        <!-- Injected dynamically by JS -->
+                    </div>
+                </div>
+
+                <!-- 3. INFINITE LOGS FEED -->
+                <div class="logs-feed-panel card">
+                    <div class="logs-header">
+                        <div class="pulsing-log-node"></div>
+                        <h3>NOC_LOG_ACTIVITY_STREAM</h3>
+                    </div>
+                    <div class="logs-container" id="logs-container-feed">
+                        <!-- Injected dynamically by JS -->
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+    <!-- Safety Warning Disclaimer Banner -->
+    <div class="safety-warning-banner" role="complementary">
+        <div class="warning-icon">🛰️</div>
+        <p class="warning-text">Simulation Mode — No real networking, scanning, packet capture, or hacking operations are performed.</p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="premium-footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <div class="nav-brand" style="margin-bottom: 1rem;">
+                    <div class="nav-brand-icon">A</div>
+                    <span>Adeeb Saifi</span>
+                </div>
+                <p>Designing digital environments that combine high aesthetics with supreme engineering standards.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="travel.html">Travel Map</a></li>
+                    <li><a href="blog.html">Technical Blog</a></li>
+                    <li><a href="gallery.html">Visual Gallery</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Social Hub</h3>
+                <div class="social-links">
+                    <a href="https://github.com/adeebsaifi" class="social-link" aria-label="GitHub Profile">GH</a>
+                    <a href="#" class="social-link" aria-label="LinkedIn Profile">LN</a>
+                    <a href="#" class="social-link" aria-label="Twitter / X Profile">TW</a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Keyboard Shortcuts</h3>
+                <ul style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.8;">
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Alt + T</kbd> Theme Mode</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">/</kbd> Instant Search</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+D</kbd> Dev Mode</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+N</kbd> Network Mode</li>
+                </ul>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <p>© 2026 Adeeb Saifi. Made with ultimate engineering craftsmanship. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/network.js"></script>
+</body>
+</html>
