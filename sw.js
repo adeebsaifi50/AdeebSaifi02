@@ -8,9 +8,11 @@ const ASSETS_TO_CACHE = [
     "./features.html",
     "./404.html",
     "./hacker.html",
+    "./systemupdate.html",
     "./css/main.css",
     "./css/animations.css",
     "./css/hacker.css",
+    "./css/systemupdate.css",
     "./js/main.js",
     "./js/travel-map.js",
     "./js/gallery.js",
@@ -18,6 +20,7 @@ const ASSETS_TO_CACHE = [
     "./js/contact.js",
     "./js/features-hub.js",
     "./js/hacker.js",
+    "./js/systemupdate.js",
     "./manifest.json",
     "./Images/photos.json"
 ];

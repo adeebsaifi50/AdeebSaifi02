@@ -266,15 +266,15 @@ header.navbar.scrolled {
 .nav-menu {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1rem;
     list-style: none;
 }
 
 .nav-item a {
     color: var(--text-secondary);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 500;
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem 0.6rem;
     border-radius: 9999px;
     transition: all var(--transition-fast);
 }
@@ -282,6 +282,44 @@ header.navbar.scrolled {
 .nav-item a:hover, .nav-item.active a {
     color: var(--text-primary);
     background: var(--bg-accent);
+}
+
+/* System Update link & glowing badge styling */
+.nav-update-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.update-badge {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    animation: badgePulse 2s infinite;
+    text-shadow: 0 0 4px rgba(255,255,255,0.4);
+    box-shadow: 0 0 8px var(--color-primary-glow);
+}
+
+@keyframes badgePulse {
+    0% {
+        transform: scale(1);
+        filter: brightness(1);
+        box-shadow: 0 0 4px var(--color-primary-glow);
+    }
+    50% {
+        transform: scale(1.05);
+        filter: brightness(1.25);
+        box-shadow: 0 0 12px var(--color-accent-glow);
+    }
+    100% {
+        transform: scale(1);
+        filter: brightness(1);
+        box-shadow: 0 0 4px var(--color-primary-glow);
+    }
 }
 
 .nav-actions {

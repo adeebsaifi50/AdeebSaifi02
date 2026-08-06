@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cinematic system update simulator of Adeeb Saifi portfolio. Completely fictional, safe, and realistic OS upgrade simulation.">
+    <meta name="keywords" content="Adeeb Saifi, System Update, OS Update Simulation, Premium UI">
+    <meta name="author" content="Adeeb Saifi">
+    <link rel="canonical" href="https://adeebsaifi.github.io/systemupdate.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://adeebsaifi.github.io/systemupdate.html">
+    <meta property="og:title" content="System Update Simulator | Adeeb Saifi">
+    <meta property="og:description" content="Premium, safe, cinematic and realistic operating system update simulator matching your current device.">
+    <meta property="og:image" content="https://picsum.photos/1200/630?random=update-og">
+
+    <title>System Update Core | Adeeb Saifi</title>
+
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/systemupdate.css">
+</head>
+<body class="update-simulation-body">
+
+    <!-- Cinematic Background Ambient Glows -->
+    <div class="ambient-glow bg-glow-1"></div>
+    <div class="ambient-glow bg-glow-2"></div>
+
+    <!-- Main Update Container -->
+    <main class="update-viewport" id="update-viewport">
+
+        <!-- Controls Header (Mute & Fullscreen & Back) — Fades in on mouse move/tap -->
+        <header class="update-header overlay-controls" id="hover-header">
+            <button class="control-btn" id="mute-toggle" aria-label="Toggle Sound" title="Toggle Sound">
+                <span class="sound-icon">🔊</span>
+            </button>
+            <button class="control-btn" id="fullscreen-toggle" aria-label="Toggle Fullscreen" title="Toggle Fullscreen">
+                <span class="fullscreen-icon">⛶</span>
+            </button>
+            <button class="control-btn" id="back-to-safety" aria-label="Cancel Update" title="Cancel & Return">
+                <span class="close-icon">&times;</span>
+            </button>
+        </header>
+
+        <!-- Dynamic OS Interface Wrapper -->
+        <div class="os-interface-wrapper" id="os-interface-container">
+
+            <!-- 1. WINDOWS STYLE INTERFACE -->
+            <div class="os-layout windows-layout" id="layout-windows" style="display: none;">
+                <!-- Classic Windows 10/11 spinning dots ring -->
+                <div class="windows-spinner">
+                    <div class="win-dot dot-1"></div>
+                    <div class="win-dot dot-2"></div>
+                    <div class="win-dot dot-3"></div>
+                    <div class="win-dot dot-4"></div>
+                    <div class="win-dot dot-5"></div>
+                    <div class="win-dot dot-6"></div>
+                </div>
+                <h1 class="win-title">Working on updates <span id="win-percentage">0%</span></h1>
+                <p class="win-subtitle">Don't turn off your PC. This will take a while.</p>
+                <p class="win-details-text" id="win-details">Preparing update components...</p>
+            </div>
+
+            <!-- 2. MACOS STYLE INTERFACE -->
+            <div class="os-layout macos-layout" id="layout-macos" style="display: none;">
+                <div class="macos-apple-logo">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#ffffff" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.15.67-2.87 1.51-.62.71-1.16 1.85-1.02 2.96 1.1.09 2.21-.57 2.9-1.41z"/></svg>
+                </div>
+                <div class="macos-progress-container">
+                    <div class="macos-progress-bar">
+                        <div class="macos-progress-fill" id="macos-fill"></div>
+                    </div>
+                </div>
+                <p class="macos-status-text" id="macos-status">Installing macOS update — <span id="macos-percentage">0%</span></p>
+                <p class="macos-time-remaining" id="macos-time">Remaining: Calculating...</p>
+            </div>
+
+            <!-- 3. IOS STYLE INTERFACE -->
+            <div class="os-layout ios-layout" id="layout-ios" style="display: none;">
+                <div class="ios-apple-logo">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#ffffff" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.15.67-2.87 1.51-.62.71-1.16 1.85-1.02 2.96 1.1.09 2.21-.57 2.9-1.41z"/></svg>
+                </div>
+                <div class="ios-progress-container">
+                    <div class="ios-progress-bar">
+                        <div class="ios-progress-fill" id="ios-fill"></div>
+                    </div>
+                </div>
+                <p class="ios-status-text" id="ios-status">Verifying secure firmware packages...</p>
+            </div>
+
+            <!-- 4. ANDROID STYLE INTERFACE -->
+            <div class="os-layout android-layout" id="layout-android" style="display: none;">
+                <div class="android-branding">
+                    <div class="android-icon">🤖</div>
+                    <h1 class="android-title">Installing system update...</h1>
+                </div>
+                <div class="android-progress-ring">
+                    <svg width="180" height="180">
+                        <circle class="android-ring-bg" r="76" cx="90" cy="90" stroke="rgba(255,255,255,0.08)" stroke-width="6" fill="transparent"/>
+                        <circle class="android-ring-circle" id="android-ring-bar" r="76" cx="90" cy="90" stroke="#3ddc84" stroke-width="6" fill="transparent"/>
+                    </svg>
+                    <div class="android-percentage" id="android-percentage">0%</div>
+                </div>
+                <p class="android-subtitle" id="android-details">Optimizing applications...</p>
+            </div>
+
+            <!-- 5. LINUX STYLE INTERFACE -->
+            <div class="os-layout linux-layout" id="layout-linux" style="display: none;">
+                <div class="linux-terminal">
+                    <div class="terminal-header">
+                        <span class="terminal-dot red"></span>
+                        <span class="terminal-dot yellow"></span>
+                        <span class="terminal-dot green"></span>
+                        <span class="terminal-title">bash -- system-upgrade.sh</span>
+                    </div>
+                    <div class="terminal-body" id="linux-terminal-body">
+                        <!-- Scrolling Unix Terminal Update lines -->
+                        <div>[ OK ] Starting system-upgrade daemon...</div>
+                    </div>
+                    <div class="linux-progress-section">
+                        <div class="linux-percentage" id="linux-percentage">0%</div>
+                        <div class="linux-progress-bar">
+                            <div class="linux-progress-fill" id="linux-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Safety Simulation Footer Label & Dynamic Interaction Prompts -->
+        <div class="viewport-footer-wrapper">
+            <!-- Lock Interaction Notice (Hidden by default, shown at 99%) -->
+            <div class="interaction-lock-notice" id="interaction-lock-notice">
+                <div class="lock-pulse-icon">⚡</div>
+                <p class="desktop-only-text">Authorization Required: Press <kbd class="update-kbd">ENTER</kbd> twice to finalize installation.</p>
+                <p class="mobile-only-text">Authorization Required: Double tap anywhere to finalize installation.</p>
+            </div>
+
+            <footer class="simulation-footer">
+                <p class="simulation-label">Simulation Mode — No real system update is being performed.</p>
+            </footer>
+        </div>
+
+    </main>
+
+    <!-- Core Javascript Modules -->
+    <script src="js/main.js"></script>
+    <script src="js/systemupdate.js"></script>
+</body>
+</html>
