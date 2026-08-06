@@ -1,62 +1,20 @@
 /* ==========================================================================
-   SYSTEMUPDATE.CSS — CINEMATIC SIMULATION PERSISTENCE THEMES
+   SYSTEMUPDATE.CSS — ULTRA-REALISTIC CINEMATIC SIMULATION PERSISTENCE THEMES
    ========================================================================== */
 
-/* OS Theme Variables (Dynamically adjusted by JS, default is MacOS metallic) */
+/* Core Variables */
 :root {
-    --os-accent-color: #3b82f6;
-    --os-glow-color: rgba(59, 130, 246, 0.4);
-    --os-bg-solid: #0d0d11;
-    --os-card-bg: rgba(22, 22, 29, 0.65);
-    --os-text-primary: #f3f4f6;
+    --win-blue: #0078d7;
+    --mac-dark: #1e1e1e;
+    --mac-accent: #ff9f0a;
+    --ios-bg: #000000;
+    --android-green: #3ddc84;
+    --linux-purple: #300a24;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
-/* Simulated OS Specific Skins */
-.os-windows-skin {
-    --os-accent-color: #0078d4;
-    --os-glow-color: rgba(0, 120, 212, 0.5);
-    --os-bg-solid: #001f3f;
-    --os-card-bg: rgba(0, 20, 45, 0.7);
-    --os-text-primary: #ffffff;
-}
-
-.os-android-skin {
-    --os-accent-color: #3ddc84;
-    --os-glow-color: rgba(61, 220, 132, 0.4);
-    --os-bg-solid: #05140b;
-    --os-card-bg: rgba(12, 28, 18, 0.75);
-    --os-text-primary: #e3e3e3;
-}
-
-.os-ios-skin {
-    --os-accent-color: #af52de;
-    --os-glow-color: rgba(175, 82, 222, 0.5);
-    --os-bg-solid: #000000;
-    --os-card-bg: rgba(18, 18, 18, 0.8);
-    --os-text-primary: #ffffff;
-}
-
-.os-macos-skin {
-    --os-accent-color: #ff9f0a;
-    --os-glow-color: rgba(255, 159, 10, 0.45);
-    --os-bg-solid: #1c1c1e;
-    --os-card-bg: rgba(44, 44, 46, 0.6);
-    --os-text-primary: #f5f5f7;
-}
-
-.os-linux-skin {
-    --os-accent-color: #f15a24;
-    --os-glow-color: rgba(241, 90, 36, 0.5);
-    --os-bg-solid: #110011;
-    --os-card-bg: rgba(33, 0, 33, 0.7);
-    --os-text-primary: #00ff00; /* Terminal styling */
-}
-
-/* Reset / Body Specifics */
 body.update-simulation-body {
-    background-color: var(--os-bg-solid) !important;
-    color: var(--os-text-primary) !important;
-    font-family: var(--font-sans);
     margin: 0;
     padding: 0;
     width: 100vw;
@@ -64,21 +22,35 @@ body.update-simulation-body {
     height: 100dvh;
     overflow: hidden;
     position: relative;
+    font-family: var(--font-sans);
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: background-color 1s ease, color 0.5s ease;
+    user-select: none;
+    background-color: #000000;
 }
 
-/* Fullscreen Ambient Glows */
+/* Overlay controls (fades in on hover/move, hides for high realism) */
+.overlay-controls {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.overlay-controls.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Ambient glows (disabled on native dark designs like Windows/iOS/macOS for absolute accuracy, but kept lightly on fallback) */
 .ambient-glow {
     position: absolute;
     border-radius: 50%;
     filter: blur(140px);
-    opacity: 0.15;
+    opacity: 0;
     pointer-events: none;
     z-index: 1;
-    transition: background 1s ease;
+    transition: opacity 1s ease;
 }
 
 .bg-glow-1 {
@@ -86,7 +58,6 @@ body.update-simulation-body {
     left: -10%;
     width: 50vw;
     height: 50vw;
-    background: radial-gradient(circle, var(--os-accent-color) 0%, transparent 80%);
 }
 
 .bg-glow-2 {
@@ -94,12 +65,10 @@ body.update-simulation-body {
     right: -10%;
     width: 50vw;
     height: 50vw;
-    background: radial-gradient(circle, var(--os-accent-color) 0%, transparent 80%);
 }
 
-/* Main Viewport Container */
+/* Viewport structure */
 .update-viewport {
-    position: relative;
     width: 100%;
     height: 100%;
     display: flex;
@@ -107,11 +76,11 @@ body.update-simulation-body {
     justify-content: space-between;
     align-items: center;
     padding: 2.5rem 1.5rem;
-    z-index: 5;
     box-sizing: border-box;
+    z-index: 5;
+    position: relative;
 }
 
-/* Header Controls */
 .update-header {
     width: 100%;
     max-width: 1200px;
@@ -122,475 +91,523 @@ body.update-simulation-body {
 }
 
 .control-btn {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #e5e7eb;
-    width: 46px;
-    height: 46px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 1.25rem;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    transition: background 0.25s, transform 0.25s, border-color 0.25s;
+    font-size: 1.15rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: background 0.2s, transform 0.2s;
 }
 
 .control-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.18);
     transform: translateY(-2px);
 }
 
-.control-btn:active {
-    transform: translateY(0);
-}
-
-.close-icon {
-    font-size: 1.5rem;
-    line-height: 1;
-}
-
-/* OS Interface Core Wrapper */
 .os-interface-wrapper {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
+    max-width: 1200px;
 }
 
 .os-layout {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2.5rem;
-    width: 100%;
-    max-width: 520px;
+    justify-content: center;
     animation: fadeScaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* OS Branding */
-.os-branding {
+/* ==========================================================================
+   1. WINDOWS UPDATE INTERFACE DESIGN (Centered spinning dots & solid blue)
+   ========================================================================== */
+.os-windows-skin {
+    background-color: #004687 !important; /* Authentic Windows 10/11 upgrade background */
+}
+
+.windows-layout {
+    max-width: 650px;
     text-align: center;
-}
-
-.os-logo {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    filter: drop-shadow(0 0 15px var(--os-glow-color));
-    transition: filter 0.5s ease;
-}
-
-.os-logo svg {
-    width: 72px;
-    height: 72px;
-    fill: var(--os-accent-color);
-    transition: fill 0.5s ease;
-}
-
-.os-title {
-    font-size: 2.25rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    margin: 0;
-    background: linear-gradient(to right, #ffffff, #9ca3af);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.os-subtitle {
-    font-size: 1.05rem;
-    color: var(--text-secondary);
-    margin: 0.5rem 0 0 0;
-    font-weight: 400;
-}
-
-/* Glass Progress Card */
-.glass-card {
-    background: var(--os-card-bg);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 28px;
-    padding: 2.5rem;
-    width: 100%;
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
-    transition: background 0.5s ease, border-color 0.5s ease;
-}
-
-/* Progress Ring Container */
-.progress-ring-container {
-    position: relative;
-    width: 220px;
-    height: 220px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.progress-ring {
-    transform: rotate(-90deg);
-    transform-origin: 50% 50%;
-}
-
-.progress-ring-circle {
-    transition: stroke-dashoffset 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.progress-percentage-wrapper {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.progress-percentage {
-    font-family: var(--font-mono);
-    font-size: 3.5rem;
-    font-weight: 800;
     color: #ffffff;
-    letter-spacing: -0.03em;
-    text-shadow: 0 0 20px var(--os-glow-color);
 }
 
-/* Progress Bar (Linear Fallback) */
-.progress-bar-container {
-    width: 100%;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 9999px;
-    overflow: hidden;
+/* Windows 10/11 spinner (6 rotating dots running at non-uniform speeds) */
+.windows-spinner {
+    position: relative;
+    width: 54px;
+    height: 54px;
+    margin-bottom: 2.5rem;
 }
 
-.progress-bar-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, var(--os-accent-color), var(--os-glow-color));
-    border-radius: 9999px;
-    box-shadow: 0 0 12px var(--os-glow-color);
-    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+.win-dot {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    opacity: 0;
+    transform: rotate(225deg);
+    animation: winOrbit 5.5s infinite;
 }
 
-/* Telemetry Information */
-.update-telemetry {
-    width: 100%;
-    text-align: center;
+.dot-1 { animation-delay: 240ms; }
+.dot-2 { animation-delay: 480ms; }
+.dot-3 { animation-delay: 720ms; }
+.dot-4 { animation-delay: 960ms; }
+.dot-5 { animation-delay: 1200ms; }
+.dot-6 { animation-delay: 1440ms; }
+
+@keyframes winOrbit {
+    0% {
+        transform: rotate(225deg);
+        opacity: 1;
+        animation-timing-function: ease-out;
+    }
+    7% {
+        transform: rotate(345deg);
+        animation-timing-function: linear;
+    }
+    30% {
+        transform: rotate(455deg);
+        animation-timing-function: ease-in-out;
+    }
+    39% {
+        transform: rotate(570deg);
+        animation-timing-function: ease-out;
+    }
+    70% {
+        transform: rotate(815deg);
+        opacity: 1;
+        animation-timing-function: ease-out;
+    }
+    75% {
+        transform: rotate(945deg);
+        animation-timing-function: ease-out;
+    }
+    76% {
+        opacity: 0;
+    }
+    100% {
+        transform: rotate(945deg);
+        opacity: 0;
+    }
 }
 
-.update-stage-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.25rem;
+.win-title {
+    font-size: 2.1rem;
+    font-weight: 300; /* Windows update fonts are light weight */
+    letter-spacing: -0.01em;
+    margin-bottom: 0.75rem;
+    color: #ffffff;
+}
+
+.win-subtitle {
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.95);
     margin-bottom: 0.5rem;
 }
 
-.update-stage {
-    font-size: 1.15rem;
-    font-weight: 600;
+.win-details-text {
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+/* ==========================================================================
+   2. MACOS UPDATE INTERFACE DESIGN (Minimalism, thin progress bar & logo)
+   ========================================================================== */
+.os-macos-skin {
+    background-color: #121212 !important; /* Macintosh dark grey boot color */
+}
+
+.macos-layout {
+    max-width: 320px;
     color: #ffffff;
 }
 
-.loading-dots span {
-    animation: bounceDots 1.4s infinite both;
-    font-weight: bold;
+.macos-apple-logo {
+    width: 65px;
+    height: 65px;
+    margin-bottom: 4rem;
+}
+
+.macos-apple-logo svg {
+    width: 100%;
+    height: 100%;
+}
+
+.macos-progress-container {
+    width: 100%;
+    height: 4px;
+    background-color: #333333;
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.macos-progress-fill {
+    height: 100%;
+    width: 0%;
+    background-color: #ffffff; /* pure white progress bar */
+    border-radius: 99px;
+    transition: width 0.35s ease;
+}
+
+.macos-status-text {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: #e5e5e7;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.macos-time-remaining {
+    font-size: 0.85rem;
+    color: #8e8e93;
+    text-align: center;
+}
+
+/* ==========================================================================
+   3. IOS UPDATE INTERFACE DESIGN (Absolute pure black minimalistic Apple)
+   ========================================================================== */
+.os-ios-skin {
+    background-color: #000000 !important;
+}
+
+.ios-layout {
+    max-width: 260px;
+    color: #ffffff;
+}
+
+.ios-apple-logo {
+    width: 55px;
+    height: 55px;
+    margin-bottom: 4.5rem;
+}
+
+.ios-apple-logo svg {
+    width: 100%;
+    height: 100%;
+}
+
+.ios-progress-container {
+    width: 100%;
+    height: 3px;
+    background-color: #2c2c2e;
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.ios-progress-fill {
+    height: 100%;
+    width: 0%;
+    background-color: #ffffff;
+    border-radius: 99px;
+    transition: width 0.35s ease;
+}
+
+.ios-status-text {
+    font-size: 0.85rem;
+    color: #8e8e93;
+    text-align: center;
+}
+
+/* ==========================================================================
+   4. ANDROID UPDATE INTERFACE DESIGN (Organic dark layout & circular ring)
+   ========================================================================== */
+.os-android-skin {
+    background-color: #0d0d0d !important;
+}
+
+.android-layout {
+    max-width: 320px;
+    text-align: center;
+}
+
+.android-branding {
+    margin-bottom: 2.5rem;
+}
+
+.android-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    animation: scaleHeartbeat 2s infinite;
+}
+
+.android-title {
     font-size: 1.3rem;
-    line-height: 1;
+    font-weight: 500;
+    color: #ffffff;
+    letter-spacing: -0.01em;
 }
 
-.loading-dots span:nth-child(2) {
-    animation-delay: .2s;
+.android-progress-ring {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin-bottom: 2.5rem;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.loading-dots span:nth-child(3) {
-    animation-delay: .4s;
+.android-ring-circle {
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 0.35s ease;
 }
 
-.update-time-remaining {
+.android-percentage {
+    position: absolute;
+    font-family: var(--font-sans);
+    font-size: 2.25rem;
+    font-weight: 300;
+    color: #ffffff;
+}
+
+.android-subtitle {
     font-size: 0.9rem;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.6);
 }
 
-/* Interaction Lock Notice */
-.interaction-lock-notice {
-    display: none; /* Injected / shown dynamically */
+/* ==========================================================================
+   5. LINUX UPDATE INTERFACE DESIGN (Full Ubuntu style scrolling terminal shell)
+   ========================================================================== */
+.os-linux-skin {
+    background-color: var(--linux-purple) !important; /* Authentic Ubuntu purple background */
+}
+
+.linux-layout {
+    max-width: 800px;
+    width: 90%;
+}
+
+.linux-terminal {
+    background-color: rgba(10, 5, 10, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    width: 100%;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.terminal-header {
+    background-color: rgba(30, 15, 30, 0.95);
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.terminal-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+}
+
+.terminal-dot.red { background-color: #ff5f56; }
+.terminal-dot.yellow { background-color: #ffbd2e; }
+.terminal-dot.green { background-color: #27c93f; }
+
+.terminal-title {
+    color: #dfdbd2;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+}
+
+.terminal-body {
+    height: 250px;
+    padding: 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: #00ff00; /* classic green on black */
+    overflow-y: auto;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.terminal-line {
+    margin-bottom: 0.4rem;
+    opacity: 0.9;
+    animation: printLine 0.2s ease forwards;
+}
+
+@keyframes printLine {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 0.9; transform: translateY(0); }
+}
+
+.linux-progress-section {
+    padding: 1rem 1.25rem;
+    background-color: rgba(20, 10, 20, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.linux-percentage {
+    color: #ffffff;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    min-width: 45px;
+}
+
+.linux-progress-bar {
+    flex: 1;
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.linux-progress-fill {
+    height: 100%;
+    width: 0%;
+    background-color: #df4a16; /* classic Ubuntu orange progress */
+    border-radius: 4px;
+    transition: width 0.35s ease;
+}
+
+/* ==========================================================================
+   INTERACTION LOCKS & SAFETY LABELS
+   ========================================================================== */
+.viewport-footer-wrapper {
+    width: 100%;
+    max-width: 650px;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.75rem;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 1.25rem;
-    width: 100%;
+    gap: 1.5rem;
+    z-index: 10;
+}
+
+/* Rounded, elegant lock notice */
+.interaction-lock-notice {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50px;
+    padding: 0.85rem 1.75rem;
+    width: auto;
     text-align: center;
-    animation: pulseLockBorder 2s infinite, scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    animation: lockPulse 2.5s infinite, scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .lock-pulse-icon {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
+    color: var(--mac-accent);
     animation: scaleHeartbeat 1.5s infinite;
 }
 
 .interaction-lock-notice kbd.update-kbd {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    padding: 0.2rem 0.5rem;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+    padding: 0.15rem 0.45rem;
     font-family: var(--font-mono);
     color: #ffffff;
-    box-shadow: 0 2px 0 rgba(255,255,255,0.05);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.3);
 }
 
 .interaction-lock-notice p {
     margin: 0;
     font-size: 0.9rem;
-    color: #e5e7eb;
+    font-weight: 500;
+    color: #f3f4f6;
 }
 
-/* Responsive Lock Visibility Helpers */
-.desktop-only-text {
-    display: block;
-}
-
-.mobile-only-text {
-    display: none;
-}
+.desktop-only-text { display: block; }
+.mobile-only-text { display: none; }
 
 @media (max-width: 768px) {
-    .desktop-only-text {
-        display: none;
-    }
-    .mobile-only-text {
-        display: block;
-    }
+    .desktop-only-text { display: none; }
+    .mobile-only-text { display: block; }
 }
 
-/* Safety Simulation Footer Label */
 .simulation-footer {
     width: 100%;
     text-align: center;
-    z-index: 10;
 }
 
 .simulation-label {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     margin: 0;
 }
 
 /* ==========================================================================
-   ANIMATIONS & GPU ACCELERATION
+   UTILITY ANIMATIONS
    ========================================================================== */
 
 @keyframes fadeScaleIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes scaleUp {
-    from {
-        transform: scale(0.9);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-@keyframes bounceDots {
-    0%, 80%, 100% {
-        opacity: 0;
-        transform: translateY(0);
-    }
-    40% {
-        opacity: 1;
-        transform: translateY(-4px);
-    }
-}
-
-@keyframes pulseLockBorder {
-    0% {
-        border-color: rgba(255, 255, 255, 0.08);
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.02);
-    }
-    50% {
-        border-color: var(--os-accent-color);
-        box-shadow: 0 0 15px 0 rgba(255, 255, 255, 0.06);
-    }
-    100% {
-        border-color: rgba(255, 255, 255, 0.08);
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.02);
-    }
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
 }
 
 @keyframes scaleHeartbeat {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.15);
-    }
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
 }
 
-/* Fade Out Transition Class */
+@keyframes lockPulse {
+    0% { border-color: rgba(255, 255, 255, 0.12); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+    50% { border-color: rgba(255, 255, 255, 0.35); box-shadow: 0 10px 30px rgba(255, 255, 255, 0.05); }
+    100% { border-color: rgba(255, 255, 255, 0.12); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+}
+
+/* Fade Out cinematic transition */
 .fade-out-simulation {
     opacity: 0 !important;
     transform: scale(0.98) !important;
     transition: opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1), transform 1.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-/* ==========================================================================
-   RESPONSIVE DESIGN ADAPTATIONS
-   ========================================================================== */
-
-@media (max-width: 600px) {
-    .update-viewport {
-        padding: 1.5rem 1rem;
-    }
-
-    .os-layout {
-        gap: 2rem;
-    }
-
-    .os-logo svg {
-        width: 56px;
-        height: 56px;
-    }
-
-    .os-title {
-        font-size: 1.75rem;
-    }
-
-    .os-subtitle {
-        font-size: 0.95rem;
-    }
-
-    .glass-card {
-        padding: 1.5rem;
-        gap: 1.5rem;
-        border-radius: 20px;
-    }
-
-    .progress-ring-container {
-        width: 180px;
-        height: 180px;
-    }
-
-    .progress-ring {
-        width: 180px;
-        height: 180px;
-    }
-
-    /* Recalculate dimensions for smaller SVG */
-    .progress-ring circle {
-        r: 76px;
-        cx: 90px;
-        cy: 90px;
-    }
-
-    .progress-percentage {
-        font-size: 2.75rem;
-    }
-
-    .update-stage {
-        font-size: 1rem;
-    }
-
-    .update-time-remaining {
-        font-size: 0.8rem;
-    }
-}
-
-/* Support Landscape layouts on low-height mobile devices */
+/* Responsive adjust for lower heights */
 @media (max-height: 520px) {
     .update-viewport {
-        padding: 0.75rem 1rem;
-        justify-content: center;
-        gap: 1rem;
+        padding: 1rem 1rem;
     }
-
     .update-header {
         position: absolute;
         top: 0.5rem;
         right: 1rem;
-        width: auto;
     }
-
     .control-btn {
         width: 36px;
         height: 36px;
-        font-size: 1rem;
-    }
-
-    .os-layout {
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        max-width: 800px;
-        gap: 1.5rem;
-    }
-
-    .os-branding {
-        text-align: left;
-        width: 35%;
-    }
-
-    .os-logo {
-        margin-bottom: 0.5rem;
-        justify-content: flex-start;
-    }
-
-    .os-logo svg {
-        width: 42px;
-        height: 42px;
-    }
-
-    .os-title {
-        font-size: 1.5rem;
-    }
-
-    .os-subtitle {
-        font-size: 0.85rem;
-    }
-
-    .glass-card {
-        width: 65%;
-        padding: 1.25rem;
-        gap: 1rem;
-    }
-
-    .progress-ring-container {
-        display: none; /* Hide circular on super short landscapes */
-    }
-
-    .simulation-footer {
-        position: absolute;
-        bottom: 0.5rem;
-        left: 1rem;
-        text-align: left;
-        width: auto;
-    }
-
-    .simulation-label {
-        font-size: 0.7rem;
+        font-size: 0.95rem;
     }
 }
