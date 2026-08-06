@@ -32,14 +32,16 @@ body.update-simulation-body {
 
 /* Overlay controls (fades in on hover/move, hides for high realism) */
 .overlay-controls {
+    display: none !important;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.4s ease;
 }
 
 .overlay-controls.visible {
-    opacity: 1;
-    pointer-events: auto;
+    display: none !important;
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* Ambient glows (disabled on native dark designs like Windows/iOS/macOS for absolute accuracy, but kept lightly on fallback) */

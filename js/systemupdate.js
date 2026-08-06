@@ -418,9 +418,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Keybindings: double Enter
+    // Keybindings: double Enter, Escape to exit back to previous page
     document.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
+        if (e.key === "Escape") {
+            e.preventDefault();
+            if (state.animationFrameId) {
+                cancelAnimationFrame(state.animationFrameId);
+            }
+            window.location.href = state.returnUrl;
+        } else if (e.key === "Enter") {
             if (state.reached99) {
                 e.preventDefault();
                 handleVerification();
