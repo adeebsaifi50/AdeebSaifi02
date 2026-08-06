@@ -299,6 +299,12 @@ function initInteractiveEasterEggs() {
             e.preventDefault();
             window.location.href = "network.html";
         }
+
+        // Open World City Simulation: Ctrl + Shift + O
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'o') {
+            e.preventDefault();
+            window.location.href = "city.html";
+        }
     });
 
     // Konami Code Easter Egg: ArrowUp, ArrowUp, ArrowDown, ArrowDown, ArrowLeft, ArrowRight, ArrowLeft, ArrowRight, B, A
