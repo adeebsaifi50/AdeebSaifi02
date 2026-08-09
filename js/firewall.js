@@ -266,9 +266,13 @@ document.addEventListener("DOMContentLoaded", () => {
     function triggerFakeAttack(specificType = null) {
         if (!isSimulationActive) return;
 
-        // Pick threat
+        // Pick threat (support aliases like SQLi and PortScan)
+        let normalizedType = specificType ? specificType.toLowerCase() : "";
+        if (normalizedType === "sqli") normalizedType = "sql injection";
+        if (normalizedType === "portscan") normalizedType = "port scan";
+
         let attack = specificType
-            ? attackTypes.find(t => t.name.toLowerCase().includes(specificType.toLowerCase()) || t.name === specificType)
+            ? attackTypes.find(t => t.name.toLowerCase().includes(normalizedType) || t.name === specificType)
             : attackTypes[Math.floor(Math.random() * attackTypes.length)];
 
         if (!attack) {
