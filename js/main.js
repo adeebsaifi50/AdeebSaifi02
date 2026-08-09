@@ -300,8 +300,8 @@ function initInteractiveEasterEggs() {
             window.location.href = "network.html";
         }
 
-        // Open World City Simulation: Ctrl + Shift + O
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'o') {
+        // Open World City Simulation: Ctrl + Shift + C or O
+        if (e.ctrlKey && e.shiftKey && (e.key.toLowerCase() === 'c' || e.key.toLowerCase() === 'o')) {
             e.preventDefault();
             window.location.href = "city.html";
         }

@@ -85,7 +85,7 @@
         <!-- Dashboard Header -->
         <div class="city-header-section">
             <div class="header-details">
-                <span class="system-badge glow-neon-purple">CITY_CORE_SANDBOX_v2.6</span>
+                <span class="system-badge glow-neon-purple">CITY_CORE_SANDBOX_v2.7</span>
                 <h1 class="main-title">METROPOLIS DIRECTIVE</h1>
                 <p class="subtitle">Autonomous Vector Transportation & Urban Meteorological Simulation</p>
             </div>
@@ -108,11 +108,95 @@
                 <div class="canvas-viewport-container" id="canvas-container-box">
                     <canvas id="city-canvas"></canvas>
 
-                    <!-- HUD Overlay Indicators -->
-                    <div class="hud-item pt-left">COORDS: <span id="hud-player-coords">X: 0.00, Y: 0.00</span></div>
-                    <div class="hud-item pt-right">SPEED: <span id="hud-player-speed">0.0 km/h</span></div>
-                    <div class="hud-item pb-left">ZONE: <span id="hud-player-zone">CITY CENTRAL</span></div>
-                    <div class="hud-item pb-right" id="hud-engine-status">FPS: 60 // GL_ACTIVE</div>
+                    <!-- Advanced HUD overlay wrapper (Toggled visibility via 'H' key or button) -->
+                    <div id="game-hud-root">
+                        <!-- Top-left Coordinates and Active Zone -->
+                        <div class="hud-item pt-left">
+                            <span class="hud-lbl">ZONE:</span> <span id="hud-player-zone">CITY CENTRAL</span><br>
+                            <span class="hud-lbl">COORD:</span> <span id="hud-player-coords">X: 800.0, Y: 450.0</span>
+                        </div>
+
+                        <!-- Top-right Speedometer & Altitude HUD -->
+                        <div class="hud-item pt-right">
+                            <span class="hud-lbl">VELOCITY:</span> <span id="hud-player-speed">0.0 km/h</span>
+                            <div id="hud-drone-altitude-box" style="display: none; margin-top: 0.25rem;">
+                                <span class="hud-lbl" style="color: #fb7185;">ALTITUDE:</span> <span id="hud-drone-altitude">25m</span>
+                            </div>
+                        </div>
+
+                        <!-- Bottom-left Active Mission Objective card -->
+                        <div class="hud-objective-card card-glow" id="hud-mission-box">
+                            <div class="obj-header">
+                                <span class="obj-indicator blinking-dot"></span>
+                                <span class="obj-title" id="hud-mission-title">⚡ Ignite Metropolis</span>
+                            </div>
+                            <p class="obj-desc" id="hud-mission-desc">Boot up system updates and explore the core plaza.</p>
+                            <div class="obj-progress-row">
+                                <span>City Balance:</span>
+                                <strong id="hud-token-balance" style="color: #fbbf24;">0 Tokens</strong>
+                            </div>
+                        </div>
+
+                        <!-- Bottom-right Advanced Mini-map and Compass hud panel -->
+                        <div class="hud-map-compass-panel card-glow">
+                            <div class="compass-wheel-container">
+                                <div class="compass-dial" id="hud-compass-dial">
+                                    <span class="dir-n">N</span>
+                                    <span class="dir-e">E</span>
+                                    <span class="dir-s">S</span>
+                                    <span class="dir-w">W</span>
+                                </div>
+                                <div class="compass-needle"></div>
+                            </div>
+                            <div class="minimap-container">
+                                <canvas id="minimap-canvas" width="100" height="100"></canvas>
+                                <div class="minimap-controls">
+                                    <button class="minimap-zoom-btn" id="minimap-zoom-in">+</button>
+                                    <button class="minimap-zoom-btn" id="minimap-zoom-out">-</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- General Bottom-left System Frame status -->
+                        <div class="hud-item pb-left" id="hud-engine-status" style="bottom: 1rem; left: 1rem;">FPS: 60 // GL_ACTIVE</div>
+                    </div>
+
+                    <!-- Photo Mode Filters HUD Control panel overlay -->
+                    <div id="photo-filters-panel" class="card-glow photo-panel-wrapper" style="display: none;">
+                        <h4 class="photo-title">📸 PHOTO CONTROLS</h4>
+
+                        <div class="filter-row">
+                            <label>Brightness</label>
+                            <input type="range" id="filter-brightness" min="50" max="150" value="100">
+                        </div>
+                        <div class="filter-row">
+                            <label>Contrast</label>
+                            <input type="range" id="filter-contrast" min="50" max="150" value="100">
+                        </div>
+                        <div class="filter-row">
+                            <label>Vignette</label>
+                            <input type="range" id="filter-vignette" min="0" max="100" value="0">
+                        </div>
+                        <div class="filter-row">
+                            <label>Rendering Tone</label>
+                            <select id="filter-tone" class="input-premium" style="padding: 0.25rem; font-size: 0.75rem;">
+                                <option value="normal">Normal</option>
+                                <option value="monochrome">Noir (Mono)</option>
+                                <option value="cyber">Cyber Neon</option>
+                                <option value="vintage">Sunset Amber</option>
+                            </select>
+                        </div>
+                        <button class="city-btn" id="photo-capture-btn" style="width: 100%; margin-top: 0.5rem; font-size: 0.75rem;">CAPTURE SYSTEM SCREEN</button>
+                    </div>
+
+                    <!-- Proximity Location Interaction Banner -->
+                    <div id="proximity-interaction-panel" class="proximity-banner hidden">
+                        <span class="interact-key-badge">E</span>
+                        <div class="interact-details">
+                            <span class="interact-title" id="interact-station-name">Airport Terminal</span>
+                            <span class="interact-prompt" id="interact-prompt-action">Press E to Explore Airport</span>
+                        </div>
+                    </div>
 
                     <!-- Cinematic On-Screen Virtual Camera Guides -->
                     <div class="camera-lens-guide top-left"></div>
@@ -129,6 +213,9 @@
                     <div class="mobile-action-container" style="display: none;">
                         <button class="mobile-game-btn" id="mobile-btn-sprint">SPRINT</button>
                         <button class="mobile-game-btn" id="mobile-btn-action">INTERACT</button>
+                        <button class="mobile-game-btn" id="mobile-btn-hud">HUD</button>
+                        <button class="mobile-game-btn" id="mobile-btn-photo">PHOTO</button>
+                        <button class="mobile-game-btn" id="mobile-btn-drone">DRONE</button>
                     </div>
 
                     <!-- On-Screen Camera Navigation Controls -->
@@ -148,6 +235,7 @@
                             <button class="city-btn active" id="weather-clear-btn" data-weather="clear">☀️ CLEAR</button>
                             <button class="city-btn" id="weather-rain-btn" data-weather="rain">🌧️ RAIN</button>
                             <button class="city-btn" id="weather-fog-btn" data-weather="fog">🌫️ FOG</button>
+                            <button class="city-btn" id="weather-storm-btn" data-weather="storm">⛈️ STORM</button>
                         </div>
                     </div>
 
@@ -159,6 +247,16 @@
                             <button class="city-btn" id="time-night-btn">🌙 NIGHT</button>
                             <button class="city-btn active" id="time-auto-btn">🔄 CYCLE</button>
                         </div>
+                    </div>
+
+                    <div class="panel-section-group">
+                        <span class="control-label">GRAPHICS:</span>
+                        <select id="graphics-quality-selector" class="theme-dropdown" style="padding: 0.35rem; font-size: 0.75rem;">
+                            <option value="high">HIGH (Default)</option>
+                            <option value="medium">MEDIUM</option>
+                            <option value="low">LOW (Particles Off)</option>
+                            <option value="auto">AUTO (FPS Sync)</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -298,6 +396,8 @@
     <!-- Global scripts and modules link -->
     <script src="js/main.js"></script>
     <script src="js/world.js"></script>
+    <script src="js/npc.js"></script>
+    <script src="js/missions.js"></script>
     <script src="js/player.js"></script>
     <script src="js/camera.js"></script>
     <script src="js/vehicles.js"></script>

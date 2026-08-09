@@ -33,6 +33,8 @@ class WorldMap {
         this.waterBody = null;
         this.airport = null;
         this.metro = null;
+        this.landmarks = [];
+        this.secrets = [];
 
         this.initWorld();
     }
@@ -217,6 +219,23 @@ class WorldMap {
                 }
             }
         });
+
+        // 10. Interactive Landmarks and Secret Zones
+        this.landmarks = [
+            { id: 'cyberdine', x: 200, y: 200, name: 'Cyberdine Corp', desc: 'Secure the mainframe and fetch structural database blueprints.' },
+            { id: 'hospital', x: 275, y: 2150, name: 'Neo Hospital', desc: 'Synchronize biosensors and test regional life-support telemetry.' },
+            { id: 'airport', x: 925, y: 3550, name: 'Aviation Control', desc: 'Calibrate runway beacons and download orbital drone vectors.' },
+            { id: 'solis', x: 3100, y: 1400, name: 'Solis Plaza', desc: 'Connect to local server terminals to test city-wide load buffers.' },
+            { id: 'saas', x: 190, y: 675, name: 'SaaS Terminal', desc: 'Deploy cloud gateway nodes to verify regional load balancers.' },
+            { id: 'servers', x: 3000, y: 750, name: 'Cloud Server Farms', desc: 'Synchronize quantum database partitions across server bays.' },
+            { id: 'quantum', x: 3240, y: 750, name: 'Quantum Core', desc: 'Perform system diagnostic sequences on the experimental neon reactor.' }
+        ];
+
+        this.secrets = [
+            { id: 'subway', x: 1900, y: 1600, name: 'Subway Tunnel', desc: 'Discover the submerged subterranean metro access bypass channel.' },
+            { id: 'island', x: 2500, y: 2200, name: 'Hidden Island', desc: 'Map out the lost central island coordinates and recover the secret tracker.' },
+            { id: 'secret_lab', x: 50, y: 3950, name: 'Secret Lab', desc: 'Crack the entrance lock of the long-abandoned black-site research laboratory.' }
+        ];
     }
 
     isValidPositionForTree(x, y) {
@@ -280,6 +299,34 @@ class WorldMap {
                 item.sway += 0.02;
             }
         });
+    }
+
+    // Proximity checking for interactive zones
+    checkProximityInteraction(px, py) {
+        let closest = null;
+        let minDist = 100; // Interact threshold of 100px
+
+        // Check secrets first (for priority)
+        for (let s of this.secrets) {
+            const dist = Math.hypot(px - s.x, py - s.y);
+            if (dist < minDist) {
+                minDist = dist;
+                closest = { ...s, type: 'secret' };
+            }
+        }
+
+        // Check landmarks
+        if (!closest) {
+            for (let l of this.landmarks) {
+                const dist = Math.hypot(px - l.x, py - l.y);
+                if (dist < minDist) {
+                    minDist = dist;
+                    closest = { ...l, type: 'landmark' };
+                }
+            }
+        }
+
+        return closest;
     }
 
     // Checking collision boundaries for player coordinate checking
@@ -546,6 +593,52 @@ class WorldMap {
             ctx.arc(light.x, light.y, 6, 0, Math.PI * 2);
             ctx.fill();
             ctx.shadowBlur = 0;
+        });
+
+        // 11. Draw Interactive Landmarks and Secret holographic beacons
+        const timeFactor = Date.now() / 1000;
+
+        // Draw Landmark indicators (Cyan spinning brackets)
+        this.landmarks.forEach(l => {
+            ctx.strokeStyle = '#4cc9f0';
+            ctx.lineWidth = 1.5;
+
+            // Outer pulsing ring
+            const pulseRadius = 25 + Math.sin(timeFactor * 5) * 5;
+            ctx.beginPath();
+            ctx.arc(l.x, l.y, pulseRadius, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Inner core beacon
+            ctx.fillStyle = '#4cc9f0';
+            ctx.beginPath();
+            ctx.arc(l.x, l.y, 3, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // Draw Secret Zone indicators (Holographic pulsing violet beacon)
+        this.secrets.forEach(s => {
+            ctx.strokeStyle = '#f72585';
+            ctx.lineWidth = 1.5;
+
+            // Expanding sonar radar waves
+            const ring1 = (timeFactor * 30) % 40;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, ring1, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(247, 37, 133, ${Math.max(0, 1 - ring1 / 40)})`;
+            ctx.stroke();
+
+            const ring2 = ((timeFactor * 30) + 20) % 40;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, ring2, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(247, 37, 133, ${Math.max(0, 1 - ring2 / 40)})`;
+            ctx.stroke();
+
+            // Tiny central core
+            ctx.fillStyle = '#f72585';
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, 4, 0, Math.PI * 2);
+            ctx.fill();
         });
     }
 

@@ -138,9 +138,9 @@ class WeatherController {
             ctx.restore();
         });
 
-        // Draw Rain streaks
+        // Draw Rain streaks with realistic droplet trails
         if (this.activeWeather === 'rain') {
-            ctx.strokeStyle = 'rgba(156, 163, 175, 0.45)';
+            ctx.strokeStyle = 'rgba(76, 201, 240, 0.45)'; // Sleek neon blue tinted rain
             ctx.lineWidth = 1.2;
             ctx.beginPath();
             this.rainDrops.forEach(drop => {
@@ -149,11 +149,26 @@ class WeatherController {
                 ctx.lineTo(rx_end, drop.y + drop.length);
             });
             ctx.stroke();
+
+            // Draw splashes at droplet endpoints
+            ctx.strokeStyle = 'rgba(76, 201, 240, 0.2)';
+            ctx.lineWidth = 1;
+            this.rainDrops.forEach((drop, idx) => {
+                if (idx % 8 === 0) { // Limit performance impact of splash rendering
+                    ctx.beginPath();
+                    ctx.arc(drop.x, drop.y + drop.length, 4, 0, Math.PI, true);
+                    ctx.stroke();
+                }
+            });
         }
 
         // Draw fog atmospheric visibility filter overlay
         if (this.activeWeather === 'fog') {
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
+            const radGrad = ctx.createRadialGradient(2000, 2000, 10, 2000, 2000, 2500);
+            radGrad.addColorStop(0, 'rgba(15, 23, 42, 0.25)');
+            radGrad.addColorStop(0.7, 'rgba(15, 23, 42, 0.45)');
+            radGrad.addColorStop(1, 'rgba(15, 23, 42, 0.65)');
+            ctx.fillStyle = radGrad;
             ctx.fillRect(0, 0, this.world.width, this.world.height);
         }
     }

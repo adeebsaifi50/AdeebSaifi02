@@ -563,6 +563,342 @@
     color: var(--color-neon-pink);
 }
 
+/* Advanced HUD overlay systems */
+#game-hud-root {
+    position: absolute;
+    inset: 0;
+    pointer-events: none; /* Let clicks pass to the gameplay canvas */
+    z-index: 50;
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#game-hud-root.hide-hud {
+    opacity: 0;
+}
+
+#game-hud-root * {
+    pointer-events: auto; /* Re-enable for HUD controls */
+}
+
+/* Custom mini labels inside HUD text */
+.hud-lbl {
+    color: #94a3b8;
+    font-weight: 500;
+    font-size: 0.65rem;
+}
+
+/* Objective status card */
+.hud-objective-card {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    background: rgba(10, 10, 18, 0.85);
+    border: 1px solid rgba(157, 78, 221, 0.4);
+    border-radius: 8px;
+    padding: 0.85rem 1.2rem;
+    max-width: 280px;
+    box-shadow: 0 4px 15px rgba(157, 78, 221, 0.15);
+    backdrop-filter: blur(8px);
+}
+
+.obj-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+}
+
+.obj-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.obj-desc {
+    color: #cbd5e1;
+    font-size: 0.75rem;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.3;
+}
+
+.obj-progress-row {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 0.4rem;
+}
+
+/* Map and Compass joint HUD widgets */
+.hud-map-compass-panel {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: rgba(10, 10, 18, 0.85);
+    border: 1px solid rgba(157, 78, 221, 0.4);
+    border-radius: 8px;
+    padding: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 4px 15px rgba(157, 78, 221, 0.15);
+    backdrop-filter: blur(8px);
+}
+
+/* Rotating Compass Wheel Styles */
+.compass-wheel-container {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(157, 78, 221, 0.6);
+    background: rgba(1, 1, 3, 0.8);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.compass-dial {
+    position: absolute;
+    inset: 2px;
+    border-radius: 50%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: bold;
+    color: #94a3b8;
+    transition: transform 0.1s linear; /* Rotates with camera sways */
+}
+
+.compass-dial span {
+    position: absolute;
+    transform: translateX(-50%);
+}
+
+.compass-dial .dir-n { top: 2px; left: 50%; color: #fb7185; }
+.compass-dial .dir-e { right: 5px; top: 50%; transform: translateY(-50%); }
+.compass-dial .dir-s { bottom: 2px; left: 50%; }
+.compass-dial .dir-w { left: 5px; top: 50%; transform: translateY(-50%); }
+
+.compass-needle {
+    width: 2px;
+    height: 40px;
+    background: linear-gradient(to top, transparent 50%, #fb7185 50%);
+    position: absolute;
+    pointer-events: none;
+}
+
+/* Local Mini-map canvas container */
+.minimap-container {
+    width: 100px;
+    height: 100px;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    border: 1.5px solid rgba(157, 78, 221, 0.6);
+}
+
+#minimap-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.minimap-controls {
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.minimap-zoom-btn {
+    width: 16px;
+    height: 16px;
+    font-size: 0.65rem;
+    background: rgba(1,1,3,0.85);
+    border: 0.5px solid rgba(255,255,255,0.3);
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+}
+
+/* Photo Filter custom panel overrides */
+.photo-panel-wrapper {
+    position: absolute;
+    top: 4rem;
+    left: 1.5rem;
+    background: rgba(10, 10, 18, 0.9);
+    border: 1.5px solid rgba(76, 201, 240, 0.6);
+    border-radius: 8px;
+    padding: 0.85rem 1.2rem;
+    width: 240px;
+    z-index: 120;
+    box-shadow: 0 8px 24px rgba(76, 201, 240, 0.2);
+    backdrop-filter: blur(12px);
+    pointer-events: auto;
+}
+
+.photo-title {
+    margin: 0 0 0.75rem 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #ffffff;
+    border-bottom: 1.5px solid rgba(255,255,255,0.1);
+    padding-bottom: 0.35rem;
+}
+
+.filter-row {
+    margin-bottom: 0.65rem;
+}
+
+.filter-row label {
+    display: block;
+    font-size: 0.65rem;
+    color: #94a3b8;
+    margin-bottom: 0.2rem;
+}
+
+.filter-row input[type="range"] {
+    width: 100%;
+    height: 3px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.filter-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-neon-blue);
+    cursor: pointer;
+}
+
+/* Interactive Proximity Location Banner */
+.proximity-banner {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+    background: rgba(10, 10, 18, 0.95);
+    border: 1.5px solid var(--color-neon-purple);
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    z-index: 100;
+    box-shadow: 0 10px 30px rgba(157, 78, 221, 0.35);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: auto;
+}
+
+.proximity-banner.hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(40px);
+    pointer-events: none;
+}
+
+.interact-key-badge {
+    background: var(--color-neon-purple);
+    border: 1px solid #ffffff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #ffffff;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 6px var(--color-neon-purple);
+}
+
+.interact-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.interact-title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.interact-prompt {
+    font-size: 0.7rem;
+    color: #cbd5e1;
+}
+
+/* Reusable slide-in notification banners */
+.city-notification-banner {
+    position: fixed;
+    top: 5.5rem;
+    right: 1.5rem;
+    background: rgba(5, 5, 10, 0.96);
+    border: 1.5px solid var(--color-neon-pink);
+    border-radius: 8px;
+    padding: 0.85rem 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 100000;
+    box-shadow: 0 10px 30px rgba(247, 37, 133, 0.25);
+    backdrop-filter: blur(15px);
+    max-width: 320px;
+    animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.city-notification-banner.hide {
+    animation: slideOutRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.notification-pulse {
+    font-size: 1.25rem;
+    animation: pulseGlow 1s infinite alternate;
+}
+
+.notification-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.notification-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--color-neon-pink);
+    letter-spacing: 1px;
+}
+
+.notification-text {
+    font-size: 0.75rem;
+    color: #ffffff;
+    line-height: 1.4;
+    white-space: pre-line;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(120%); opacity: 0; }
+}
+
 /* Fixed safety warning banner permanently positioned at the very bottom */
 .safety-warning-banner {
     position: fixed;
