@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SPACE MISSION CONTROL SIMULATION ENGINE — CORE ARCHITECTURE
+   SPACE MISSION CONTROL SIMULATION ENGINE — HIGH FIDELITY CORE v2.0
    ========================================================================== */
 
 // Global state container
@@ -25,17 +25,21 @@ const SpaceState = {
     battery: 100.0, // percentage remaining
     signal: 100.0, // comm signal %
     distance: 0, // in km from launch site
-    trajectoryAngle: 0, // degrees deviation (0 is straight up, positive is right/east)
+    trajectoryAngle: 0, // degrees deviation (0 is vertical, positive is right/east)
     throttle: 0, // 0 to 100 percentage
     engineIgnited: false,
     commActive: true,
     stageSeparated: false,
     solarArraysDeployed: false,
 
-    // Graphics & Preferences
-    cameraMode: "follow", // follow, orbit, drone, free
+    // Graphics, Selected Views & Preferences
+    cameraMode: "mission", // mission, orbit, earth, satellite, deep, cinematic
+    currentScale: 0.85, // for smooth camera transitions
+    currentCameraY: 290, // for smooth camera transitions
+    currentCameraX: 400, // for smooth camera transitions
     quality: "high", // high, medium, low, auto
     soundMuted: false,
+    activeTab: "altitude", // altitude, velocity, fuel, temperature, signal
 
     // Telemetry History (for charts)
     history: {
@@ -43,7 +47,8 @@ const SpaceState = {
         altitude: [],
         velocity: [],
         fuel: [],
-        temp: []
+        temp: [],
+        signal: []
     }
 };
 
@@ -53,25 +58,24 @@ const PhysicsConstants = {
     re: 6371.0, // Earth radius in km
     atmScaleHeight: 8.5, // Atmospheric scale height in km
     rocketMassDry: 12000, // kg
-    rocketMassWet: 85000, // kg (total fuel = 73000 kg)
-    maxThrust: 18.5, // m/s² acceleration at 100% throttle with full wet mass
+    rocketMassWet: 85000, // kg
+    maxThrust: 18.5, // m/s² acceleration at 100% throttle
     burnRate: 0.15, // % fuel burn per second at 100% throttle
     maxTemp: 1800, // °C
-    coolingRate: 0.8, // °C cooled per second when throttle is 0
-    heatingFactor: 1.2, // °C rise per unit of drag heating
+    coolingRate: 0.8, // °C cooled per second
     solarChargeRate: 0.05, // % battery gain per second in orbit
     batteryDrainRate: 0.02, // % battery drain per second
 };
 
 // Sequence stages metadata
 const FlightStages = [
-    { id: "PRE-LAUNCH", name: "Pre-Launch", desc: "System checks nominal. Rocket on launchpad." },
+    { id: "PRE-LAUNCH", name: "Pre-Launch", desc: "System checks nominal. Target satellite on launchpad." },
     { id: "COUNTDOWN", name: "Countdown Sequence", desc: "Terminal countdown in progress." },
     { id: "ENGINE IGNITION", name: "Engine Ignition", desc: "Main engine core ignition." },
     { id: "LIFTOFF", name: "Liftoff", desc: "Successful tower clearance achieved." },
     { id: "ASCENT", name: "Ascent Phase", desc: "Gravity turn initiated. Ascending lower atmosphere." },
     { id: "ATMOSPHERIC FLIGHT", name: "Atmospheric Max-Q", desc: "Maximum aerodynamic pressure." },
-    { id: "STAGE SEPARATION", name: "Stage Separation", desc: "Booster separation. Second stage ignited." },
+    { id: "STAGE SEPARATION", name: "Stage Separation", desc: "Booster separation. Second stage active." },
     { id: "ORBIT INSERTION", name: "Orbit Insertion", desc: "Horizontal burns to achieve circularization." },
     { id: "ORBIT", name: "Orbit Achieved", desc: "Stable circular orbit around Earth." },
     { id: "DEEP SPACE", name: "Deep Space Cruise", desc: "Escaping Earth sphere. Direct lunar transit." },
@@ -91,18 +95,16 @@ function initAudio() {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         audioCtx = new AudioContextClass();
 
-        // Create engine rumbly noise
+        // Deep heavy engine rumble synthesizer
         engineOsc = audioCtx.createOscillator();
         engineGain = audioCtx.createGain();
 
-        // Low frequency sawtooth oscillator representing heavy booster rumbles
         engineOsc.type = "sawtooth";
         engineOsc.frequency.setValueAtTime(45, audioCtx.currentTime);
 
-        // Filter to remove high-frequency screech from sawtooth, making it deep
         const lpFilter = audioCtx.createBiquadFilter();
         lpFilter.type = "lowpass";
-        lpFilter.frequency.setValueAtTime(100, audioCtx.currentTime);
+        lpFilter.frequency.setValueAtTime(95, audioCtx.currentTime);
 
         engineOsc.connect(lpFilter);
         lpFilter.connect(engineGain);
@@ -111,7 +113,7 @@ function initAudio() {
         engineGain.gain.setValueAtTime(0, audioCtx.currentTime);
         engineOsc.start();
 
-        // Create white noise for background signal static
+        // Background white noise generator representing solar-radiation/interstellar static
         const bufferSize = audioCtx.sampleRate * 2;
         const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const output = noiseBuffer.getChannelData(0);
@@ -124,19 +126,19 @@ function initAudio() {
         staticNode.loop = true;
 
         staticGain = audioCtx.createGain();
-        staticGain.gain.setValueAtTime(0.005, audioCtx.currentTime); // Low static hum
+        staticGain.gain.setValueAtTime(0.005, audioCtx.currentTime);
 
         staticNode.connect(staticGain);
         staticGain.connect(audioCtx.destination);
         staticNode.start();
 
     } catch (e) {
-        console.error("Audio Context initialization failed: ", e);
+        console.error("Audio Context initialization failed:", e);
     }
 }
 
-// Procedural synthesizer helper sounds
-function playSynthBeep(freq, duration, type = "sine", gainVal = 0.1) {
+// Procedural Web Audio Beeps
+function playSynthBeep(freq, duration, type = "sine", gainVal = 0.08) {
     if (SpaceState.soundMuted || !audioCtx) return;
     try {
         if (audioCtx.state === "suspended") {
@@ -165,75 +167,126 @@ function updateEngineSound() {
             audioCtx.resume();
         }
         if (SpaceState.engineIgnited && SpaceState.throttle > 0 && !SpaceState.isPaused) {
-            // Volume depends on throttle and atmospheric density
             const density = Math.exp(-SpaceState.altitude / PhysicsConstants.atmScaleHeight);
-            // Even in vacuum, structural vibration is heard (minimum 25%)
             const volumeFactor = 0.25 + 0.75 * density;
-            const targetGain = (SpaceState.throttle / 100) * 0.18 * volumeFactor;
+            const targetGain = (SpaceState.throttle / 100) * 0.15 * volumeFactor;
             engineGain.gain.setTargetAtTime(targetGain, audioCtx.currentTime, 0.1);
 
-            // Frequency pitches up slightly with higher throttle
             const targetFreq = 40 + (SpaceState.throttle / 100) * 35;
             engineOsc.frequency.setTargetAtTime(targetFreq, audioCtx.currentTime, 0.2);
         } else {
             engineGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.15);
         }
 
-        // Fluctuate signal static hum based on distance and signal strength
         if (SpaceState.commActive) {
-            const staticVolume = 0.002 + (1.0 - (SpaceState.signal / 100)) * 0.02;
+            const staticVolume = 0.002 + (1.0 - (SpaceState.signal / 100)) * 0.015;
             staticGain.gain.setTargetAtTime(staticVolume, audioCtx.currentTime, 0.5);
         } else {
-            staticGain.gain.setTargetAtTime(0.04, audioCtx.currentTime, 0.1); // High static when comm is disconnected
+            staticGain.gain.setTargetAtTime(0.035, audioCtx.currentTime, 0.1);
         }
     } catch (e) {}
 }
 
 /* ==========================================================================
-   STATE STAGE MANAGEMENT
+   LIVE EVENT LOGGER & CHAT FLUID COMPONENT
+   ========================================================================== */
+
+function logEvent(msg, type = "system") {
+    const logBox = document.getElementById("event-stream-logs");
+    if (!logBox) return;
+
+    const entry = document.createElement("div");
+    entry.className = `log-entry ${type}`;
+
+    // UTC/sim timestamp format
+    const timeStr = formatTimeSpan(SpaceState.missionTime);
+    entry.innerHTML = `<span class="log-time">[${timeStr}]</span> ${msg}`;
+
+    logBox.appendChild(entry);
+    logBox.scrollTop = logBox.scrollHeight;
+
+    // Prune entries to keep history light
+    const entries = logBox.getElementsByClassName("log-entry");
+    if (entries.length > 50) {
+        logBox.removeChild(entries[0]);
+    }
+}
+
+// AI Message sequence dispatcher
+function triggerAIOfficerMessage(msg) {
+    const textEl = document.getElementById("ai-officer-text");
+    if (textEl) {
+        textEl.style.opacity = 0;
+        setTimeout(() => {
+            textEl.innerText = msg;
+            textEl.style.opacity = 1;
+        }, 200);
+    }
+}
+
+/* ==========================================================================
+   STATE STAGE CONTROL
    ========================================================================== */
 
 function setFlightStage(stageId) {
     if (FlightStages.findIndex(s => s.id === stageId) === -1 && stageId !== "ABORTED") return;
     SpaceState.status = stageId;
 
-    // Trigger visual highlights
+    // Render updates
     renderStagesTimeline();
-
-    // Status warning calculation depending on stage
     updateStatusBadge();
 
-    // Trigger sound alerts depending on stage
-    if (stageId === "ENGINE IGNITION") {
+    // Trigger AI message & Audio Chime Alerts
+    if (stageId === "PRE-LAUNCH") {
+        triggerAIOfficerMessage("SYSTEMS Nominal. WAITING FOR TERMINAL COUNTDOWN START COMMAND.");
+        logEvent("PRE-LAUNCH checks complete. Launch vehicle ready.", "nominal");
+    } else if (stageId === "COUNTDOWN") {
+        triggerAIOfficerMessage("COUNTDOWN INITIATED. CORE IGNITION MATRIX IS ON AUTO-STANDBY.");
+        logEvent("Terminal countdown sequence initiated.", "system");
+    } else if (stageId === "ENGINE IGNITION") {
         playSynthBeep(180, 1.2, "sawtooth", 0.15);
+        triggerAIOfficerMessage("BOOSTER IGNITION SEQUENCE CONFIRMED. STEERING GIMBAL ALIGNING.");
+        logEvent("Booster engine ignition sequence nominal.", "nominal");
     } else if (stageId === "LIFTOFF") {
         playSynthBeep(440, 1.0, "sine", 0.2);
         playSynthBeep(880, 0.5, "sine", 0.1);
+        triggerAIOfficerMessage("LIFTOFF! WE HAVE A LIFTOFF OF THE COSMO SATELLITE ORBITER.");
+        logEvent("LIFTOFF confirmed. Main tower cleared.", "nominal");
+    } else if (stageId === "ASCENT") {
+        triggerAIOfficerMessage("ASCENDING LOWER STRATOSPHERE. INITIATING BALLISTIC GRAVITY TURN.");
+        logEvent("Entering lower stratosphere. Pitch deviation tracking nominal.", "system");
+    } else if (stageId === "ATMOSPHERIC FLIGHT") {
+        triggerAIOfficerMessage("WARNING: ENTERING HIGH AERODYNAMIC DRAG REGION. MONITOR G-FORCE.");
+        logEvent("Atmospheric Max-Q threshold encountered.", "warning");
     } else if (stageId === "STAGE SEPARATION") {
         playSynthBeep(600, 0.8, "triangle", 0.12);
+        triggerAIOfficerMessage("BOOSTER DECOUPLING SECURED. UPPER STAGE VACUUM ENGINE START.");
+        logEvent("First-stage booster decoupled. Second stage operational.", "nominal");
+    } else if (stageId === "ORBIT INSERTION") {
+        triggerAIOfficerMessage("ENTERING VACUUM ORBIT PATH. STEERING APOGEE CIRCULARIZATION.");
+        logEvent("Approaching transfer orbital apogee.", "system");
     } else if (stageId === "ORBIT") {
-        playSynthBeep(523.25, 0.4, "sine", 0.15); // C5 note beep
-        setTimeout(() => playSynthBeep(659.25, 0.4, "sine", 0.15), 150); // E5
-        setTimeout(() => playSynthBeep(783.99, 0.8, "sine", 0.15), 300); // G5
+        playSynthBeep(523.25, 0.4, "sine", 0.12);
+        setTimeout(() => playSynthBeep(659.25, 0.4, "sine", 0.12), 150);
+        setTimeout(() => playSynthBeep(783.99, 0.7, "sine", 0.12), 300);
+        triggerAIOfficerMessage("STABLE EARTH ORBIT ACHIEVED! DEPLOYING SOLAR MATRIX ANTENNAS.");
+        logEvent("Stable orbit established. Solar tracking array deployed.", "nominal");
+    } else if (stageId === "DEEP SPACE") {
+        triggerAIOfficerMessage("ESCAPING LOW EARTH ORBIT. DEEP SPACE CRUISE ENGAGED.");
+        logEvent("Earth escape velocity achieved. Cruising deep-space telemetry plot.", "nominal");
     } else if (stageId === "MISSION COMPLETE") {
-        // High-pitched victory chime
         const chime = [523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77, 1046.50];
         chime.forEach((f, idx) => {
-            setTimeout(() => playSynthBeep(f, 0.3, "sine", 0.12), idx * 120);
+            setTimeout(() => playSynthBeep(f, 0.35, "sine", 0.1), idx * 110);
         });
+        triggerAIOfficerMessage("COSMO-760228 PAYLOAD HAS BEEN DELIVERED. MISSION COMPLETED!");
+        logEvent("Payload deployment fully secured. All systems green.", "nominal");
     }
 
-    // Adjust specific controls based on stage
     const stageBtn = document.getElementById("btn-manual-stage");
     if (stageBtn) {
-        if (stageId === "ASCENT" || stageId === "ATMOSPHERIC FLIGHT") {
-            stageBtn.disabled = false;
-        } else {
-            stageBtn.disabled = true;
-        }
+        stageBtn.disabled = !(stageId === "ASCENT" || stageId === "ATMOSPHERIC FLIGHT");
     }
-
-    console.log(`Flight Stage updated to: ${stageId}`);
 }
 
 function updateStatusBadge() {
@@ -243,21 +296,21 @@ function updateStatusBadge() {
     badge.className = "status-badge";
     if (SpaceState.hasAborted) {
         badge.innerText = "🚨 ABORT SEQUENCE INITIATED";
-        badge.classList.add("glow-red");
+        badge.className = "status-badge glow-red";
     } else if (SpaceState.temp > 1200 || SpaceState.fuel < 10) {
         badge.innerText = "🔴 CRITICAL WARNING";
-        badge.classList.add("glow-red");
+        badge.className = "status-badge glow-red";
     } else if (SpaceState.temp > 800 || SpaceState.battery < 20 || SpaceState.signal < 30) {
         badge.innerText = "🟡 WARNING - MONITOR TELEMETRY";
-        badge.classList.add("glow-orange");
+        badge.className = "status-badge glow-orange";
     } else {
         badge.innerText = "🟢 SYSTEMS NOMINAL";
-        badge.classList.add("glow-green");
+        badge.className = "status-badge glow-green";
     }
 }
 
 /* ==========================================================================
-   PHYSICS STATE UPDATE SIMULATOR
+   PHYSICS STATE ENGINE
    ========================================================================== */
 
 function updatePhysics(dT) {
@@ -265,15 +318,24 @@ function updatePhysics(dT) {
         return;
     }
 
-    // 1. Manage Countdown Sequence
+    // 1. Manage countdown terminal sequence
     if (SpaceState.status === "COUNTDOWN") {
+        const prevSecond = Math.ceil(SpaceState.countdown);
         SpaceState.countdown -= dT;
+        const currentSecond = Math.ceil(SpaceState.countdown);
+
+        // Audio tick beeps
+        if (currentSecond < prevSecond && currentSecond > 0) {
+            playSynthBeep(880, 0.1, "sine", 0.12);
+            logEvent(`T-Minus ${currentSecond}...`, "system");
+        }
+
         if (SpaceState.countdown <= 3.0 && !SpaceState.engineIgnited) {
-            // Engine pre-ignition sequence
             SpaceState.engineIgnited = true;
-            SpaceState.throttle = 15; // Auto idle throttle
+            SpaceState.throttle = 15;
             setFlightStage("ENGINE IGNITION");
         }
+
         if (SpaceState.countdown <= 0.0) {
             SpaceState.countdown = 0.0;
             SpaceState.isCountdownActive = false;
@@ -283,60 +345,50 @@ function updatePhysics(dT) {
         return;
     }
 
-    // 2. Clock & Distance Tracking
+    // Incremental clock time
     SpaceState.missionTime += dT;
 
-    // Fuel Consumption Physics
+    // Fuel usage mechanics
     let currentMass = PhysicsConstants.rocketMassDry;
     if (SpaceState.fuel > 0) {
         const fuelUsed = PhysicsConstants.burnRate * (SpaceState.throttle / 100) * dT;
         SpaceState.fuel = Math.max(0.0, SpaceState.fuel - fuelUsed);
         currentMass += (PhysicsConstants.rocketMassWet - PhysicsConstants.rocketMassDry) * (SpaceState.fuel / 100);
     } else {
-        SpaceState.throttle = 0;
-        SpaceState.engineIgnited = false;
+        if (SpaceState.throttle > 0) {
+            SpaceState.throttle = 0;
+            SpaceState.engineIgnited = false;
+            logEvent("CRITICAL: Fuel starvation encountered. Booster shutdown.", "critical");
+            triggerAIOfficerMessage("CRITICAL ERROR: PROPULSION DEPLETED. POWER LOSS.");
+        }
     }
 
-    // 3. Thrust Calculations
+    // Thrust vector calculation
     let thrustAccel = 0;
     if (SpaceState.engineIgnited && SpaceState.throttle > 0 && SpaceState.fuel > 0) {
         thrustAccel = (SpaceState.throttle / 100) * PhysicsConstants.maxThrust * (PhysicsConstants.rocketMassWet / currentMass);
     }
 
-    // Gravity calculation based on distance from earth's center (inverse square)
     const currentGravity = PhysicsConstants.g0 * Math.pow(PhysicsConstants.re / (PhysicsConstants.re + SpaceState.altitude), 2);
-
-    // 4. Aerodynamic Drag Physics (Atmosphere drops exponentially)
     const airDensity = 1.225 * Math.exp(-SpaceState.altitude / PhysicsConstants.atmScaleHeight);
-    const dragCoeff = SpaceState.stageSeparated ? 0.15 : 0.28; // stage separation reduces drag coefficient
-    const dragForceFactor = 0.000005 * airDensity * dragCoeff;
+    const dragCoeff = SpaceState.stageSeparated ? 0.12 : 0.25;
+    const dragForceFactor = 0.0000045 * airDensity * dragCoeff;
     const dragAccel = dragForceFactor * Math.pow(SpaceState.velocity, 2);
 
-    // 5. Angular components (Gravity turn)
-    // Trajectory deviation angle relative to standard local vertical
+    // Resolve vector angle components
     const angleRad = (SpaceState.trajectoryAngle * Math.PI) / 180.0;
-
-    // Accelerations along local vertical and horizontal coordinates
     const accelVertical = thrustAccel * Math.cos(angleRad) - currentGravity - (dragAccel * Math.cos(angleRad));
     const accelHorizontal = thrustAccel * Math.sin(angleRad) - (dragAccel * Math.sin(angleRad));
 
-    // Resolve net acceleration
     const netAccel = Math.sqrt(accelVertical * accelVertical + accelHorizontal * accelHorizontal);
-    SpaceState.acceleration = accelVertical >= 0 || SpaceState.velocity > 0 ? accelVertical : 0; // standard display lock
-
-    // G-Force calculation
+    SpaceState.acceleration = accelVertical >= 0 || SpaceState.velocity > 0 ? accelVertical : 0;
     SpaceState.gForce = 1.0 + (netAccel / PhysicsConstants.g0);
 
-    // 6. Integrate Velocity & Altitude (simple fictional integration Euler)
     const prevVelocityKmS = (SpaceState.velocity) / 3600.0;
-    const velocityChangeVertical = accelVertical * dT;
-    const velocityChangeHorizontal = accelHorizontal * dT;
-
-    // Current vertical and horizontal speeds in km/h
     let velVertKmH = prevVelocityKmS * Math.cos(angleRad) * 3600.0 + (accelVertical * dT * 3.6);
     let velHorizKmH = prevVelocityKmS * Math.sin(angleRad) * 3600.0 + (accelHorizontal * dT * 3.6);
 
-    // Filter lock for rocket sitting on launchpad
+    // Sitting on launchpad lock
     if (SpaceState.altitude === 0 && accelVertical <= 0) {
         velVertKmH = 0;
         velHorizKmH = 0;
@@ -344,90 +396,77 @@ function updatePhysics(dT) {
         SpaceState.gForce = 1.0;
     }
 
-    // Combine velocities
-    SpaceState.velocity = Math.sqrt(velVertKmH * velVertKmH + velHorizKmH * velHorizKmH);
-
-    // Altitude increment based on vertical component
+    SpaceState.velocity = Math.max(0, Math.sqrt(velVertKmH * velVertKmH + velHorizKmH * velHorizKmH));
     const altitudeGain = (velVertKmH / 3600.0) * dT;
     SpaceState.altitude = Math.max(0.0, SpaceState.altitude + altitudeGain);
 
-    // 7. Distance & Temp calculations
-    // Horizontal tracking adds to distance covered from site
     const distanceGain = Math.abs(velHorizKmH / 3600.0) * dT;
     SpaceState.distance += Math.sqrt(altitudeGain * altitudeGain + distanceGain * distanceGain);
 
-    // Thermal properties: Heat rises with throttle and atmospheric speed (compressional drag heating)
-    const targetTemp = 24.0 + (SpaceState.throttle / 100) * 1100 + (airDensity * Math.pow(SpaceState.velocity / 1000, 2) * 80);
+    // Thermal limits
+    const targetTemp = 24.0 + (SpaceState.throttle / 100) * 1150 + (airDensity * Math.pow(SpaceState.velocity / 1000, 2) * 75);
     if (SpaceState.temp < targetTemp) {
-        SpaceState.temp = Math.min(PhysicsConstants.maxTemp, SpaceState.temp + (120 * dT));
+        SpaceState.temp = Math.min(PhysicsConstants.maxTemp, SpaceState.temp + (130 * dT));
     } else {
         SpaceState.temp = Math.max(24.0, SpaceState.temp - (PhysicsConstants.coolingRate * dT));
     }
 
-    // Cabin Pressure decays into vacuum
+    // Warn of thermal warning threshold
+    if (SpaceState.temp > 1200 && Math.random() < 0.01) {
+        logEvent("WARNING: Heavy compressional friction. Core thermal boundaries reached.", "critical");
+    }
+
     SpaceState.cabinPressure = Math.max(0, 101.32 * Math.exp(-SpaceState.altitude / PhysicsConstants.atmScaleHeight));
 
-    // Battery system
+    // Solar Arrays & battery
     if (SpaceState.solarArraysDeployed) {
         SpaceState.battery = Math.min(100.0, SpaceState.battery + (PhysicsConstants.solarChargeRate * dT));
     } else {
         SpaceState.battery = Math.max(0.0, SpaceState.battery - (PhysicsConstants.batteryDrainRate * dT));
     }
 
-    // Signal strength (decays into deep space, restored if high throttle comm is used)
-    const signalLoss = (SpaceState.distance / 1200.0);
-    SpaceState.signal = Math.max(5, 100 - signalLoss);
+    // Communication signal decay
+    const signalLoss = (SpaceState.distance / 1500.0);
+    SpaceState.signal = SpaceState.commActive ? Math.max(8, 100 - signalLoss) : 0;
 
-    // 8. Auto Flight Stage Progression based on physics boundaries
+    // Automatic flight progression levels
     if (SpaceState.status === "LIFTOFF" && SpaceState.altitude > 0.5) {
         setFlightStage("ASCENT");
     } else if (SpaceState.status === "ASCENT" && SpaceState.altitude > 12.0) {
-        // High pressure atmospheric interface Max-Q
         setFlightStage("ATMOSPHERIC FLIGHT");
     } else if (SpaceState.status === "ATMOSPHERIC FLIGHT" && SpaceState.altitude > 45.0) {
-        // Beyond densest atmosphere, prepare stage separation
         setFlightStage("STAGE SEPARATION");
-        // Separation prompt helper:
-        playSynthBeep(580, 0.4, "sine", 0.15);
+        logEvent("ACTION REQUIRED: Booster fuel depleted. Trigger STAGE SEPARATION manually.", "warning");
     } else if (SpaceState.status === "STAGE SEPARATION" && SpaceState.stageSeparated && SpaceState.altitude > 100.0) {
         setFlightStage("ORBIT INSERTION");
-    } else if (SpaceState.status === "ORBIT INSERTION" && SpaceState.velocity >  circularizationSpeed() && SpaceState.altitude > 180.0) {
-        // Orbit speed circularized
+    } else if (SpaceState.status === "ORBIT INSERTION" && SpaceState.velocity > 26500 && SpaceState.altitude > 180.0) {
         setFlightStage("ORBIT");
-        SpaceState.solarArraysDeployed = true; // Deploy arrays in space
+        SpaceState.solarArraysDeployed = true;
     } else if (SpaceState.status === "ORBIT" && SpaceState.velocity > 38000) {
-        // Exceeded orbital escape velocity
         setFlightStage("DEEP SPACE");
-    } else if (SpaceState.status === "DEEP SPACE" && SpaceState.distance > 3500.0) {
+    } else if (SpaceState.status === "DEEP SPACE" && SpaceState.distance > 3800.0) {
         setFlightStage("MISSION COMPLETE");
     }
 
-    // Update dynamic sound effects
     updateEngineSound();
-
-    // Track state history for live charts
     saveHistoryStats();
 }
 
-function circularizationSpeed() {
-    return 27000;
-}
-
 /* ==========================================================================
-   CHARTING & STATS RECORDERS
+   CHART HISTORY MANAGER
    ========================================================================== */
 
 function saveHistoryStats() {
     const hist = SpaceState.history;
     const timeVal = SpaceState.missionTime;
 
-    // Limit tracking capacity to prevent leak
-    if (hist.time.length > 100) {
+    if (hist.time.length > 80) {
         hist.time.shift();
         hist.altitude.shift();
         hist.velocity.shift();
         hist.fuel.shift();
         hist.temp.shift();
+        hist.signal.shift();
     }
 
     hist.time.push(timeVal);
@@ -435,356 +474,35 @@ function saveHistoryStats() {
     hist.velocity.push(SpaceState.velocity);
     hist.fuel.push(SpaceState.fuel);
     hist.temp.push(SpaceState.temp);
+    hist.signal.push(SpaceState.signal);
 }
 
 /* ==========================================================================
-   2D PROCEDURAL CANVAS RENDERING ENGINE
-   ========================================================================== */
-
-let earthRotationAngle = 0;
-const stars = [];
-
-function initStars() {
-    for (let i = 0; i < 150; i++) {
-        stars.push({
-            x: Math.random() * 800,
-            y: Math.random() * 480,
-            size: Math.random() * 1.5 + 0.5,
-            glow: Math.random() * 0.5 + 0.5
-        });
-    }
-}
-
-function drawSpaceTheater(canvas, ctx) {
-    if (!canvas || !ctx) return;
-
-    const w = canvas.width;
-    const h = canvas.height;
-
-    // Draw dark space grid background
-    ctx.fillStyle = "#020204";
-    ctx.fillRect(0, 0, w, h);
-
-    // Render stars
-    ctx.fillStyle = "#ffffff";
-    stars.forEach(star => {
-        ctx.globalAlpha = star.glow * (0.6 + 0.4 * Math.sin(Date.now() / 300 + star.x));
-        ctx.fillRect(star.x * (w / 800), star.y * (h / 480), star.size, star.size);
-    });
-    ctx.globalAlpha = 1.0;
-
-    // Compute camera coordinates/zoom depending on select mode
-    let scale = 1.0;
-    let cameraX = w / 2;
-    let cameraY = h / 2;
-
-    const isShaking = SpaceState.engineIgnited && SpaceState.throttle > 0 && !SpaceState.isPaused;
-    let shakeX = 0;
-    let shakeY = 0;
-    if (isShaking) {
-        // High vibration factor during liftoff & Max-Q
-        const intensity = (SpaceState.throttle / 100) * (SpaceState.altitude < 40 ? 4 : 1.5);
-        shakeX = (Math.random() - 0.5) * intensity;
-        shakeY = (Math.random() - 0.5) * intensity;
-    }
-
-    // Apply Camera Modes
-    if (SpaceState.cameraMode === "follow") {
-        // Camera tracks the rocket altitude
-        scale = 0.8;
-    } else if (SpaceState.cameraMode === "orbit") {
-        // Earth circular telemetry overview
-        scale = 0.35;
-    } else if (SpaceState.cameraMode === "drone") {
-        // Tracking sweep from launchtower
-        scale = 1.5;
-    }
-
-    ctx.save();
-    ctx.translate(cameraX + shakeX, cameraY + shakeY);
-    ctx.scale(scale, scale);
-
-    // Draw reference orbital elements
-    drawEarthProcedural(ctx, 0, 380, earthRotationAngle);
-    drawMoonProcedural(ctx, 350, -200);
-    drawTrajectoryPath(ctx);
-    drawRocketGraphic(ctx);
-
-    ctx.restore();
-
-    // Increment earth rotation vector over frames
-    if (!SpaceState.isPaused) {
-        earthRotationAngle += 0.0003;
-    }
-}
-
-function drawEarthProcedural(ctx, x, y, angle) {
-    const radius = 220;
-
-    // Glow effects atmosphere
-    ctx.save();
-    const atmosGlow = ctx.createRadialGradient(x, y, radius - 10, x, y, radius + 25);
-    atmosGlow.addColorStop(0, "rgba(59, 130, 246, 0.4)");
-    atmosGlow.addColorStop(0.5, "rgba(139, 92, 246, 0.15)");
-    atmosGlow.addColorStop(1, "rgba(139, 92, 246, 0)");
-    ctx.fillStyle = atmosGlow;
-    ctx.beginPath();
-    ctx.arc(x, y, radius + 25, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-
-    // Base deep water circle
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
-    ctx.clip();
-
-    ctx.fillStyle = "#1e3a8a"; // Ocean blue
-    ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
-
-    // Procedural Landmass mapping
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(angle);
-    ctx.fillStyle = "#10b981"; // Continents green
-
-    // Draw fictional continent clusters
-    for (let i = 0; i < 4; i++) {
-        const cx = Math.sin(i * 1.5) * 80;
-        const cy = Math.cos(i * 1.5) * 80;
-        ctx.beginPath();
-        ctx.arc(cx, cy, 75, 0, Math.PI * 2);
-        ctx.fill();
-    }
-    // Draw smaller islands
-    ctx.fillStyle = "#059669";
-    for (let i = 0; i < 6; i++) {
-        ctx.beginPath();
-        ctx.arc(Math.cos(i * 2) * 120, Math.sin(i * 2.5) * 120, 25, 0, Math.PI * 2);
-        ctx.fill();
-    }
-    ctx.restore();
-
-    // Shadow of night side
-    const nightGlow = ctx.createRadialGradient(x + 100, y - 100, radius, x - 100, y + 100, radius * 1.5);
-    nightGlow.addColorStop(0, "rgba(0,0,0,0)");
-    nightGlow.addColorStop(0.8, "rgba(5, 5, 8, 0.85)");
-    nightGlow.addColorStop(1, "rgba(5, 5, 8, 0.98)");
-    ctx.fillStyle = nightGlow;
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Atmosphere outline ring
-    ctx.strokeStyle = "rgba(147, 197, 253, 0.25)";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // Draw safe circular orbit reference line
-    ctx.strokeStyle = "rgba(139, 92, 246, 0.12)";
-    ctx.setLineDash([4, 8]);
-    ctx.beginPath();
-    ctx.arc(x, y, radius + 110, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    ctx.restore();
-}
-
-function drawMoonProcedural(ctx, x, y) {
-    const radius = 35;
-
-    // Glow
-    ctx.save();
-    const glow = ctx.createRadialGradient(x, y, radius - 5, x, y, radius + 10);
-    glow.addColorStop(0, "rgba(255, 255, 255, 0.15)");
-    glow.addColorStop(1, "rgba(255, 255, 255, 0)");
-    ctx.fillStyle = glow;
-    ctx.beginPath();
-    ctx.arc(x, y, radius + 10, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Core
-    ctx.fillStyle = "#9ca3af";
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Craters
-    ctx.fillStyle = "#4b5563";
-    for (let i = 0; i < 4; i++) {
-        ctx.beginPath();
-        ctx.arc(x - 12 + i * 8, y - 8 + (i % 2) * 12, 5 + i, 0, Math.PI * 2);
-        ctx.fill();
-    }
-    ctx.restore();
-}
-
-function drawTrajectoryPath(ctx) {
-    // Current flight trajectory representation
-    const earthCenterX = 0;
-    const earthCenterY = 380;
-    const startAltitudeRadius = 220; // Earth surface
-
-    ctx.save();
-    ctx.strokeStyle = "rgba(139, 92, 246, 0.4)";
-    ctx.lineWidth = 3;
-    ctx.setLineDash([5, 5]);
-
-    // Compute trajectory curve based on flight statistics
-    ctx.beginPath();
-    ctx.moveTo(earthCenterX, earthCenterY - startAltitudeRadius);
-
-    const steps = 30;
-    const maxTrajLength = Math.min(steps, 1 + Math.floor(SpaceState.altitude / 8));
-
-    let currentX = earthCenterX;
-    let currentY = earthCenterY - startAltitudeRadius;
-
-    for (let i = 1; i <= maxTrajLength; i++) {
-        // Simulating curve reflecting heading angle
-        const t = i / steps;
-        const angle = (SpaceState.trajectoryAngle * t * Math.PI) / 180.0;
-        const radius = startAltitudeRadius + (SpaceState.altitude * t);
-
-        currentX = earthCenterX + radius * Math.sin(angle);
-        currentY = earthCenterY - radius * Math.cos(angle);
-
-        ctx.lineTo(currentX, currentY);
-    }
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.restore();
-}
-
-function drawRocketGraphic(ctx) {
-    const earthCenterX = 0;
-    const earthCenterY = 380;
-    const earthRadius = 220;
-
-    // Determine current coordinates of rocket
-    const angleRad = (SpaceState.trajectoryAngle * Math.PI) / 180.0;
-    const orbitalRadius = earthRadius + SpaceState.altitude;
-
-    const rX = earthCenterX + orbitalRadius * Math.sin(angleRad);
-    const rY = earthCenterY - orbitalRadius * Math.cos(angleRad);
-
-    ctx.save();
-    ctx.translate(rX, rY);
-    // Align rocket along thrust vector angle
-    ctx.rotate(angleRad);
-
-    // Render original vector fictional rocket
-    // 1. Boost flames
-    if (SpaceState.engineIgnited && SpaceState.throttle > 0 && !SpaceState.isPaused) {
-        ctx.fillStyle = "#ff5500";
-        ctx.beginPath();
-        ctx.moveTo(-6, 20);
-        ctx.lineTo(0, 20 + (SpaceState.throttle / 100) * 22 + Math.random() * 8);
-        ctx.lineTo(6, 20);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.fillStyle = "#ffaa00";
-        ctx.beginPath();
-        ctx.moveTo(-4, 20);
-        ctx.lineTo(0, 20 + (SpaceState.throttle / 100) * 14 + Math.random() * 4);
-        ctx.lineTo(4, 20);
-        ctx.closePath();
-        ctx.fill();
-
-        // Exhaust smoke particles
-        ctx.fillStyle = "rgba(156, 163, 175, 0.15)";
-        ctx.beginPath();
-        ctx.arc((Math.random() - 0.5) * 8, 22 + Math.random() * 15, 6 + Math.random() * 6, 0, Math.PI * 2);
-        ctx.fill();
-    }
-
-    // 2. Main cylindrical body
-    ctx.fillStyle = "#e5e7eb"; // Silver-white hull
-    ctx.beginPath();
-    ctx.rect(-6, -18, 12, 36);
-    ctx.fill();
-
-    // 3. Nose cone (triangle cap)
-    ctx.fillStyle = "#3b82f6"; // Blue composite shield
-    ctx.beginPath();
-    ctx.moveTo(-6, -18);
-    ctx.lineTo(0, -32);
-    ctx.lineTo(6, -18);
-    ctx.closePath();
-    ctx.fill();
-
-    // 4. Side fins
-    ctx.fillStyle = "#1e3a8a";
-    // Left fin
-    ctx.beginPath();
-    ctx.moveTo(-6, 8);
-    ctx.lineTo(-12, 18);
-    ctx.lineTo(-6, 18);
-    ctx.closePath();
-    ctx.fill();
-    // Right fin
-    ctx.beginPath();
-    ctx.moveTo(6, 8);
-    ctx.lineTo(12, 18);
-    ctx.lineTo(6, 18);
-    ctx.closePath();
-    ctx.fill();
-
-    // 5. Cabin Window
-    ctx.fillStyle = "#93c5fd";
-    ctx.beginPath();
-    ctx.arc(0, -6, 3, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 6. Solar panel wings (deploy only in ORBIT)
-    if (SpaceState.solarArraysDeployed) {
-        ctx.fillStyle = "#1e40af";
-        ctx.strokeStyle = "#60a5fa";
-        ctx.lineWidth = 1;
-        // Left Panel
-        ctx.fillRect(-32, -4, 26, 8);
-        ctx.strokeRect(-32, -4, 26, 8);
-        // Right Panel
-        ctx.fillRect(6, -4, 26, 8);
-        ctx.strokeRect(6, -4, 26, 8);
-    }
-
-    ctx.restore();
-}
-
-/* ==========================================================================
-   TELEMETRY REAL-TIME GRAPHS
+   TABBED CHART CANVAS GRAPH
    ========================================================================== */
 
 function drawTelemetryGraphs() {
-    const canvas1 = document.getElementById("chart-canvas-alt-vel");
-    const canvas2 = document.getElementById("chart-canvas-fuel-temp");
+    const canvas = document.getElementById("chart-canvas-tabbed");
+    if (!canvas) return;
 
-    if (!canvas1 || !canvas2) return;
-
-    drawSingleGraph(canvas1, SpaceState.history.altitude, SpaceState.history.velocity, "#3b82f6", "#10b981", "ALT", "VEL");
-    drawSingleGraph(canvas2, SpaceState.history.fuel, SpaceState.history.temp, "#f59e0b", "#ef4444", "FUEL", "TEMP");
-}
-
-function drawSingleGraph(canvas, dataSeries1, dataSeries2, color1, color2, label1, label2) {
     const ctx = canvas.getContext("2d");
     const w = canvas.width;
     const h = canvas.height;
 
-    ctx.fillStyle = "#0a0a0f";
+    // Reset chart frame background
+    ctx.fillStyle = "#06060c";
     ctx.fillRect(0, 0, w, h);
 
-    if (dataSeries1.length < 2) {
+    const hist = SpaceState.history;
+    if (hist.time.length < 2) {
         ctx.font = "10px monospace";
         ctx.fillStyle = "rgba(255,255,255,0.25)";
-        ctx.fillText("AWAITING FLIGHT DATA...", w / 2 - 60, h / 2 + 3);
+        ctx.fillText("AWAITING FLIGHT INJECTOR LOGS...", w / 2 - 80, h / 2 + 3);
         return;
     }
 
-    // Grid guide lines
-    ctx.strokeStyle = "rgba(255,255,255,0.03)";
+    // Draw horizontal grid alignments
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
     ctx.lineWidth = 1;
     for (let i = 1; i < 4; i++) {
         const y = (h / 4) * i;
@@ -794,46 +512,531 @@ function drawSingleGraph(canvas, dataSeries1, dataSeries2, color1, color2, label
         ctx.stroke();
     }
 
-    // Determine scale limits
-    const maxVal1 = Math.max(1, ...dataSeries1);
-    const minVal1 = Math.min(...dataSeries1);
-    const range1 = maxVal1 - minVal1 || 1;
+    // Determine current graph data array & colors
+    let data = [];
+    let color = "#3b82f6";
+    let suffix = "";
 
-    const maxVal2 = Math.max(1, ...dataSeries2);
-    const minVal2 = Math.min(...dataSeries2);
-    const range2 = maxVal2 - minVal2 || 1;
+    if (SpaceState.activeTab === "altitude") {
+        data = hist.altitude;
+        color = "#3b82f6";
+        suffix = " km";
+    } else if (SpaceState.activeTab === "velocity") {
+        data = hist.velocity;
+        color = "#10b981";
+        suffix = " km/h";
+    } else if (SpaceState.activeTab === "fuel") {
+        data = hist.fuel;
+        color = "#f59e0b";
+        suffix = "%";
+    } else if (SpaceState.activeTab === "temperature") {
+        data = hist.temp;
+        color = "#ef4444";
+        suffix = "°C";
+    } else if (SpaceState.activeTab === "signal") {
+        data = hist.signal;
+        color = "#a855f7";
+        suffix = "%";
+    }
 
-    const len = dataSeries1.length;
+    const maxVal = Math.max(1, ...data);
+    const minVal = Math.min(...data);
+    const range = maxVal - minVal || 1;
+    const len = data.length;
 
-    // Plot Series 1
-    ctx.strokeStyle = color1;
-    ctx.lineWidth = 1.5;
+    // Gradient fill under the curves
+    const gradient = ctx.createLinearGradient(0, 0, 0, h);
+    gradient.addColorStop(0, color + "33"); // 20% opacity color
+    gradient.addColorStop(1, color + "00"); // Transparent color
+
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.moveTo(0, h);
+
+    for (let i = 0; i < len; i++) {
+        const x = (w / (len - 1)) * i;
+        const normY = (data[i] - minVal) / range;
+        const y = h - 8 - normY * (h - 16);
+        ctx.lineTo(x, y);
+    }
+    ctx.lineTo(w, h);
+    ctx.closePath();
+    ctx.fill();
+
+    // Actual stroke path
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
     ctx.beginPath();
     for (let i = 0; i < len; i++) {
         const x = (w / (len - 1)) * i;
-        const normY = (dataSeries1[i] - minVal1) / range1;
-        const y = h - 5 - normY * (h - 10);
+        const normY = (data[i] - minVal) / range;
+        const y = h - 8 - normY * (h - 16);
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
     }
     ctx.stroke();
 
-    // Plot Series 2
-    ctx.strokeStyle = color2;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    for (let i = 0; i < len; i++) {
-        const x = (w / (len - 1)) * i;
-        const normY = (dataSeries2[i] - minVal2) / range2;
-        const y = h - 5 - normY * (h - 10);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
+    // Render telemetry tags overlay
+    ctx.font = "9px monospace";
+    ctx.fillStyle = "rgba(255,255,255,0.45)";
+    ctx.fillText(`MAX: ${maxVal.toFixed(1)}${suffix}`, 10, 15);
+    ctx.fillText(`MIN: ${minVal.toFixed(1)}${suffix}`, 10, h - 8);
+    ctx.fillText(`LIVE: ${data[len - 1].toFixed(1)}${suffix}`, w - 100, 15);
 }
 
 /* ==========================================================================
-   LOCALSTORAGE PREFERENCES MANAGER
+   2D PROCEDURAL EARTH & ORBIT DOME DRAWING
+   ========================================================================== */
+
+let earthRotationAngle = 0;
+const stars = [];
+const satellitePaths = [];
+
+function initStars() {
+    for (let i = 0; i < 120; i++) {
+        stars.push({
+            x: Math.random() * 800,
+            y: Math.random() * 480,
+            size: Math.random() * 1.5 + 0.5,
+            glow: Math.random() * 0.5 + 0.5
+        });
+    }
+
+    // Establish simulated satellites in geo orbit loops
+    satellitePaths.push({ angle: 0, radius: 290, speed: 0.002, color: "#a855f7" });
+    satellitePaths.push({ angle: Math.PI / 3, radius: 335, speed: -0.0015, color: "#14b8a6" });
+}
+
+function drawSpaceTheater(canvas, ctx) {
+    if (!canvas || !ctx) return;
+
+    const w = canvas.width;
+    const h = canvas.height;
+
+    // Reset base dome space color
+    ctx.fillStyle = "#010103";
+    ctx.fillRect(0, 0, w, h);
+
+    // Draw background stars
+    ctx.fillStyle = "#ffffff";
+    stars.forEach(star => {
+        ctx.globalAlpha = star.glow * (0.55 + 0.45 * Math.sin(Date.now() / 400 + star.x));
+        ctx.fillRect(star.x * (w / 800), star.y * (h / 480), star.size, star.size);
+    });
+    ctx.globalAlpha = 1.0;
+
+    // Handle viewport camera projections
+    let targetScale = 1.0;
+    let targetCameraX = w / 2;
+    let targetCameraY = h / 2;
+
+    const isShaking = SpaceState.engineIgnited && SpaceState.throttle > 0 && !SpaceState.isPaused;
+    let shakeX = 0, shakeY = 0;
+    if (isShaking) {
+        const intensity = (SpaceState.throttle / 100) * (SpaceState.altitude < 40 ? 3.5 : 1.2);
+        shakeX = (Math.random() - 0.5) * intensity;
+        shakeY = (Math.random() - 0.5) * intensity;
+    }
+
+    // Dynamic viewport transformations depending on selecting camera Mode
+    if (SpaceState.cameraMode === "mission") {
+        targetScale = 0.85;
+        targetCameraY = h / 2 + 50;
+    } else if (SpaceState.cameraMode === "orbit") {
+        targetScale = 0.48;
+    } else if (SpaceState.cameraMode === "earth") {
+        targetScale = 1.1;
+        targetCameraY = h / 2 + 180;
+    } else if (SpaceState.cameraMode === "satellite") {
+        targetScale = 0.65;
+        targetCameraY = h / 2 + 20;
+    } else if (SpaceState.cameraMode === "deep") {
+        targetScale = 0.32;
+    } else if (SpaceState.cameraMode === "cinematic") {
+        // Smooth sine panning sweeps
+        targetScale = 0.75 + Math.sin(Date.now() / 3000) * 0.15;
+        targetCameraX = w / 2 + Math.cos(Date.now() / 4000) * 35;
+    }
+
+    // Smooth linear interpolation (lerp) for cinematic camera transitions
+    if (SpaceState.currentScale === undefined) SpaceState.currentScale = targetScale;
+    if (SpaceState.currentCameraX === undefined) SpaceState.currentCameraX = targetCameraX;
+    if (SpaceState.currentCameraY === undefined) SpaceState.currentCameraY = targetCameraY;
+
+    SpaceState.currentScale += (targetScale - SpaceState.currentScale) * 0.08;
+    SpaceState.currentCameraX += (targetCameraX - SpaceState.currentCameraX) * 0.08;
+    SpaceState.currentCameraY += (targetCameraY - SpaceState.currentCameraY) * 0.08;
+
+    ctx.save();
+    ctx.translate(SpaceState.currentCameraX + shakeX, SpaceState.currentCameraY + shakeY);
+    ctx.scale(SpaceState.currentScale, SpaceState.currentScale);
+
+    // Draw background orbital paths
+    drawOrbitPaths(ctx);
+
+    // Draw technical elements
+    drawEarthProcedural(ctx, 0, 180, earthRotationAngle);
+    drawMoonProcedural(ctx, 330, -220);
+    drawSatelliteSystem(ctx);
+    drawTrajectoryPath(ctx);
+    drawSpacecraftPointer(ctx);
+
+    ctx.restore();
+
+    if (!SpaceState.isPaused) {
+        earthRotationAngle += 0.00045;
+        // Increment satellite orbit angles
+        satellitePaths.forEach(sat => {
+            sat.angle += sat.speed;
+        });
+    }
+}
+
+function drawOrbitPaths(ctx) {
+    ctx.save();
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 10]);
+
+    // LEO Orbit (Low Earth Orbit)
+    ctx.strokeStyle = "rgba(59, 130, 246, 0.15)";
+    ctx.beginPath();
+    ctx.arc(0, 180, 240, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // MEO Orbit
+    ctx.strokeStyle = "rgba(20, 184, 166, 0.15)";
+    ctx.beginPath();
+    ctx.arc(0, 180, 290, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // GEO Orbit (Geostationary)
+    ctx.strokeStyle = "rgba(168, 85, 247, 0.15)";
+    ctx.beginPath();
+    ctx.arc(0, 180, 335, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+    ctx.restore();
+}
+
+function drawEarthProcedural(ctx, x, y, angle) {
+    const radius = 170;
+
+    // Glowing atmospheric layer
+    ctx.save();
+    const atmosGlow = ctx.createRadialGradient(x, y, radius - 8, x, y, radius + 22);
+    atmosGlow.addColorStop(0, "rgba(59, 130, 246, 0.42)");
+    atmosGlow.addColorStop(0.4, "rgba(139, 92, 246, 0.18)");
+    atmosGlow.addColorStop(1, "rgba(139, 92, 246, 0)");
+    ctx.fillStyle = atmosGlow;
+    ctx.beginPath();
+    ctx.arc(x, y, radius + 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // Clip earth sphere to draw internal layers
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.clip();
+
+    // Water layer
+    ctx.fillStyle = "#111827"; // Very dark space ocean blue
+    ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+
+    // Procedural spinning landmass
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.fillStyle = "rgba(16, 185, 129, 0.22)"; // translucent tech green continents
+
+    for (let i = 0; i < 4; i++) {
+        const cx = Math.sin(i * 1.5) * 60;
+        const cy = Math.cos(i * 1.5) * 60;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 60, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    // Islands
+    ctx.fillStyle = "rgba(20, 184, 166, 0.25)";
+    for (let i = 0; i < 5; i++) {
+        ctx.beginPath();
+        ctx.arc(Math.cos(i * 1.8) * 100, Math.sin(i * 2.2) * 100, 20, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.restore();
+
+    // Procedural Floating cloud vectors
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle * 1.25); // clouds spin slightly faster
+    ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
+    for (let i = 0; i < 6; i++) {
+        ctx.beginPath();
+        ctx.arc(Math.sin(i * 2) * 90, Math.cos(i * 1.5) * 90, 35, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.restore();
+
+    // Day/Night shade division mask (Light is located at upper right corner)
+    ctx.save();
+    const sunGlow = ctx.createLinearGradient(x + 120, y - 120, x - 120, y + 120);
+    sunGlow.addColorStop(0, "rgba(255, 255, 255, 0.1)");
+    sunGlow.addColorStop(0.55, "rgba(5, 5, 10, 0.35)");
+    sunGlow.addColorStop(0.8, "rgba(2, 2, 5, 0.85)");
+    sunGlow.addColorStop(1, "rgba(1, 1, 3, 0.98)");
+    ctx.fillStyle = sunGlow;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // Glowing city-lights metropolitan center dots (rendered on the dark shaded night side)
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.fillStyle = "rgba(245, 158, 11, 0.8)"; // neon orange city light dot glow
+
+    // Set static positions for metropolitan nodes
+    const cityNodes = [
+        { lat: 10, lng: -45 }, { lat: -25, lng: 30 },
+        { lat: 40, lng: 110 }, { lat: 15, lng: -90 },
+        { lat: -5, lng: -10 }, { lat: 50, lng: -5 }
+    ];
+
+    cityNodes.forEach(node => {
+        const radLat = (node.lat * Math.PI) / 180;
+        const radLng = (node.lng * Math.PI) / 180;
+        const nodeX = (radius - 12) * Math.cos(radLat) * Math.sin(radLng);
+        const nodeY = -(radius - 12) * Math.sin(radLat);
+
+        // Render dot only if it is rotated into the night shading area
+        // Compute current angle-rotated position to see if it is in the bottom-left quadrant (dark area)
+        const currentRotatedLng = radLng + angle;
+        const cosVal = Math.cos(radLat) * Math.sin(currentRotatedLng);
+
+        if (cosVal < -0.15) {
+            ctx.beginPath();
+            ctx.arc(nodeX, nodeY, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+            // Tiny city glow
+            ctx.fillStyle = "rgba(245, 158, 11, 0.25)";
+            ctx.beginPath();
+            ctx.arc(nodeX, nodeY, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "rgba(245, 158, 11, 0.8)";
+        }
+    });
+    ctx.restore();
+
+    ctx.restore(); // end clip
+
+    // Perimeter atmospheric neon-blue ring
+    ctx.strokeStyle = "rgba(59, 130, 246, 0.35)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+}
+
+function drawMoonProcedural(ctx, x, y) {
+    const radius = 25;
+
+    // Outer moon shadow
+    ctx.save();
+    const glow = ctx.createRadialGradient(x, y, radius - 4, x, y, radius + 8);
+    glow.addColorStop(0, "rgba(255, 255, 255, 0.1)");
+    glow.addColorStop(1, "rgba(255, 255, 255, 0)");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(x, y, radius + 8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Solid core
+    ctx.fillStyle = "#374151";
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Crater highlights
+    ctx.fillStyle = "rgba(255,255,255,0.04)";
+    ctx.beginPath();
+    ctx.arc(x - 5, y - 5, 5, 0, Math.PI * 2);
+    ctx.arc(x + 8, y + 4, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+}
+
+function drawSatelliteSystem(ctx) {
+    ctx.save();
+    satellitePaths.forEach(sat => {
+        // Calculate coordinate positions
+        const sx = sat.radius * Math.sin(sat.angle);
+        const sy = 180 - sat.radius * Math.cos(sat.angle);
+
+        // Draw scanning telemetry sweep vectors
+        ctx.strokeStyle = sat.color + "1a"; // 10% opacity
+        ctx.fillStyle = sat.color + "08"; // 3% opacity
+
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        ctx.lineTo(0, 180);
+        ctx.stroke();
+
+        // Draw scanning fan
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        ctx.arc(sx, sy, 40, sat.angle - Math.PI / 1.1, sat.angle - Math.PI / 0.9);
+        ctx.closePath();
+        ctx.fill();
+
+        // Draw satellite dot marker
+        ctx.fillStyle = sat.color;
+        ctx.beginPath();
+        ctx.arc(sx, sy, 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Satellite core blink
+        if (Math.sin(Date.now() / 150) > 0) {
+            ctx.fillStyle = "#ffffff";
+            ctx.beginPath();
+            ctx.arc(sx, sy, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    });
+    ctx.restore();
+}
+
+function drawTrajectoryPath(ctx) {
+    const earthCenterX = 0;
+    const earthCenterY = 180;
+    const earthRadius = 170;
+
+    ctx.save();
+    ctx.strokeStyle = "rgba(139, 92, 246, 0.45)";
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([4, 4]);
+
+    ctx.beginPath();
+    ctx.moveTo(earthCenterX, earthCenterY - earthRadius);
+
+    const steps = 40;
+    const maxTrajLength = Math.min(steps, 1 + Math.floor(SpaceState.altitude / 6.5));
+
+    for (let i = 1; i <= maxTrajLength; i++) {
+        const t = i / steps;
+        const angle = (SpaceState.trajectoryAngle * t * Math.PI) / 180.0;
+        const radius = earthRadius + (SpaceState.altitude * t);
+
+        const currentX = earthCenterX + radius * Math.sin(angle);
+        const currentY = earthCenterY - radius * Math.cos(angle);
+
+        ctx.lineTo(currentX, currentY);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+}
+
+function drawSpacecraftPointer(ctx) {
+    const earthCenterX = 0;
+    const earthCenterY = 180;
+    const earthRadius = 170;
+
+    const angleRad = (SpaceState.trajectoryAngle * Math.PI) / 180.0;
+    const orbitalRadius = earthRadius + SpaceState.altitude;
+
+    const rX = earthCenterX + orbitalRadius * Math.sin(angleRad);
+    const rY = earthCenterY - orbitalRadius * Math.cos(angleRad);
+
+    ctx.save();
+    ctx.translate(rX, rY);
+    ctx.rotate(angleRad);
+
+    // Render modern tactical telemetry HUD pointer (No illustrative rocket body)
+    // 1. Engine flare vector
+    if (SpaceState.engineIgnited && SpaceState.throttle > 0 && !SpaceState.isPaused) {
+        ctx.strokeStyle = "#ef4444";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, 5);
+        ctx.lineTo(0, 5 + (SpaceState.throttle / 100) * 15 + Math.random() * 5);
+        ctx.stroke();
+
+        // Thrust particle ring glows
+        ctx.fillStyle = "rgba(239, 68, 68, 0.25)";
+        ctx.beginPath();
+        ctx.arc(0, 6, 4 + Math.random() * 4, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // 2. Spacecraft point crosshair
+    ctx.strokeStyle = "#10b981"; // neon green
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(0, 0, 5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Crosshair ticks
+    ctx.beginPath();
+    ctx.moveTo(-9, 0); ctx.lineTo(-4, 0);
+    ctx.moveTo(4, 0); ctx.lineTo(9, 0);
+    ctx.moveTo(0, -9); ctx.lineTo(0, -4);
+    ctx.moveTo(0, 4); ctx.lineTo(0, 9);
+    ctx.stroke();
+
+    // Center telemetry dot
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(0, 0, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 3. Mini label
+    ctx.font = "bold 8px monospace";
+    ctx.fillStyle = "rgba(16, 185, 129, 0.85)";
+    ctx.fillText("ADEEB-01", 12, 3);
+
+    ctx.restore();
+}
+
+/* ==========================================================================
+   CIRCULAR METRIC GAUGES COMPONENT
+   ========================================================================== */
+
+function updateCircularGauges() {
+    // 1. G-Force (Range 1.0 to 10.0 G)
+    const gfPercent = Math.min(100, Math.max(0, ((SpaceState.gForce - 1) / 9) * 100));
+    setGaugeStroke("gauge-gforce-fill", gfPercent);
+    setGaugeValue("gauge-gforce-val", `${SpaceState.gForce.toFixed(1)}G`);
+
+    // 2. Cabin Pressure (Range 0.0 to 120 kPa)
+    const cpPercent = Math.min(100, Math.max(0, (SpaceState.cabinPressure / 120) * 100));
+    setGaugeStroke("gauge-pressure-fill", cpPercent);
+    setGaugeValue("gauge-pressure-val", `${SpaceState.cabinPressure.toFixed(0)}k`);
+
+    // 3. Battery Buffer (Range 0 to 100%)
+    setGaugeStroke("gauge-battery-fill", SpaceState.battery);
+    setGaugeValue("gauge-battery-val", `${SpaceState.battery.toFixed(0)}%`);
+
+    // 4. Signal strength (Range 0 to 100%)
+    setGaugeStroke("gauge-signal-fill", SpaceState.signal);
+    setGaugeValue("gauge-signal-val", `${SpaceState.signal.toFixed(0)}%`);
+}
+
+function setGaugeStroke(elementId, percent) {
+    const el = document.getElementById(elementId);
+    if (el) {
+        // Circumference of radius 15.9155 is exactly 100
+        el.setAttribute("stroke-dasharray", `${percent.toFixed(1)}, 100`);
+    }
+}
+
+function setGaugeValue(elementId, value) {
+    const el = document.getElementById(elementId);
+    if (el) el.innerText = value;
+}
+
+/* ==========================================================================
+   LOCALSTORAGE SYSTEM
    ========================================================================== */
 
 function saveMissionStateToDisk() {
@@ -849,7 +1052,8 @@ function saveMissionStateToDisk() {
             solarArraysDeployed: SpaceState.solarArraysDeployed,
             soundMuted: SpaceState.soundMuted,
             cameraMode: SpaceState.cameraMode,
-            quality: SpaceState.quality
+            quality: SpaceState.quality,
+            activeTab: SpaceState.activeTab
         };
         localStorage.setItem("COSMO_SAVE_STATE", JSON.stringify(payload));
     } catch (e) {}
@@ -870,10 +1074,21 @@ function loadMissionStateFromDisk() {
         SpaceState.stageSeparated = !!data.stageSeparated;
         SpaceState.solarArraysDeployed = !!data.solarArraysDeployed;
         SpaceState.soundMuted = !!data.soundMuted;
-        SpaceState.cameraMode = data.cameraMode || "follow";
+        SpaceState.cameraMode = data.cameraMode || "mission";
         SpaceState.quality = data.quality || "high";
+        SpaceState.activeTab = data.activeTab || "altitude";
 
-        // Update UI switches
+        // Restore tab buttons active classes
+        const tabs = ["alt", "vel", "fuel", "temp", "sig"];
+        tabs.forEach(tabId => {
+            const btn = document.getElementById(`tab-${tabId}`);
+            if (btn) btn.classList.remove("active");
+        });
+        const activeMap = { altitude: "alt", velocity: "vel", fuel: "fuel", temperature: "temp", signal: "sig" };
+        const activeBtn = document.getElementById(`tab-${activeMap[SpaceState.activeTab]}`);
+        if (activeBtn) activeBtn.classList.add("active");
+
+        // Sync visual UI elements
         const muteBtn = document.getElementById("btn-sound-toggle");
         if (muteBtn) {
             muteBtn.innerHTML = SpaceState.soundMuted ? "<span>🔇</span> SOUND OFF" : "<span>🔊</span> SOUND ON";
@@ -888,46 +1103,49 @@ function loadMissionStateFromDisk() {
         if (throttleSlider) {
             SpaceState.throttle = SpaceState.status === "ENGINE IGNITION" ? 15 : 0;
             throttleSlider.value = SpaceState.throttle;
-            document.getElementById("throttle-display-val").innerText = `${SpaceState.throttle}%`;
+            const displayVal = document.getElementById("throttle-display-val");
+            if (displayVal) displayVal.innerText = `${SpaceState.throttle}%`;
         }
 
         renderStagesTimeline();
-        console.log("Space state restored successfully.");
+        logEvent("COSMO-760228 telemetry save matrix restored from Disk.", "system");
     } catch (e) {}
 }
 
 /* ==========================================================================
-   UI UPDATER & RENDERING LOOPS
+   UI SYNCHRONIZATION
    ========================================================================== */
 
 function updateTelemetryUI() {
-    // Left column stats
     document.getElementById("mission-time").innerText = formatTimeSpan(SpaceState.missionTime);
 
-    // Right column stats
     document.getElementById("tele-altitude").innerText = `${SpaceState.altitude.toFixed(2)} km`;
     document.getElementById("tele-velocity").innerText = `${SpaceState.velocity.toFixed(1)} km/h`;
     document.getElementById("tele-acceleration").innerText = `${SpaceState.acceleration.toFixed(2)} m/s²`;
-    document.getElementById("tele-gforce").innerText = `${SpaceState.gForce.toFixed(2)} G`;
 
     document.getElementById("tele-fuel").innerText = `${SpaceState.fuel.toFixed(2)}%`;
-    document.getElementById("tele-fuel-bar").style.width = `${SpaceState.fuel}%`;
+    const fBar = document.getElementById("tele-fuel-bar");
+    if (fBar) fBar.style.width = `${SpaceState.fuel}%`;
 
     document.getElementById("tele-temp").innerText = `${SpaceState.temp.toFixed(1)}°C`;
-    document.getElementById("tele-temp-bar").style.width = `${Math.min(100, (SpaceState.temp / PhysicsConstants.maxTemp) * 100)}%`;
+    const tBar = document.getElementById("tele-temp-bar");
+    if (tBar) tBar.style.width = `${Math.min(100, (SpaceState.temp / PhysicsConstants.maxTemp) * 100)}%`;
 
-    document.getElementById("tele-pressure").innerText = `${SpaceState.cabinPressure.toFixed(2)} kPa`;
-    document.getElementById("tele-battery").innerText = `${SpaceState.battery.toFixed(2)}%`;
-    document.getElementById("tele-signal").innerText = `${Math.round(SpaceState.signal)}%`;
     document.getElementById("tele-distance").innerText = `${SpaceState.distance.toFixed(2)} km`;
 
-    // Center HUD lines
-    document.getElementById("hud-camera-altitude").innerText = `ALTITUDE: ${SpaceState.altitude.toFixed(2)} km`;
-    document.getElementById("hud-flight-path").innerText = `FLIGHT_PATH: ${SpaceState.status}`;
-    document.getElementById("hud-vibration-factor").innerText = `VIBRATION_HZ: ${SpaceState.engineIgnited ? (12 + SpaceState.throttle / 4).toFixed(1) : "nominal"}`;
+    // Center HUD overlays
+    const hudCamAlt = document.getElementById("hud-camera-altitude");
+    if (hudCamAlt) hudCamAlt.innerText = `ALTITUDE: ${SpaceState.altitude.toFixed(2)} km`;
+    const hudFlight = document.getElementById("hud-flight-path");
+    if (hudFlight) hudFlight.innerText = `FLIGHT_PATH: ${SpaceState.status}`;
+    const hudVib = document.getElementById("hud-vibration-factor");
+    if (hudVib) hudVib.innerText = `VIBRATION_HZ: ${SpaceState.engineIgnited ? (12 + SpaceState.throttle / 4).toFixed(1) : "nominal"}`;
 
-    // Angle read-out
-    document.getElementById("dir-deg-read").innerText = `${SpaceState.trajectoryAngle}°`;
+    const dirRead = document.getElementById("dir-deg-read");
+    if (dirRead) dirRead.innerText = `${SpaceState.trajectoryAngle}°`;
+
+    // Update gauges
+    updateCircularGauges();
 }
 
 function renderStagesTimeline() {
@@ -935,8 +1153,6 @@ function renderStagesTimeline() {
     if (!container) return;
 
     container.innerHTML = "";
-
-    // Determine numerical level of active stage
     const activeIdx = FlightStages.findIndex(s => s.id === SpaceState.status);
 
     FlightStages.forEach((stage, idx) => {
@@ -970,11 +1186,10 @@ function formatTimeSpan(seconds) {
 }
 
 /* ==========================================================================
-   INPUTS CONTROLLERS BINDING
+   INPUTS BINDINGS SETUP
    ========================================================================== */
 
 function setupInputs() {
-    // 1. Controls Panel Countdowns
     const btnStart = document.getElementById("btn-count-start");
     const btnPause = document.getElementById("btn-count-pause");
     const btnResume = document.getElementById("btn-count-resume");
@@ -987,8 +1202,10 @@ function setupInputs() {
             setFlightStage("COUNTDOWN");
             SpaceState.isCountdownActive = true;
             btnStart.style.display = "none";
-            btnPause.style.display = "block";
-            btnPause.disabled = false;
+            if (btnPause) {
+                btnPause.style.display = "block";
+                btnPause.disabled = false;
+            }
             playSynthBeep(440, 0.2);
         });
     }
@@ -997,8 +1214,9 @@ function setupInputs() {
         btnPause.addEventListener("click", () => {
             SpaceState.isPaused = true;
             btnPause.style.display = "none";
-            btnResume.style.display = "block";
+            if (btnResume) btnResume.style.display = "block";
             playSynthBeep(330, 0.2);
+            logEvent("Simulation track paused by Ground Control.", "warning");
         });
     }
 
@@ -1006,8 +1224,9 @@ function setupInputs() {
         btnResume.addEventListener("click", () => {
             SpaceState.isPaused = false;
             btnResume.style.display = "none";
-            btnPause.style.display = "block";
+            if (btnPause) btnPause.style.display = "block";
             playSynthBeep(440, 0.2);
+            logEvent("Simulation track resumed.", "system");
         });
     }
 
@@ -1017,7 +1236,24 @@ function setupInputs() {
         });
     }
 
-    // 2. Flight Panel manual controls
+    // Interactive Tabbed graph switches
+    const tabMap = { alt: "altitude", vel: "velocity", fuel: "fuel", temp: "temperature", sig: "signal" };
+    Object.keys(tabMap).forEach(tabId => {
+        const btn = document.getElementById(`tab-${tabId}`);
+        if (btn) {
+            btn.addEventListener("click", () => {
+                // Toggle tab active classes
+                Object.keys(tabMap).forEach(id => {
+                    const el = document.getElementById(`tab-${id}`);
+                    if (el) el.classList.remove("active");
+                });
+                btn.classList.add("active");
+                SpaceState.activeTab = tabMap[tabId];
+                playSynthBeep(650, 0.08);
+            });
+        }
+    });
+
     const btnEngine = document.getElementById("btn-manual-engine");
     const btnComm = document.getElementById("btn-manual-comm");
     const btnStage = document.getElementById("btn-manual-stage");
@@ -1029,11 +1265,12 @@ function setupInputs() {
             SpaceState.engineIgnited = !SpaceState.engineIgnited;
             if (SpaceState.engineIgnited) {
                 if (SpaceState.throttle === 0) SpaceState.throttle = 15;
-                playSynthBeep(180, 0.5);
+                logEvent("Core engine ignition forced.", "nominal");
             } else {
-                playSynthBeep(120, 0.5);
+                logEvent("Core engine shutdown forced.", "warning");
             }
             updateEngineSound();
+            playSynthBeep(SpaceState.engineIgnited ? 220 : 140, 0.4, "triangle");
         });
     }
 
@@ -1041,6 +1278,7 @@ function setupInputs() {
         btnComm.addEventListener("click", () => {
             SpaceState.commActive = !SpaceState.commActive;
             playSynthBeep(SpaceState.commActive ? 600 : 300, 0.1);
+            logEvent(`Ground telemetry link: ${SpaceState.commActive ? "RE-ESTABLISHED" : "DISCONNECTED"}`, SpaceState.commActive ? "nominal" : "warning");
         });
     }
 
@@ -1056,7 +1294,6 @@ function setupInputs() {
         });
     }
 
-    // Throttle range slider
     const slider = document.getElementById("throttle-input");
     const label = document.getElementById("throttle-display-val");
     if (slider) {
@@ -1073,7 +1310,6 @@ function setupInputs() {
         });
     }
 
-    // Throttle Step triggers
     const btnThrotUp = document.getElementById("btn-throttle-up");
     const btnThrotDn = document.getElementById("btn-throttle-down");
 
@@ -1085,7 +1321,7 @@ function setupInputs() {
             if (label) label.innerText = `${SpaceState.throttle}%`;
             if (SpaceState.throttle > 0) SpaceState.engineIgnited = true;
             updateEngineSound();
-            playSynthBeep(500, 0.1);
+            playSynthBeep(520, 0.08);
         });
     }
 
@@ -1097,11 +1333,10 @@ function setupInputs() {
             if (label) label.innerText = `${SpaceState.throttle}%`;
             if (SpaceState.throttle === 0) SpaceState.engineIgnited = false;
             updateEngineSound();
-            playSynthBeep(400, 0.1);
+            playSynthBeep(380, 0.08);
         });
     }
 
-    // Trajectory steering triggers
     const btnDirL = document.getElementById("btn-dir-left");
     const btnDirR = document.getElementById("btn-dir-right");
     const btnDirU = document.getElementById("btn-dir-up");
@@ -1132,7 +1367,6 @@ function setupInputs() {
         });
     }
 
-    // Abort triggers
     const btnAbort = document.getElementById("btn-manual-abort");
     if (btnAbort) {
         btnAbort.addEventListener("click", () => {
@@ -1140,12 +1374,12 @@ function setupInputs() {
         });
     }
 
-    // Camera & Quality selector bindings
     const cameraSelect = document.getElementById("camera-select");
     if (cameraSelect) {
         cameraSelect.addEventListener("change", (e) => {
             SpaceState.cameraMode = e.target.value;
             playSynthBeep(500, 0.1);
+            logEvent(`HUD Viewport camera angle adjusted: ${SpaceState.cameraMode.toUpperCase()}`, "system");
         });
     }
 
@@ -1157,24 +1391,23 @@ function setupInputs() {
         });
     }
 
-    // Sound toggle buttons
     const btnSound = document.getElementById("btn-sound-toggle");
     if (btnSound) {
         btnSound.addEventListener("click", () => {
             SpaceState.soundMuted = !SpaceState.soundMuted;
             if (SpaceState.soundMuted) {
-                btnSound.innerHTML = "<span>🔇</span> SOUND OFF";
+                btnSound.innerHTML = "<span>🔇</span> AUDIO OFF";
                 if (engineGain) engineGain.gain.setValueAtTime(0, audioCtx.currentTime);
                 if (staticGain) staticGain.gain.setValueAtTime(0, audioCtx.currentTime);
             } else {
-                btnSound.innerHTML = "<span>🔊</span> SOUND ON";
+                btnSound.innerHTML = "<span>🔊</span> AUDIO ON";
                 initAudio();
                 updateEngineSound();
             }
         });
     }
 
-    // Mobile specific triggers
+    // Mobile buttons mapping
     const mLaunch = document.getElementById("mobile-btn-launch");
     const mPause = document.getElementById("mobile-btn-pause");
     const mResume = document.getElementById("mobile-btn-resume");
@@ -1197,6 +1430,7 @@ function setupInputs() {
             SpaceState.isPaused = true;
             mPause.style.display = "none";
             if (mResume) mResume.style.display = "block";
+            logEvent("Simulation track paused via mobile console.", "warning");
         });
     }
     if (mResume) {
@@ -1204,6 +1438,7 @@ function setupInputs() {
             SpaceState.isPaused = false;
             mResume.style.display = "none";
             if (mPause) mPause.style.display = "block";
+            logEvent("Simulation track resumed via mobile.", "system");
         });
     }
     if (mEngine) {
@@ -1247,9 +1482,8 @@ function setupInputs() {
         });
     }
 
-    // Keyboard bindings listener
+    // Keyboard global listener
     document.addEventListener("keydown", (e) => {
-        // Prevent action inside inputs
         if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
 
         switch (e.key.toLowerCase()) {
@@ -1260,13 +1494,7 @@ function setupInputs() {
                     if (btnStart) btnStart.click();
                 } else {
                     SpaceState.isPaused = !SpaceState.isPaused;
-                    if (SpaceState.isPaused) {
-                        if (btnPause) btnPause.style.display = "none";
-                        if (btnResume) btnResume.style.display = "block";
-                    } else {
-                        if (btnResume) btnResume.style.display = "none";
-                        if (btnPause) btnPause.style.display = "block";
-                    }
+                    logEvent(`Simulation track ${SpaceState.isPaused ? "PAUSED" : "RESUMED"} by shortcut`, "system");
                 }
                 playSynthBeep(440, 0.1);
                 break;
@@ -1295,17 +1523,10 @@ function setupInputs() {
             case "a":
                 triggerAbortSequence();
                 break;
-            case "m":
-                // Set default Orbit view
-                if (cameraSelect) {
-                    cameraSelect.value = "orbit";
-                    SpaceState.cameraMode = "orbit";
-                }
-                break;
             case "d":
-                // Toggle solar panel
                 SpaceState.solarArraysDeployed = !SpaceState.solarArraysDeployed;
                 playSynthBeep(600, 0.2);
+                logEvent(`Solar Array tracker arrays manually ${SpaceState.solarArraysDeployed ? "DEPLOYED" : "STOWED"}`, "system");
                 break;
         }
     });
@@ -1316,17 +1537,13 @@ function triggerStageSeparation() {
     SpaceState.stageSeparated = true;
     playSynthBeep(300, 0.6, "sawtooth", 0.15);
 
-    // Minor physics drop during staging
-    SpaceState.velocity = Math.max(0, SpaceState.velocity - 200);
-
-    // Refill minor fuel for next booster stage
+    // Dynamic trajectory change
+    SpaceState.velocity = Math.max(0, SpaceState.velocity - 250);
     SpaceState.fuel = 100.0;
 
-    // Drop total structural dry mass (booster casing)
     PhysicsConstants.rocketMassDry = 6000;
     PhysicsConstants.rocketMassWet = 40000;
 
-    // Transition state
     setFlightStage("STAGE SEPARATION");
 }
 
@@ -1334,25 +1551,19 @@ function triggerAbortSequence() {
     if (SpaceState.hasAborted) return;
     SpaceState.hasAborted = true;
 
-    // Trigger sound alerts
     playSynthBeep(120, 1.5, "sawtooth", 0.3);
+    logEvent("CRITICAL: ABORT CMD CONFIRMED BY GROUND CONTROLLER.", "critical");
 
-    // Display overlay
     const overlay = document.getElementById("abort-warning-overlay");
     if (overlay) overlay.style.display = "flex";
 
-    // Set stage
     setFlightStage("ABORTED");
 
-    // Decouple physics
     SpaceState.throttle = 0;
     SpaceState.engineIgnited = false;
     updateEngineSound();
-
-    // Reset countdown states
     SpaceState.isCountdownActive = false;
 
-    // Reset loop safely after 4 seconds
     setTimeout(() => {
         performFullReset();
         if (overlay) overlay.style.display = "none";
@@ -1383,13 +1594,11 @@ function performFullReset() {
     SpaceState.stageSeparated = false;
     SpaceState.solarArraysDeployed = false;
 
-    // Reset sliders
     const slider = document.getElementById("throttle-input");
     if (slider) slider.value = 0;
     const label = document.getElementById("throttle-display-val");
     if (label) label.innerText = "0%";
 
-    // Reset buttons
     const btnStart = document.getElementById("btn-count-start");
     if (btnStart) btnStart.style.display = "block";
     const btnPause = document.getElementById("btn-count-pause");
@@ -1397,66 +1606,65 @@ function performFullReset() {
     const btnResume = document.getElementById("btn-count-resume");
     if (btnResume) btnResume.style.display = "none";
 
-    // Reset timeline
     renderStagesTimeline();
     updateTelemetryUI();
     updateEngineSound();
 
-    // Wipe charts history
     SpaceState.history = {
         time: [],
         altitude: [],
         velocity: [],
         fuel: [],
-        temp: []
+        temp: [],
+        signal: []
     };
 
     localStorage.removeItem("COSMO_SAVE_STATE");
+    logEvent("Space Mission Control telemetry tracking cleared. Launch Ready.", "system");
+    triggerAIOfficerMessage("SYSTEMS Nominal. WAITING FOR TERMINAL COUNTDOWN START COMMAND.");
 
     playSynthBeep(440, 0.5, "sine", 0.1);
 }
 
 /* ==========================================================================
-   INITIALIZATION & MAIN RAF LOOP
+   INITIALIZATION & LOOP BINDINGS
    ========================================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Avoid double instantiation in iframe/PWA wrappers
     if (window.__spaceSimulatorInitialized) return;
     window.__spaceSimulatorInitialized = true;
 
-    // 1. Core inputs binding
     setupInputs();
-
-    // 2. Stars init
     initStars();
 
-    // 3. Canvas element setup
     const canvas = document.getElementById("space-canvas");
     let ctx = null;
     if (canvas) {
         ctx = canvas.getContext("2d");
-
-        // Resize Handler
-        const resizeCanvas = () => {
+        const resize = () => {
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight || 480;
         };
-        resizeCanvas();
-        window.addEventListener("resize", resizeCanvas);
+        resize();
+        window.addEventListener("resize", resize);
     }
 
-    // 4. State restores from LocalStorage
     loadMissionStateFromDisk();
 
-    // 5. Main loop
-    let lastTime = performance.now();
+    // UTC Digital clock updates
+    setInterval(() => {
+        const clk = document.getElementById("digital-clock");
+        if (clk) {
+            const now = new Date();
+            clk.innerText = now.toUTCString().slice(17, 25);
+        }
+    }, 1000);
 
+    let lastTime = performance.now();
     function loop(now) {
-        const dT = Math.min(0.1, (now - lastTime) / 1000.0); // Limit maximum frame skip delta
+        const dT = Math.min(0.1, (now - lastTime) / 1000.0);
         lastTime = now;
 
-        // Perform simulation updates if document is active (respect performance rules)
         if (!document.hidden) {
             updatePhysics(dT);
             updateTelemetryUI();
@@ -1467,8 +1675,7 @@ document.addEventListener("DOMContentLoaded", () => {
             drawTelemetryGraphs();
         }
 
-        // Periodically write to disk for save states
-        if (Math.random() < 0.005) {
+        if (Math.random() < 0.004) {
             saveMissionStateToDisk();
         }
 

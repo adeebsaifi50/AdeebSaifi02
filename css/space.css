@@ -1,5 +1,5 @@
 /* ==========================================
-   SPACE MISSION COMMAND CONTROL PANEL STYLES
+   SPACE MISSION CONTROL PANEL STYLES - v2.0
    ========================================== */
 
 /* Space Body Base */
@@ -15,96 +15,165 @@
 .space-main-container {
     max-width: 1540px;
     margin: 0 auto;
-    padding: 8rem 1.5rem 4rem 1.5rem;
+    padding: 7.5rem 1.5rem 4rem 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
 
-/* Header Section styling */
-.space-header-section {
-    display: flex;
-    justify-content: space-between;
+/* Premium Command Bar Top Header */
+.space-command-bar {
+    display: grid;
+    grid-template-columns: 1.2fr 1.6fr 1.2fr;
     align-items: center;
-    flex-wrap: wrap;
     gap: 1.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+    padding: 1.25rem 1.75rem !important;
+    background: rgba(13, 13, 20, 0.7) !important;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.15) !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5) !important;
 }
 
-.space-header-section .header-details {
-    flex: 1;
-    min-width: 280px;
+.command-bar-left .system-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    font-family: var(--font-mono), monospace;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: 4px;
+    margin-bottom: 0.35rem;
 }
 
-.space-header-section .main-title {
-    font-size: 2.25rem;
+.command-bar-left .main-title {
+    font-size: 1.75rem;
     font-weight: 900;
-    margin: 0.5rem 0 0.25rem 0;
-    letter-spacing: -0.05em;
+    margin: 0;
+    letter-spacing: -0.03em;
     background: linear-gradient(135deg, #a78bfa, #8b5cf6, #3b82f6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 30px rgba(139, 92, 246, 0.2);
 }
 
-.space-header-section .subtitle {
-    font-size: 0.95rem;
-    color: var(--text-muted, #9ca3af);
-    margin: 0;
+.nav-back-link-wrapper {
+    margin-top: 0.25rem;
 }
 
-/* Sound and Oscillator Indicators */
-.audio-control-card {
-    background: var(--bg-surface, rgba(13, 13, 18, 0.6));
-    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
-    border-radius: 14px;
-    padding: 0.75rem 1.25rem;
-    backdrop-filter: blur(12px);
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    min-width: 240px;
+.nav-back-link {
+    font-size: 0.72rem;
+    font-family: var(--font-mono), monospace;
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    font-weight: 700;
+    transition: color 0.2s;
 }
 
-.audio-indicator {
+.nav-back-link:hover {
+    color: var(--color-primary, #8b5cf6);
+}
+
+/* AI Command Officer widget */
+.ai-comms-module {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 700;
+    gap: 0.85rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 0.65rem 1rem;
+}
+
+.ai-status-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+    flex-shrink: 0;
+}
+
+.ai-text-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.ai-label {
+    font-size: 0.62rem;
     font-family: var(--font-mono), monospace;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.4);
     letter-spacing: 0.05em;
-    color: var(--text-muted, #9ca3af);
+}
+
+.ai-message {
+    font-size: 0.78rem;
+    font-family: var(--font-mono), monospace;
+    font-weight: 700;
+    color: var(--text-primary, #f3f4f6);
+    letter-spacing: -0.01em;
+}
+
+/* Command Bar Right Clock & Web Audio */
+.command-bar-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.digital-utc-clock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.utc-label {
+    font-size: 0.62rem;
+    font-family: var(--font-mono), monospace;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.utc-time {
+    font-size: 1.15rem;
+    font-family: var(--font-mono), monospace;
+    font-weight: 900;
+    color: #3b82f6;
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+.audio-control-card-v2 {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 0.35rem 0.75rem;
 }
 
 .audio-controls-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
-.sound-btn {
-    padding: 0.35rem 0.75rem !important;
-    font-size: 0.75rem !important;
+.btn-xs {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.68rem !important;
     font-weight: 700;
-    font-family: var(--font-sans);
-    letter-spacing: 0.05em;
 }
 
 .freq-oscillator-bars {
     display: flex;
     align-items: flex-end;
-    gap: 3px;
-    height: 18px;
-    width: 45px;
+    gap: 2px;
+    height: 14px;
+    width: 35px;
 }
 
 .freq-oscillator-bars .bar {
     flex: 1;
     background: var(--color-primary, #8b5cf6);
-    border-radius: 2px;
+    border-radius: 1px;
     height: 3px;
     transition: height 0.1s ease;
 }
@@ -112,7 +181,7 @@
 /* Grid workspace */
 .space-dashboard-grid {
     display: grid;
-    grid-template-columns: 310px 1fr 340px;
+    grid-template-columns: 310px 1fr 350px;
     gap: 1.5rem;
     align-items: start;
 }
@@ -168,7 +237,47 @@
     font-size: 1.1rem;
 }
 
-/* Profiles parameter rows */
+/* Tabbed header version for graph card */
+.panel-header-tabs {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.15rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 0.65rem;
+}
+
+.graph-tabs {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.graph-tab-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.62rem;
+    font-weight: 800;
+    font-family: var(--font-mono), monospace;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.graph-tab-btn:hover {
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.graph-tab-btn.active {
+    color: white;
+    background: var(--color-primary, #8b5cf6);
+    border-color: var(--color-primary, #8b5cf6);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.35);
+}
+
+/* Parameters rows */
 .mission-details, .telemetry-stats {
     display: flex;
     flex-direction: column;
@@ -199,7 +308,7 @@
     font-weight: 700;
 }
 
-/* Fictional countdown panel */
+/* Countdown Panel */
 .countdown-card {
     text-align: center;
 }
@@ -312,7 +421,7 @@
     display: block;
 }
 
-/* CENTER COLUMN: Interactive visualizer dome */
+/* CENTER COLUMN: Orbital Dome Visualizer */
 .theater-card {
     padding: 0 !important;
     display: flex;
@@ -374,13 +483,14 @@
     border-color: var(--color-primary, #8b5cf6);
 }
 
-/* Space Canvas Box */
-.canvas-viewport-container {
+/* Space Canvas (Orbital Dome Aesthetics) */
+.canvas-viewport-container.orbital-dome {
     position: relative;
     width: 100%;
     height: 480px;
-    background: #010103;
+    background: radial-gradient(circle at center, #070712 0%, #010103 100%);
     overflow: hidden;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 #space-canvas {
@@ -399,10 +509,11 @@
     pointer-events: none;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    background: rgba(5, 5, 8, 0.45);
+    background: rgba(5, 5, 8, 0.6);
     padding: 0.15rem 0.45rem;
     border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(2px);
 }
 
 .hud-layer.pt-left { top: 1rem; left: 1rem; border-left: 2px solid var(--color-primary, #8b5cf6); }
@@ -482,7 +593,81 @@ kbd {
     color: var(--text-primary, #f3f4f6);
 }
 
-/* Telemetry status cards */
+/* Circular Metric Telemetry Gauges Grid */
+.gauges-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 1.25rem;
+}
+
+.gauge-container {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 0.75rem 0.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    transition: all 0.25s;
+}
+
+.gauge-container:hover {
+    border-color: rgba(139, 92, 246, 0.15);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.circular-gauge {
+    width: 46px;
+    height: 46px;
+    transform: rotate(-90deg);
+}
+
+.gauge-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.05);
+    stroke-width: 3.2;
+}
+
+.gauge-fill {
+    fill: none;
+    stroke-width: 3.2;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.35s ease;
+}
+
+.gauge-fill.color-blue { stroke: #3b82f6; }
+.gauge-fill.color-green { stroke: #10b981; }
+.gauge-fill.color-teal { stroke: #14b8a6; }
+.gauge-fill.color-orange { stroke: #f97316; }
+
+.gauge-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.2;
+}
+
+.gauge-val {
+    font-size: 0.75rem;
+    font-family: var(--font-mono), monospace;
+    font-weight: 700;
+    color: var(--text-primary, #f3f4f6);
+}
+
+.gauge-lbl {
+    font-size: 0.58rem;
+    font-weight: 700;
+    color: var(--text-muted, #9ca3af);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+/* Linear Telemetry Progress Bars */
 .progress-bar-container {
     flex: 1;
     background: rgba(255, 255, 255, 0.05);
@@ -528,21 +713,13 @@ kbd {
     padding: 0.5rem 0.75rem;
 }
 
-.chart-label {
-    font-size: 0.65rem;
-    font-family: var(--font-mono), monospace;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.4);
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 0.25rem;
-    letter-spacing: 0.03em;
-}
-
 /* BOTTOM PANEL: Command Deck Console */
 .space-bottom-panel {
     grid-column: span 3;
-    padding: 1.25rem 1.5rem !important;
+    padding: 1.25rem 1.75rem !important;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
 }
 
 .control-console-container {
@@ -707,6 +884,76 @@ kbd {
     justify-content: center;
 }
 
+/* Event Stream Logging Module */
+.event-stream-container {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.event-stream-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.event-indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #3b82f6;
+    box-shadow: 0 0 8px #3b82f6;
+    animation: beaconPulse 1.8s infinite;
+}
+
+.event-stream-title {
+    font-size: 0.68rem;
+    font-family: var(--font-mono), monospace;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.45);
+    letter-spacing: 0.05em;
+}
+
+.event-stream-logs {
+    max-height: 85px;
+    overflow-y: auto;
+    font-family: var(--font-mono), monospace;
+    font-size: 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.event-stream-logs::-webkit-scrollbar {
+    width: 4px;
+}
+.event-stream-logs::-webkit-scrollbar-track {
+    background: transparent;
+}
+.event-stream-logs::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+}
+
+.log-entry {
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+}
+
+.log-entry.system { color: rgba(255, 255, 255, 0.65); }
+.log-entry.warning { color: #f59e0b; }
+.log-entry.critical { color: #ef4444; }
+.log-entry.nominal { color: #10b981; }
+
+.log-time {
+    color: rgba(255, 255, 255, 0.25);
+    margin-right: 0.4rem;
+}
+
 /* Virtual Touch Joystick Overlay (only visible when active on touchscreen mobile) */
 .joystick-ring {
     position: absolute;
@@ -830,6 +1077,13 @@ kbd {
 
 /* Responsive Media Queries */
 @media (max-width: 1200px) {
+    .space-command-bar {
+        grid-template-columns: 1fr 1fr;
+    }
+    .ai-comms-module {
+        grid-column: span 2;
+        order: 3;
+    }
     .space-dashboard-grid {
         grid-template-columns: 280px 1fr;
     }
@@ -848,6 +1102,17 @@ kbd {
 }
 
 @media (max-width: 968px) {
+    .space-command-bar {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    .ai-comms-module {
+        grid-column: span 1;
+        order: unset;
+    }
+    .command-bar-right {
+        justify-content: space-between;
+    }
     .space-dashboard-grid {
         grid-template-columns: 1fr;
     }
@@ -880,7 +1145,7 @@ kbd {
 
 /* High Contrast Mode Override Option */
 @media (forced-colors: active) {
-    .card, .space-bottom-panel, .audio-control-card {
+    .card, .space-bottom-panel, .audio-control-card-v2 {
         border: 2px solid CanvasText;
     }
     .btn, .mobile-ctrl-btn {
