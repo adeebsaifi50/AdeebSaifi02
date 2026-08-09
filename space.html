@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Cinematic Space Mission Control Simulator. An interactive aerospace visual flight tracker with real-time vector trajectory physics, Web Audio synthesis, and procedural canvas flight path scans.">
+    <meta name="keywords" content="Adeeb Saifi, Space Mission Control, Rocket Simulator, Aerospace HUD, Web Audio API, Canvas Animation">
+    <meta name="author" content="Adeeb Saifi">
+    <link rel="canonical" href="https://adeebsaifi.github.io/space.html">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://adeebsaifi.github.io/space.html">
+    <meta property="og:title" content="Aerospace Space Mission Control Simulator | Adeeb Saifi">
+    <meta property="og:description" content="Immerse yourself in a state-of-the-art NASA-style Space Mission Command dashboard with real-time vector flows, trajectory calculation, and audio synthesis.">
+    <meta property="og:image" content="https://picsum.photos/1200/630?random=space-og">
+
+    <!-- PWA -->
+    <meta name="theme-color" content="#020205">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="images/icon-192.png">
+
+    <title>Space Mission Control Simulator | Adeeb Saifi</title>
+
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/space.css">
+</head>
+<body class="space-body">
+
+    <!-- Scroll Progress -->
+    <div class="scroll-progress" aria-hidden="true"></div>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" aria-hidden="true"></div>
+    <div class="custom-cursor-dot" aria-hidden="true"></div>
+
+    <!-- Header / Navbar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand" aria-label="Adeeb Saifi Home">
+                <div class="nav-brand-icon">A</div>
+                <span>Adeeb Saifi</span>
+            </a>
+
+            <nav aria-label="Main navigation">
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="index.html">Home</a></li>
+                    <li class="nav-item"><a href="travel.html">Travel</a></li>
+                    <li class="nav-item"><a href="blog.html">Blog</a></li>
+                    <li class="nav-item"><a href="gallery.html">Gallery</a></li>
+                    <li class="nav-item"><a href="features.html">Developer Hub</a></li>
+                    <li class="nav-item"><a href="systemupdate.html" class="nav-update-link">🔄 System Update <span class="update-badge">NEW</span></a></li>
+                    <li class="nav-item"><a href="firewall.html" class="nav-update-link">🛡 Firewall Defense <span class="update-badge">NEW</span></a></li>
+                    <li class="nav-item"><a href="city.html" class="nav-update-link">🌆 Open World <span class="update-badge">NEW</span></a></li>
+                    <li class="nav-item active"><a href="space.html" class="nav-update-link">🚀 Space Mission <span class="update-badge">NEW</span></a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-actions">
+                <!-- Search -->
+                <div class="nav-search" role="search">
+                    <span class="nav-search-icon">🔍</span>
+                    <input type="search" placeholder="Type '/' to search..." class="nav-search-input" aria-label="Search site">
+                </div>
+
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" aria-label="Toggle Dark/Light Mode" title="Toggle Mode">
+                    <svg class="sun-icon" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.01c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24"><path d="M12.3 22h-.1c-5.4 0-10-4.6-10-10 0-4.3 2.9-8.1 7.1-9.3.5-.1 1 .2 1.1.7.1.5-.2 1-.7 1.1-3.2.9-5.5 3.8-5.5 7.5 0 4.4 3.6 8 8 8 3.7 0 6.6-2.3 7.5-5.5.1-.5.6-.8 1.1-.7.5.1.8.6.7 1.1-1.2 4.2-5 7.1-9.3 7.1z"/></svg>
+                </button>
+
+                <!-- Camera Toggle -->
+                <a href="gallery.html" class="camera-toggle" aria-label="Gallery" title="Gallery">📷</a>
+
+                <!-- Menu Toggle for Mobile -->
+                <button class="mobile-nav-toggle" aria-label="Open Navigation Menu" aria-expanded="false">
+                    ☰
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="space-main-container">
+
+        <!-- Top Title Panel / Aerospace Command Bar -->
+        <section class="space-command-bar card">
+            <div class="command-bar-left">
+                <span class="system-badge glow-neon-purple">SPACE_OPS_SANDBOX_v2.0</span>
+                <h1 class="main-title">SPACE MISSION CONTROL</h1>
+                <div class="nav-back-link-wrapper">
+                    <a href="index.html" class="nav-back-link">← RETURN TO MAIN GRID</a>
+                </div>
+            </div>
+
+            <!-- AI Flight Officer Communication module -->
+            <div class="command-bar-center ai-comms-module">
+                <div class="ai-status-pulse glow-green"></div>
+                <div class="ai-text-container">
+                    <span class="ai-label">AI MISSION CONTROLLER</span>
+                    <span class="ai-message" id="ai-officer-text">SYSTEMS STABLE. READY FOR LIFTOFF. IGNITION CORE STANDBY.</span>
+                </div>
+            </div>
+
+            <div class="command-bar-right">
+                <!-- Live Digital UTC Clock -->
+                <div class="digital-utc-clock">
+                    <span class="utc-label">CLOCK (UTC)</span>
+                    <span class="utc-time" id="digital-clock">12:00:00</span>
+                </div>
+
+                <!-- Web Audio Synth Panel -->
+                <div class="audio-control-card-v2">
+                    <div class="audio-controls-row">
+                        <button id="btn-sound-toggle" class="sound-btn btn btn-secondary btn-xs" aria-label="Toggle Sound Effects">
+                            <span id="sound-icon">🔊</span> AUDIO ON
+                        </button>
+                        <div class="freq-oscillator-bars" aria-hidden="true">
+                            <span class="bar bar-1"></span>
+                            <span class="bar bar-2"></span>
+                            <span class="bar bar-3"></span>
+                            <span class="bar bar-4"></span>
+                            <span class="bar bar-5"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Dashboard Workspace -->
+        <div class="space-dashboard-grid">
+
+            <!-- LEFT COLUMN: Mission Parameters, Countdowns & Flight Stages -->
+            <section class="space-col-left" aria-label="Mission Parameters Panel">
+                <div class="card mission-card">
+                    <div class="panel-header">
+                        <span class="header-icon">🚀</span>
+                        <h3>MISSION PROFILE</h3>
+                    </div>
+                    <div class="mission-details">
+                        <div class="param-row">
+                            <span class="lbl">MISSION NAME</span>
+                            <span class="val text-glow-blue" id="mission-name">ADEEB-01</span>
+                        </div>
+                        <div class="param-row">
+                            <span class="lbl">MISSION ID</span>
+                            <span class="val font-mono" id="mission-id">COSMO-760228</span>
+                        </div>
+                        <div class="param-row">
+                            <span class="lbl">MISSION STATUS</span>
+                            <span class="status-badge glow-green" id="mission-status-badge">SYSTEMS NOMINAL</span>
+                        </div>
+                        <div class="param-row">
+                            <span class="lbl">MISSION TIME</span>
+                            <span class="val font-mono text-glow-purple" id="mission-time">00:00:00</span>
+                        </div>
+                        <div class="param-row">
+                            <span class="lbl">TARGET ORBIT</span>
+                            <span class="val" id="target-orbit">LOW EARTH ORBIT (LEO)</span>
+                        </div>
+                        <div class="param-row">
+                            <span class="lbl">LAUNCH SITE</span>
+                            <span class="val" id="launch-site">KENNEDY COMPLEX 39-A</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fictional Countdown Display Panel -->
+                <div class="card countdown-card">
+                    <div class="panel-header">
+                        <span class="header-icon">⏱️</span>
+                        <h3>COUNTDOWN STATUS</h3>
+                    </div>
+                    <div class="countdown-timer" id="countdown-display">T-10.00</div>
+                    <div class="countdown-action-row">
+                        <button id="btn-count-start" class="btn btn-primary btn-sm">START</button>
+                        <button id="btn-count-pause" class="btn btn-secondary btn-sm" disabled>PAUSE</button>
+                        <button id="btn-count-resume" class="btn btn-secondary btn-sm" style="display:none;">RESUME</button>
+                        <button id="btn-count-reset" class="btn btn-secondary btn-sm">RESET</button>
+                    </div>
+                </div>
+
+                <!-- Flight Stage Tracker -->
+                <div class="card stages-card">
+                    <div class="panel-header">
+                        <span class="header-icon">📡</span>
+                        <h3>FLIGHT SEQUENCES</h3>
+                    </div>
+                    <div class="stages-timeline" id="stages-timeline-container">
+                        <!-- Populated by JS modules -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- CENTER COLUMN: Orbital Telemetry Theater / Dome -->
+            <section class="space-col-center">
+                <div class="card theater-card">
+                    <div class="theater-header">
+                        <div class="header-tracking-block">
+                            <span class="pulse-tracker"></span>
+                            <h3>ORBITAL TELEMETRY DOME</h3>
+                        </div>
+                        <!-- Camera & Graphics selection widget -->
+                        <div class="theater-settings-row">
+                            <div class="setting-item">
+                                <label for="camera-select" class="sr-only">Camera Viewport</label>
+                                <select id="camera-select" class="theme-dropdown" aria-label="Select camera view">
+                                    <option value="mission">Camera: MISSION VIEW</option>
+                                    <option value="orbit">Camera: ORBITAL PLOT</option>
+                                    <option value="earth">Camera: EARTH TRACK</option>
+                                    <option value="satellite">Camera: SATELLITE RANGE</option>
+                                    <option value="deep">Camera: DEEP SPACE</option>
+                                    <option value="cinematic">Camera: CINEMATIC SENSOR</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label for="graphics-select" class="sr-only">Graphics Quality</label>
+                                <select id="graphics-select" class="theme-dropdown" aria-label="Select graphics level">
+                                    <option value="high">Quality: High</option>
+                                    <option value="medium">Quality: Medium</option>
+                                    <option value="low">Quality: Low</option>
+                                    <option value="auto">Quality: Auto</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Flight Visualizer Sandbox Canvas (Orbital Dome) -->
+                    <div class="canvas-viewport-container orbital-dome">
+                        <canvas id="space-canvas"></canvas>
+
+                        <!-- On-Screen HUD Indicators -->
+                        <div class="hud-layer pt-left">TARGET COORDS: LAT 28.57 // LNG -80.64</div>
+                        <div class="hud-layer pt-right" id="hud-vibration-factor">VIBRATION_HZ: nominal</div>
+                        <div class="hud-layer pb-left" id="hud-flight-path">FLIGHT_PATH: ballistic</div>
+                        <div class="hud-layer pb-right" id="hud-camera-altitude">ALTITUDE: ground level</div>
+
+                        <!-- Touchscreen Joystick overlay for mobile flight maneuver -->
+                        <div class="joystick-ring" id="joystick-pad" style="display: none;">
+                            <div class="joystick-handle" id="joystick-trigger"></div>
+                        </div>
+                    </div>
+
+                    <!-- On-Screen Manual Command Deck -->
+                    <div class="manual-flight-deck">
+                        <div class="flight-controls-group">
+                            <button class="btn btn-secondary action-btn" id="btn-manual-engine" title="Toggle Engine Core Ignition">⚡ ENGINE</button>
+                            <button class="btn btn-secondary action-btn" id="btn-manual-comm" title="Ping Comm Gateway Relay">📡 COMM</button>
+                            <button class="btn btn-secondary action-btn" id="btn-manual-stage" title="Trigger Stage Separation" disabled>🚀 STAGE SEPARATE</button>
+                            <button class="btn btn-secondary action-btn" id="btn-manual-reset" title="Perform safe system wipe">🔄 RESET MATRIX</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desktop / Keyboard guide warning box -->
+                <div class="card guide-panel" aria-label="Flight Keyboard Shortcuts">
+                    <h3 class="guide-title">⌨️ AEROSPACE FLIGHT DECK BINDINGS</h3>
+                    <div class="guide-grid">
+                        <div class="guide-col">
+                            <span><kbd>SPACE</kbd> Play / Pause</span>
+                            <span><kbd>UP</kbd> Throttle + (Power)</span>
+                            <span><kbd>DOWN</kbd> Throttle - (Power)</span>
+                        </div>
+                        <div class="guide-col">
+                            <span><kbd>LEFT</kbd> Adjust Angle Left</span>
+                            <span><kbd>RIGHT</kbd> Adjust Angle Right</span>
+                            <span><kbd>E</kbd> Toggle Engine Ignition</span>
+                        </div>
+                        <div class="guide-col">
+                            <span><kbd>C</kbd> Toggle Comm Link Ping</span>
+                            <span><kbd>A</kbd> Trigger Emergency Abort</span>
+                            <span><kbd>D</kbd> Direct Orbit Viewport</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT COLUMN: Continuous Telemetry Stats, Circular Gauges & Tabbed Graphs -->
+            <section class="space-col-right" aria-label="Telemetry Parameters Panel">
+                <div class="card telemetry-card">
+                    <div class="panel-header">
+                        <span class="header-icon">📈</span>
+                        <h3>FLIGHT TELEMETRY DATA</h3>
+                    </div>
+                    <div class="telemetry-stats">
+                        <div class="stat-row">
+                            <span class="lbl">ALTITUDE</span>
+                            <span class="val text-glow-blue" id="tele-altitude">0.00 km</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">VELOCITY</span>
+                            <span class="val text-glow-teal" id="tele-velocity">0.00 km/h</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">ACCELERATION</span>
+                            <span class="val text-glow-green" id="tele-acceleration">0.00 m/s²</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">DISTANCE TO EARTH</span>
+                            <span class="val text-glow-purple" id="tele-distance">0.00 km</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">FUEL LEVEL</span>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill progress-blue" id="tele-fuel-bar" style="width: 100%;"></div>
+                            </div>
+                            <span class="val font-mono" id="tele-fuel">100.00%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">ENGINE TEMP</span>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill progress-orange" id="tele-temp-bar" style="width: 15%;"></div>
+                            </div>
+                            <span class="val font-mono color-warning" id="tele-temp">24.00°C</span>
+                        </div>
+                    </div>
+
+                    <!-- Circular Telemetry Gauges Grid -->
+                    <div class="gauges-grid">
+                        <div class="gauge-container" title="G-Force load metric">
+                            <svg class="circular-gauge" viewBox="0 0 36 36">
+                                <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path id="gauge-gforce-fill" class="gauge-fill color-blue" stroke-dasharray="10, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                            <div class="gauge-info">
+                                <span class="gauge-val" id="gauge-gforce-val">1.0G</span>
+                                <span class="gauge-lbl">G-FORCE</span>
+                            </div>
+                        </div>
+
+                        <div class="gauge-container" title="Cabin internal atmosphere status">
+                            <svg class="circular-gauge" viewBox="0 0 36 36">
+                                <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path id="gauge-pressure-fill" class="gauge-fill color-green" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                            <div class="gauge-info">
+                                <span class="gauge-val" id="gauge-pressure-val">101.3k</span>
+                                <span class="gauge-lbl">CABIN</span>
+                            </div>
+                        </div>
+
+                        <div class="gauge-container" title="Main battery fuel cell remaining reserve">
+                            <svg class="circular-gauge" viewBox="0 0 36 36">
+                                <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path id="gauge-battery-fill" class="gauge-fill color-teal" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                            <div class="gauge-info">
+                                <span class="gauge-val" id="gauge-battery-val">100%</span>
+                                <span class="gauge-lbl">BATTERY</span>
+                            </div>
+                        </div>
+
+                        <div class="gauge-container" title="Active communication channel signal lock">
+                            <svg class="circular-gauge" viewBox="0 0 36 36">
+                                <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path id="gauge-signal-fill" class="gauge-fill color-orange" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                            <div class="gauge-info">
+                                <span class="gauge-val" id="gauge-signal-val">100%</span>
+                                <span class="gauge-lbl">SIGNAL</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced SVG / Canvas Telemetry Tabbed Charts Panel -->
+                <div class="card charts-card">
+                    <div class="panel-header-tabs">
+                        <span class="header-icon">📊</span>
+                        <div class="graph-tabs">
+                            <button class="graph-tab-btn active" data-graph="altitude" id="tab-alt">ALTITUDE</button>
+                            <button class="graph-tab-btn" data-graph="velocity" id="tab-vel">VELOCITY</button>
+                            <button class="graph-tab-btn" data-graph="fuel" id="tab-fuel">FUEL</button>
+                            <button class="graph-tab-btn" data-graph="temperature" id="tab-temp">TEMP</button>
+                            <button class="graph-tab-btn" data-graph="signal" id="tab-sig">SIGNAL</button>
+                        </div>
+                    </div>
+                    <!-- Single tabbed high-fidelity chart -->
+                    <div class="charts-body">
+                        <div class="chart-container">
+                            <canvas id="chart-canvas-tabbed" height="150" style="width: 100%; height:150px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- BOTTOM PANEL: Control Console, Throttle Deck and live EVENT STREAM -->
+        <section class="space-bottom-panel card">
+            <div class="control-console-container">
+                <div class="console-left">
+                    <div class="abort-badge">
+                        <button class="abort-btn" id="btn-manual-abort" title="WARNING: Immediately Trigger Abort Sequence">🚨 EMER_ABORT</button>
+                    </div>
+                </div>
+                <div class="console-center">
+                    <div class="throttle-deck">
+                        <span class="throttle-title">ENGINE POWER THROTTLE</span>
+                        <div class="throttle-interactive-row">
+                            <button class="throttle-step-btn" id="btn-throttle-down" aria-label="Decrease Throttle">THROTTLE -</button>
+                            <input type="range" id="throttle-input" min="0" max="100" value="0" class="throttle-range-slider" aria-label="Throttle percentage level">
+                            <button class="throttle-step-btn" id="btn-throttle-up" aria-label="Increase Throttle">THROTTLE +</button>
+                        </div>
+                        <div class="throttle-feedback">ACTIVE POWER: <span id="throttle-display-val">0%</span></div>
+                    </div>
+                </div>
+                <div class="console-right">
+                    <div class="direction-deck">
+                        <span class="dir-title">TRAJECTORY DEVIATION</span>
+                        <div class="direction-arrows-grid">
+                            <div></div>
+                            <button class="dir-arrow-btn" id="btn-dir-up" aria-label="Adjust Trajectory Angle Up">▲</button>
+                            <div></div>
+                            <button class="dir-arrow-btn" id="btn-dir-left" aria-label="Adjust Trajectory Angle Left">◀</button>
+                            <div class="dir-center-read" id="dir-deg-read">0°</div>
+                            <button class="dir-arrow-btn" id="btn-dir-right" aria-label="Adjust Trajectory Angle Right">▶</button>
+                            <div></div>
+                            <button class="dir-arrow-btn" id="btn-dir-down" aria-label="Adjust Trajectory Angle Down">▼</button>
+                            <div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compact Scrolling Event Stream / Console log at the very bottom of the card -->
+            <div class="event-stream-container">
+                <div class="event-stream-header">
+                    <span class="event-indicator"></span>
+                    <span class="event-stream-title">LIVE EVENT STREAM FEED</span>
+                </div>
+                <div class="event-stream-logs" id="event-stream-logs">
+                    <!-- Dynamic logs appended in JS -->
+                    <div class="log-entry system"><span class="log-time">[00:00:00]</span> SYSTEM: Space Mission Control console operational. Initializing orbital trackers...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Touchscreen Controls for Mobile Devices (Toggled automatically under mobile breakpoints) -->
+        <section class="mobile-controls-panel" style="display: none;">
+            <div class="mobile-action-grid">
+                <button class="mobile-ctrl-btn btn-primary" id="mobile-btn-launch">🚀 LAUNCH</button>
+                <button class="mobile-ctrl-btn btn-secondary" id="mobile-btn-pause">⏸ PAUSE</button>
+                <button class="mobile-ctrl-btn btn-secondary" id="mobile-btn-resume" style="display: none;">▶ RESUME</button>
+                <button class="mobile-ctrl-btn btn-secondary" id="mobile-btn-engine">⚡ ENGINE</button>
+                <button class="mobile-ctrl-btn btn-secondary" id="mobile-btn-comm">📡 COMM</button>
+                <button class="mobile-ctrl-btn btn-secondary" id="mobile-btn-stage">🚀 STAGE</button>
+                <button class="mobile-ctrl-btn btn-secondary" id="mobile-btn-tup">🔥 THROTTLE +</button>
+                <button class="mobile-ctrl-btn btn-secondary" id="mobile-btn-tdown">🔥 THROTTLE -</button>
+                <button class="mobile-ctrl-btn btn-secondary" id="mobile-btn-left">◀ DIRECTION L</button>
+                <button class="mobile-ctrl-btn btn-secondary" id="mobile-btn-right">DIRECTION R ▶</button>
+                <button class="mobile-ctrl-btn btn-danger" id="mobile-btn-abort">🚨 ABORT</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Emergency overlay alert banner -->
+    <div id="abort-warning-overlay" class="emergency-warning-banner" style="display: none;" role="status">
+        <div class="warning-container">
+            <span class="warning-pulsing-icon">🚨</span>
+            <div class="warning-text-block">
+                <h2 id="warning-overlay-title">ABORT SEQUENCE INITIATED</h2>
+                <p id="warning-overlay-desc">Emergency escape tower activated. Flight state reset in progress.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Safety Disclaimer permanently fixed banner -->
+    <div class="safety-warning-banner" role="complementary">
+        <div class="warning-icon">🛰️</div>
+        <p class="warning-text">Simulation Mode — Fictional flight and trajectory trackers. Fictional local browser calculations only.</p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="premium-footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <div class="nav-brand" style="margin-bottom: 1rem;">
+                    <div class="nav-brand-icon">A</div>
+                    <span>Adeeb Saifi</span>
+                </div>
+                <p>Designing digital environments that combine high aesthetics with supreme engineering standards.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="travel.html">Travel Map</a></li>
+                    <li><a href="blog.html">Technical Blog</a></li>
+                    <li><a href="gallery.html">Visual Gallery</a></li>
+                    <li><a href="firewall.html">🛡 Firewall Defense</a></li>
+                    <li><a href="city.html">🌆 Open World Simulation</a></li>
+                    <li><a href="space.html">🚀 Space Mission</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Social Hub</h3>
+                <div class="social-links">
+                    <a href="https://github.com/adeebsaifi" class="social-link" aria-label="GitHub Profile">GH</a>
+                    <a href="#" class="social-link" aria-label="LinkedIn Profile">LN</a>
+                    <a href="#" class="social-link" aria-label="Twitter / X Profile">TW</a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Keyboard Shortcuts</h3>
+                <ul style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.8;">
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Alt + T</kbd> Theme Mode</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">/</kbd> Instant Search</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+D</kbd> Dev Mode</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+F</kbd> Firewall Mode</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+N</kbd> Network Mode</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+O</kbd> Open World</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+K</kbd> Space Mission</li>
+                </ul>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <p>© 2026 Adeeb Saifi. Made with ultimate engineering craftsmanship. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/space.js"></script>
+</body>
+</html>
