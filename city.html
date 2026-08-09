@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- Premium Technical SEO Metadata -->
+    <meta name="description" content="A cinematic, fully client-side 2D top-down Open World City Simulation. Feature-rich, highly responsive sandbox city.">
+    <meta name="keywords" content="Adeeb Saifi, Open World, City Simulator, Canvas API, Interactive Sandbox, Premium UI">
+    <meta name="author" content="Adeeb Saifi">
+    <link rel="canonical" href="https://adeebsaifi.github.io/city.html">
+
+    <!-- Open Graph & Twitter Cards -->
+    <meta property="og:title" content="Futuristic Open World City Simulation | Adeeb Saifi">
+    <meta property="og:description" content="Experience a fully interactive, top-down animated city sandbox with real-time day/night progression, weather effects, and traffic flows.">
+    <meta property="og:image" content="https://adeebsaifi.github.io/adeeb5.jpg">
+    <meta property="og:url" content="https://adeebsaifi.github.io/city.html">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Futuristic Open World City Simulation | Adeeb Saifi">
+    <meta name="twitter:description" content="Interactive top-down simulation with dynamic environments and traffic.">
+
+    <title>Open World City Simulation | Adeeb Saifi</title>
+
+    <!-- Global CSS and Animations -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/city.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="city-body theme-cyberpunk">
+
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress" aria-hidden="true"></div>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" aria-hidden="true"></div>
+    <div class="custom-cursor-dot" aria-hidden="true"></div>
+
+    <!-- Header / Navbar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand" aria-label="Adeeb Saifi Home">
+                <div class="nav-brand-icon">A</div>
+                <span>Adeeb Saifi</span>
+            </a>
+
+            <nav aria-label="Main navigation">
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="index.html">Home</a></li>
+                    <li class="nav-item"><a href="travel.html">Travel</a></li>
+                    <li class="nav-item"><a href="blog.html">Blog</a></li>
+                    <li class="nav-item"><a href="gallery.html">Gallery</a></li>
+                    <li class="nav-item"><a href="features.html">Developer Hub</a></li>
+                    <li class="nav-item"><a href="systemupdate.html" class="nav-update-link">🔄 System Update <span class="update-badge">NEW</span></a></li>
+                    <li class="nav-item"><a href="firewall.html" class="nav-update-link">🛡 Firewall Defense <span class="update-badge">NEW</span></a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-actions">
+                <div class="nav-search" role="search">
+                    <span class="nav-search-icon">🔍</span>
+                    <input type="search" placeholder="Type '/' to search..." class="nav-search-input" aria-label="Search site">
+                </div>
+
+                <button class="theme-toggle" aria-label="Toggle Dark/Light Mode" title="Toggle Mode">
+                    <svg class="sun-icon" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.01c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24"><path d="M12.3 22h-.1c-5.4 0-10-4.6-10-10 0-4.3 2.9-8.1 7.1-9.3.5-.1 1 .2 1.1.7.1.5-.2 1-.7 1.1-3.2.9-5.5 3.8-5.5 7.5 0 4.4 3.6 8 8 8 3.7 0 6.6-2.3 7.5-5.5.1-.5.6-.8 1.1-.7.5.1.8.6.7 1.1-1.2 4.2-5 7.1-9.3 7.1z"/></svg>
+                </button>
+
+                <a href="gallery.html" class="camera-toggle" aria-label="Gallery" title="Gallery">📷</a>
+
+                <button class="mobile-nav-toggle" aria-label="Open Navigation Menu" aria-expanded="false">
+                    ☰
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main City Layout -->
+    <main class="city-main-container">
+        <!-- Dashboard Header -->
+        <div class="city-header-section">
+            <div class="header-details">
+                <span class="system-badge glow-neon-purple">CITY_CORE_SANDBOX_v2.6</span>
+                <h1 class="main-title">METROPOLIS DIRECTIVE</h1>
+                <p class="subtitle">Autonomous Vector Transportation & Urban Meteorological Simulation</p>
+            </div>
+
+            <!-- Global Time Controller Widget -->
+            <div class="clock-widget card card-glow">
+                <div class="clock-indicator">
+                    <span class="pulse-node neon-pink"></span>
+                    <span id="game-time-display" class="clock-time-text">08:00 AM</span>
+                </div>
+                <div class="clock-day-label" id="game-day-display">CYCLE HOUR: 08</div>
+            </div>
+        </div>
+
+        <!-- Simulator Core Grid -->
+        <div class="city-simulator-grid">
+            <!-- Main Sandbox Viewport -->
+            <div class="card viewport-card">
+                <!-- Sandbox Canvas wrapper -->
+                <div class="canvas-viewport-container" id="canvas-container-box">
+                    <canvas id="city-canvas"></canvas>
+
+                    <!-- HUD Overlay Indicators -->
+                    <div class="hud-item pt-left">COORDS: <span id="hud-player-coords">X: 0.00, Y: 0.00</span></div>
+                    <div class="hud-item pt-right">SPEED: <span id="hud-player-speed">0.0 km/h</span></div>
+                    <div class="hud-item pb-left">ZONE: <span id="hud-player-zone">CITY CENTRAL</span></div>
+                    <div class="hud-item pb-right" id="hud-engine-status">FPS: 60 // GL_ACTIVE</div>
+
+                    <!-- Cinematic On-Screen Virtual Camera Guides -->
+                    <div class="camera-lens-guide top-left"></div>
+                    <div class="camera-lens-guide top-right"></div>
+                    <div class="camera-lens-guide bottom-left"></div>
+                    <div class="camera-lens-guide bottom-right"></div>
+
+                    <!-- Touchscreen Mobile Joystick Overlays -->
+                    <div class="mobile-joystick-container" id="joystick-boundary" style="display: none;">
+                        <div class="joystick-inner-stick" id="joystick-knob"></div>
+                    </div>
+
+                    <!-- Touchscreen Mobile Action Button Columns -->
+                    <div class="mobile-action-container" style="display: none;">
+                        <button class="mobile-game-btn" id="mobile-btn-sprint">SPRINT</button>
+                        <button class="mobile-game-btn" id="mobile-btn-action">INTERACT</button>
+                    </div>
+
+                    <!-- On-Screen Camera Navigation Controls -->
+                    <div class="viewport-controls-hud">
+                        <button class="hud-circle-btn" id="cam-zoom-in" title="Zoom In">+</button>
+                        <button class="hud-circle-btn" id="cam-zoom-out" title="Zoom Out">-</button>
+                        <button class="hud-circle-btn" id="cam-rotate-left" title="Rotate Camera Left">↺</button>
+                        <button class="hud-circle-btn" id="cam-rotate-right" title="Rotate Camera Right">↻</button>
+                    </div>
+                </div>
+
+                <!-- Simulation Quick Settings Menu -->
+                <div class="simulation-quick-panel">
+                    <div class="panel-section-group">
+                        <span class="control-label">ATMOSPHERE:</span>
+                        <div class="btn-group-toggle">
+                            <button class="city-btn active" id="weather-clear-btn" data-weather="clear">☀️ CLEAR</button>
+                            <button class="city-btn" id="weather-rain-btn" data-weather="rain">🌧️ RAIN</button>
+                            <button class="city-btn" id="weather-fog-btn" data-weather="fog">🌫️ FOG</button>
+                        </div>
+                    </div>
+
+                    <div class="panel-section-group">
+                        <span class="control-label">DIURNAL PHASE:</span>
+                        <div class="btn-group-toggle">
+                            <button class="city-btn" id="time-day-btn">☀️ DAY</button>
+                            <button class="city-btn" id="time-sunset-btn">🌅 SUNSET</button>
+                            <button class="city-btn" id="time-night-btn">🌙 NIGHT</button>
+                            <button class="city-btn active" id="time-auto-btn">🔄 CYCLE</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control & Analytics Sidebar -->
+            <div class="sidebar-cards-column">
+                <!-- Simulation Matrix Card -->
+                <div class="card telemetry-card">
+                    <div class="card-header">
+                        <span class="header-icon">📊</span>
+                        <h3>SIMULATION TELEMETRY</h3>
+                    </div>
+
+                    <div class="telemetry-stats-rows">
+                        <div class="stat-row">
+                            <span class="lbl">ENVIRONMENT THEME</span>
+                            <span class="val" id="tele-active-theme">Cyberpunk Neon</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">METEOROLOGICAL COMP</span>
+                            <span class="val" id="tele-active-weather">Clear Static</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">ACTIVE VEHICLES</span>
+                            <span class="val" id="tele-active-cars">0 / 0 Spawned</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">WIND SPEED DIRECTION</span>
+                            <span class="val" id="tele-wind-speed">12 km/h WNW</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hardware Resources Simulation Panel -->
+                <div class="card resource-meters-card">
+                    <h3>SYSTEM LOAD PARAMETERS</h3>
+
+                    <div class="meter-bar-group">
+                        <div class="lbl-row">
+                            <span>GRID CALCULATIONS</span>
+                            <span id="load-val-grid">24%</span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-fill" id="load-fill-grid" style="width: 24%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="meter-bar-group">
+                        <div class="lbl-row">
+                            <span>ENTITIES CONTROLLER</span>
+                            <span id="load-val-entities">18%</span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-fill" id="load-fill-entities" style="width: 18%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="meter-bar-group">
+                        <div class="lbl-row">
+                            <span>PARTICLE BUFFER LOAD</span>
+                            <span id="load-val-particles">12%</span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-fill" id="load-fill-particles" style="width: 12%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Command Logger Terminal Feed -->
+                <div class="card logger-terminal-card">
+                    <div class="terminal-header-top">
+                        <div class="term-title-wrapper">
+                            <span class="blinking-dot"></span>
+                            <h3>CITY LOG COMPILER</h3>
+                        </div>
+                        <button class="btn-clear-logger" id="btn-clear-logs">CLEAR</button>
+                    </div>
+
+                    <div class="terminal-body-logger" id="terminal-city-logger">
+                        <!-- Instantly populated by js/ui.js -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Safety Simulation mode permanently positioned footer bar -->
+    <div class="safety-warning-banner">
+        <span class="warning-icon">⚠️</span>
+        <p class="warning-text">Simulation Mode — No real security operations, GPS coordinates tracking, or network captures are performed.</p>
+    </div>
+
+    <!-- Pinned Footer section -->
+    <footer class="premium-footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <div class="nav-brand" style="margin-bottom: 1rem;">
+                    <div class="nav-brand-icon">A</div>
+                    <span>Adeeb Saifi</span>
+                </div>
+                <p>Designing digital environments that combine high aesthetics with supreme engineering standards.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="travel.html">Travel Map</a></li>
+                    <li><a href="blog.html">Technical Blog</a></li>
+                    <li><a href="gallery.html">Visual Gallery</a></li>
+                    <li><a href="firewall.html">🛡 Firewall Defense</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Social Hub</h3>
+                <div class="social-links">
+                    <a href="https://github.com/adeebsaifi" class="social-link" aria-label="GitHub Profile">GH</a>
+                    <a href="#" class="social-link" aria-label="LinkedIn Profile">LN</a>
+                    <a href="#" class="social-link" aria-label="Twitter / X Profile">TW</a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Keyboard Shortcuts</h3>
+                <ul style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.8;">
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Alt + T</kbd> Theme Mode</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">/</kbd> Instant Search</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+D</kbd> Dev Mode</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+F</kbd> Firewall Mode</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+O</kbd> Open World</li>
+                </ul>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <p>© 2026 Adeeb Saifi. Made with ultimate engineering craftsmanship. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Global scripts and modules link -->
+    <script src="js/main.js"></script>
+    <script src="js/world.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/camera.js"></script>
+    <script src="js/vehicles.js"></script>
+    <script src="js/weather.js"></script>
+    <script src="js/daynight.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/city.js"></script>
+</body>
+</html>

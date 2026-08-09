@@ -1,0 +1,635 @@
+/*
+ * Metropolis Directive City Simulation Styling Stylesheet
+ *
+ * High-performance, sleek cyberpunk visual system. Uses CSS grid,
+ * custom glassmorphism styles, glowing highlights, responsive flex layouts.
+ */
+
+:root {
+    --color-cyber-bg: #030308;
+    --color-neon-purple: #9d4edd;
+    --color-neon-pink: #f72585;
+    --color-neon-blue: #4cc9f0;
+    --color-neon-green: #390099;
+    --color-neon-amber: #ff9e00;
+    --color-glass-bg: rgba(10, 10, 18, 0.7);
+    --color-glass-border: rgba(157, 78, 221, 0.25);
+    --color-glass-glow: rgba(157, 78, 221, 0.1);
+}
+
+.city-body {
+    background: var(--color-cyber-bg);
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(157, 78, 221, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(76, 201, 240, 0.08) 0%, transparent 40%);
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Scroll progress indicator bar */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-neon-purple), var(--color-neon-pink));
+    z-index: 1000;
+    width: 0%;
+    transition: width 0.1s ease-out;
+}
+
+/* Global dashboard grid layout */
+.city-main-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 6.5rem 1.5rem 2rem 1.5rem;
+    min-height: calc(100vh - 120px);
+}
+
+/* Dashboard Header details */
+.city-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.header-details .system-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    border: 1px solid var(--color-neon-purple);
+    background: rgba(157, 78, 221, 0.1);
+    box-shadow: 0 0 10px rgba(157, 78, 221, 0.2);
+    margin-bottom: 0.75rem;
+}
+
+.header-details .main-title {
+    font-size: 2.25rem;
+    font-weight: 900;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, var(--color-neon-purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0 0 0.25rem 0;
+    text-transform: uppercase;
+}
+
+.header-details .subtitle {
+    color: #94a3b8;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Clock display card */
+.clock-widget {
+    background: var(--color-glass-bg);
+    border: 1px solid var(--color-glass-border);
+    backdrop-filter: blur(12px);
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    box-shadow: 0 4px 20px var(--color-glass-glow);
+}
+
+.clock-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pulse-node {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-neon-pink);
+    box-shadow: 0 0 8px var(--color-neon-pink);
+    animation: pulseGlow 1.5s infinite alternate;
+}
+
+.clock-time-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 1px;
+}
+
+.clock-day-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    letter-spacing: 1.5px;
+    margin-top: 0.2rem;
+}
+
+/* Layout simulator Grid layout */
+.city-simulator-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* Sandbox card viewport styling */
+.viewport-card {
+    background: var(--color-glass-bg);
+    border: 1px solid var(--color-glass-border);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 32px var(--color-glass-glow);
+    display: flex;
+    flex-direction: column;
+}
+
+.canvas-viewport-container {
+    position: relative;
+    width: 100%;
+    height: 520px;
+    background: #010103;
+    overflow: hidden;
+}
+
+#city-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+}
+
+/* Head Up Display Overlays */
+.hud-item {
+    position: absolute;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: rgba(1, 1, 3, 0.8);
+    border: 1px solid rgba(157, 78, 221, 0.4);
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.hud-item.pt-left { top: 1rem; left: 1rem; color: var(--color-neon-blue); }
+.hud-item.pt-right { top: 1rem; right: 1rem; color: #10b981; }
+.hud-item.pb-left { bottom: 1rem; left: 1rem; color: var(--color-neon-purple); }
+.hud-item.pb-right { bottom: 1rem; right: 1rem; color: var(--color-neon-pink); }
+
+/* Cinematic Lens guides */
+.camera-lens-guide {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: rgba(157, 78, 221, 0.6);
+    border-style: solid;
+    pointer-events: none;
+    z-index: 5;
+}
+.camera-lens-guide.top-left { top: 0.5rem; left: 0.5rem; border-width: 2px 0 0 2px; }
+.camera-lens-guide.top-right { top: 0.5rem; right: 0.5rem; border-width: 2px 2px 0 0; }
+.camera-lens-guide.bottom-left { bottom: 0.5rem; left: 0.5rem; border-width: 0 0 2px 2px; }
+.camera-lens-guide.bottom-right { bottom: 0.5rem; right: 0.5rem; border-width: 0 2px 2px 0; }
+
+/* Mobile Gamepad Joystick Styles */
+.mobile-joystick-container {
+    position: absolute;
+    bottom: 4.5rem;
+    left: 2rem;
+    width: 110px;
+    height: 110px;
+    background: rgba(157, 78, 221, 0.15);
+    border: 2px solid rgba(157, 78, 221, 0.5);
+    border-radius: 50%;
+    z-index: 100;
+    touch-action: none;
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.joystick-inner-stick {
+    width: 44px;
+    height: 44px;
+    background: radial-gradient(circle, var(--color-neon-pink) 0%, var(--color-neon-purple) 100%);
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    position: absolute;
+    cursor: grab;
+    touch-action: none;
+    box-shadow: 0 0 12px var(--color-neon-purple);
+}
+
+.mobile-action-container {
+    position: absolute;
+    bottom: 4.5rem;
+    right: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    z-index: 100;
+}
+
+.mobile-game-btn {
+    width: 80px;
+    height: 44px;
+    background: rgba(76, 201, 240, 0.2);
+    border: 1px solid rgba(76, 201, 240, 0.6);
+    color: #ffffff;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    transition: all 0.2s ease;
+    box-shadow: 0 0 8px rgba(76, 201, 240, 0.15);
+}
+
+.mobile-game-btn:active {
+    background: rgba(76, 201, 240, 0.5);
+    transform: scale(0.95);
+    box-shadow: 0 0 15px rgba(76, 201, 240, 0.5);
+}
+
+/* Viewport HUD Control circles */
+.viewport-controls-hud {
+    position: absolute;
+    right: 1rem;
+    top: 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 10;
+}
+
+.hud-circle-btn {
+    width: 32px;
+    height: 32px;
+    background: rgba(1, 1, 3, 0.85);
+    border: 1px solid rgba(157, 78, 221, 0.5);
+    color: #ffffff;
+    border-radius: 50%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+}
+
+.hud-circle-btn:hover {
+    background: var(--color-neon-purple);
+    border-color: #ffffff;
+    box-shadow: 0 0 10px var(--color-neon-purple);
+    transform: scale(1.1);
+}
+
+/* Quick simulator adjustment footer panel */
+.simulation-quick-panel {
+    background: rgba(5, 5, 10, 0.9);
+    border-top: 1px solid var(--color-glass-border);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.panel-section-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.control-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #94a3b8;
+    letter-spacing: 1px;
+}
+
+.btn-group-toggle {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.city-btn {
+    background: rgba(157, 78, 221, 0.1);
+    border: 1px solid rgba(157, 78, 221, 0.3);
+    color: #94a3b8;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.45rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.city-btn:hover {
+    color: #ffffff;
+    border-color: var(--color-neon-purple);
+    background: rgba(157, 78, 221, 0.2);
+}
+
+.city-btn.active {
+    background: var(--color-neon-purple);
+    border-color: #ffffff;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(157, 78, 221, 0.4);
+}
+
+/* Sidebar columns layout */
+.sidebar-cards-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.sidebar-cards-column .card {
+    background: var(--color-glass-bg);
+    border: 1px solid var(--color-glass-border);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px var(--color-glass-glow);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.5rem;
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #ffffff;
+}
+
+.card-header .header-icon {
+    font-size: 1.15rem;
+}
+
+/* Telemetry stat lines */
+.telemetry-stats-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+}
+
+.stat-row .lbl {
+    color: #64748b;
+    letter-spacing: 0.5px;
+}
+
+.stat-row .val {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+/* Resource Meters load indicators */
+.resource-meters-card h3 {
+    margin: 0 0 1.25rem 0;
+    font-size: 0.9rem;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.5rem;
+}
+
+.meter-bar-group {
+    margin-bottom: 1rem;
+}
+
+.meter-bar-group:last-child {
+    margin-bottom: 0;
+}
+
+.meter-bar-group .lbl-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-bottom: 0.35rem;
+}
+
+.bar-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-neon-purple) 0%, var(--color-neon-blue) 100%);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+/* Live Terminal outputs card */
+.logger-terminal-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.terminal-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.5rem;
+}
+
+.term-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.term-title-wrapper h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+}
+
+.blinking-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #ef4444;
+    border-radius: 50%;
+    animation: blinkGlow 1s infinite alternate;
+}
+
+.btn-clear-logger {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #94a3b8;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-clear-logger:hover {
+    color: #ffffff;
+    border-color: #ffffff;
+}
+
+.terminal-body-logger {
+    background: #020204;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    padding: 0.75rem;
+    height: 140px;
+    overflow-y: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    line-height: 1.4;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(157, 78, 221, 0.3) transparent;
+}
+
+.terminal-body-logger::-webkit-scrollbar {
+    width: 4px;
+}
+
+.terminal-body-logger::-webkit-scrollbar-thumb {
+    background-color: rgba(157, 78, 221, 0.3);
+    border-radius: 2px;
+}
+
+.log-entry {
+    color: #cbd5e1;
+}
+
+.log-entry.log-time {
+    color: var(--color-neon-purple);
+    font-weight: bold;
+}
+
+.log-entry.log-system {
+    color: var(--color-neon-blue);
+}
+
+.log-entry.log-weather {
+    color: var(--color-neon-amber);
+}
+
+.log-entry.log-action {
+    color: var(--color-neon-pink);
+}
+
+/* Fixed safety warning banner permanently positioned at the very bottom */
+.safety-warning-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(15, 10, 5, 0.95);
+    border-top: 1px solid rgba(255, 158, 0, 0.3);
+    color: #ff9e00;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.safety-warning-banner p {
+    margin: 0;
+}
+
+/* Animations declarations */
+@keyframes pulseGlow {
+    from {
+        opacity: 0.5;
+        box-shadow: 0 0 4px var(--color-neon-pink);
+    }
+    to {
+        opacity: 1;
+        box-shadow: 0 0 12px var(--color-neon-pink);
+    }
+}
+
+@keyframes blinkGlow {
+    from { opacity: 0.3; }
+    to { opacity: 1; }
+}
+
+/* Responsive configurations */
+@media (max-width: 1150px) {
+    .city-simulator-grid {
+        grid-template-columns: 1fr;
+    }
+    .canvas-viewport-container {
+        height: 420px;
+    }
+}
+
+@media (max-width: 768px) {
+    .city-main-container {
+        padding-top: 5.5rem;
+    }
+    .city-header-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .clock-widget {
+        align-items: flex-start;
+    }
+    .canvas-viewport-container {
+        height: 340px;
+    }
+    .mobile-joystick-container,
+    .mobile-action-container {
+        display: flex !important; /* Only visible on smaller viewports */
+    }
+}
