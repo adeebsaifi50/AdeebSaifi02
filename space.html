@@ -32,7 +32,7 @@
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/space.css">
 </head>
-<body class="space-body">
+<body class="space-body" data-workspace="mission">
 
     <!-- Scroll Progress -->
     <div class="scroll-progress" aria-hidden="true"></div>
@@ -93,9 +93,13 @@
         <!-- Top Title Panel / Aerospace Command Bar -->
         <section class="space-command-bar card">
             <div class="command-bar-left">
-                <span class="system-badge glow-neon-purple">SPACE_OPS_SANDBOX_v2.0</span>
-                <h1 class="main-title">SPACE MISSION CONTROL</h1>
-                <div class="nav-back-link-wrapper">
+                <span class="system-badge glow-neon-purple">SPACE_OPS_SANDBOX_v3.0</span>
+                <h1 class="main-title">SPACE MISSION <span id="mission-name">COSMO-01</span></h1>
+                <div class="mission-status-row" style="display: flex; gap: 0.75rem; margin-top: 0.25rem; font-size: 0.75rem; align-items: center; flex-wrap: wrap;">
+                    <span class="status-badge glow-green" id="mission-status-badge">🟢 SYSTEMS NOMINAL</span>
+                    <span class="mission-time-lbl" style="color: var(--text-secondary); font-family: var(--font-mono), monospace;">TIME: <span id="mission-time">00:00:00</span></span>
+                </div>
+                <div class="nav-back-link-wrapper" style="margin-top: 0.35rem;">
                     <a href="index.html" class="nav-back-link">← RETURN TO MAIN GRID</a>
                 </div>
             </div>
@@ -134,46 +138,145 @@
             </div>
         </section>
 
+        <!-- Dynamic Space Workspace Tabs Navigation -->
+        <nav class="space-workspace-tabs" aria-label="Simulation Workspaces Navigation">
+            <button class="ws-tab-btn active" data-ws="mission" id="tab-ws-mission">🏢 MISSION HUB</button>
+            <button class="ws-tab-btn" data-ws="satellite" id="tab-ws-satellite">📡 SATELLITE BAY</button>
+            <button class="ws-tab-btn" data-ws="planet" id="tab-ws-planet">🪐 PLANET EXCURSION</button>
+            <button class="ws-tab-btn" data-ws="archives" id="tab-ws-archives">🏆 ARCHIVES & DATA</button>
+            <button class="ws-tab-btn" data-ws="freeplay" id="tab-ws-freeplay">⚙️ FREE PLAY</button>
+        </nav>
+
         <!-- Main Dashboard Workspace -->
         <div class="space-dashboard-grid">
 
-            <!-- LEFT COLUMN: Mission Parameters, Countdowns & Flight Stages -->
-            <section class="space-col-left" aria-label="Mission Parameters Panel">
-                <div class="card mission-card">
+            <!-- LEFT COLUMN: Campaign selector / Subsystems toggles -->
+            <section class="space-col-left" aria-label="Left Parameters Panel">
+
+                <!-- 1. MISSION HUB MODULE -->
+                <div class="card mission-card" data-ws="mission">
                     <div class="panel-header">
                         <span class="header-icon">🚀</span>
-                        <h3>MISSION PROFILE</h3>
+                        <h3>CAMPAIGN OBJECTIVES</h3>
                     </div>
-                    <div class="mission-details">
-                        <div class="param-row">
-                            <span class="lbl">MISSION NAME</span>
-                            <span class="val text-glow-blue" id="mission-name">ADEEB-01</span>
+                    <div class="mission-campaign-list" id="campaign-list-container">
+                        <!-- Populated by JS: Mission 01 to 06 -->
+                    </div>
+                    <div class="mission-active-objective-card">
+                        <span class="obj-hdr">ACTIVE OBJECTIVE:</span>
+                        <p class="obj-desc" id="active-objective-text">Launch fictional spacecraft and achieve stable orbit.</p>
+                        <div class="progress-bar-container-v2">
+                            <div class="progress-bar-fill-v2" id="active-objective-progress-bar" style="width: 0%;"></div>
                         </div>
-                        <div class="param-row">
-                            <span class="lbl">MISSION ID</span>
-                            <span class="val font-mono" id="mission-id">COSMO-760228</span>
-                        </div>
-                        <div class="param-row">
-                            <span class="lbl">MISSION STATUS</span>
-                            <span class="status-badge glow-green" id="mission-status-badge">SYSTEMS NOMINAL</span>
-                        </div>
-                        <div class="param-row">
-                            <span class="lbl">MISSION TIME</span>
-                            <span class="val font-mono text-glow-purple" id="mission-time">00:00:00</span>
-                        </div>
-                        <div class="param-row">
-                            <span class="lbl">TARGET ORBIT</span>
-                            <span class="val" id="target-orbit">LOW EARTH ORBIT (LEO)</span>
-                        </div>
-                        <div class="param-row">
-                            <span class="lbl">LAUNCH SITE</span>
-                            <span class="val" id="launch-site">KENNEDY COMPLEX 39-A</span>
+                        <div class="obj-footer-row">
+                            <span>PROGRESS: <strong id="active-objective-pct">0%</strong></span>
+                            <span class="obj-reward" id="active-objective-reward">REWARD: Booster Badge</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Fictional Countdown Display Panel -->
-                <div class="card countdown-card">
+                <!-- 2. SATELLITE BAY MODULE -->
+                <div class="card satellite-card" data-ws="satellite" style="display: none;">
+                    <div class="panel-header">
+                        <span class="header-icon">📡</span>
+                        <h3>SATELLITE SELECTOR</h3>
+                    </div>
+                    <p class="panel-intro">Choose an orbital asset to monitor and steer.</p>
+                    <div class="sat-selector-list">
+                        <button class="sat-select-btn active" data-sat="0" id="btn-sat-0">
+                            <span class="sat-dot glow-green"></span>
+                            <span class="sat-title">ADEEB-SAT 01</span>
+                            <span class="sat-sub">Active • Telemetry Locked</span>
+                        </button>
+                        <button class="sat-select-btn" data-sat="1" id="btn-sat-1">
+                            <span class="sat-dot glow-green"></span>
+                            <span class="sat-title">ADEEB-SAT 02</span>
+                            <span class="sat-sub">Active • Solar Tracking</span>
+                        </button>
+                        <button class="sat-select-btn" data-sat="2" id="btn-sat-2">
+                            <span class="sat-dot glow-green"></span>
+                            <span class="sat-title">ADEEB-SAT 03</span>
+                            <span class="sat-sub">Active • Comm Bridge</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. PLANET EXCURSION MODULE -->
+                <div class="card planet-card" data-ws="planet" style="display: none;">
+                    <div class="panel-header">
+                        <span class="header-icon">🪐</span>
+                        <h3>PLANETS DATA</h3>
+                    </div>
+                    <p class="panel-intro">Select a fictional planet to chart telemetry.</p>
+                    <div class="planet-selector-list">
+                        <button class="planet-select-btn active" data-planet="0" id="btn-planet-0">
+                            <span class="planet-icon-indicator">🪐</span>
+                            <div class="planet-title-block">
+                                <span class="planet-name">AURELIA</span>
+                                <span class="planet-status">Status: Exploring</span>
+                            </div>
+                        </button>
+                        <button class="planet-select-btn" data-planet="1" id="btn-planet-1">
+                            <span class="planet-icon-indicator">🪐</span>
+                            <div class="planet-title-block">
+                                <span class="planet-name">VYRON</span>
+                                <span class="planet-status">Status: Orbiting</span>
+                            </div>
+                        </button>
+                        <button class="planet-select-btn" data-planet="2" id="btn-planet-2">
+                            <span class="planet-icon-indicator">🪐</span>
+                            <div class="planet-title-block">
+                                <span class="planet-name">NOVA-7</span>
+                                <span class="planet-status" id="nova-lock-lbl">Status: LOCKED</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4. ARCHIVES / DATA SAVES MODULE -->
+                <div class="card archives-card" data-ws="archives" style="display: none;">
+                    <div class="panel-header">
+                        <span class="header-icon">💾</span>
+                        <h3>DATA SYSTEMS</h3>
+                    </div>
+                    <div class="saves-actions-list">
+                        <button class="btn btn-primary btn-block" id="btn-save-mission">SAVE MISSION STATE</button>
+                        <button class="btn btn-secondary btn-block" id="btn-resume-mission">RESUME PREVIOUS SAVE</button>
+                        <button class="btn btn-secondary btn-block" id="btn-new-mission">START NEW CAMPAIGN</button>
+                        <button class="btn btn-danger btn-block" id="btn-reset-data">RESET ALL SYSTEMS</button>
+                    </div>
+                </div>
+
+                <!-- 5. FREE PLAY CONFIGURATION MODULE -->
+                <div class="card freeplay-card" data-ws="freeplay" style="display: none;">
+                    <div class="panel-header">
+                        <span class="header-icon">🌤️</span>
+                        <h3>ENVIRONMENT</h3>
+                    </div>
+                    <div class="freeplay-switches">
+                        <span class="switch-title">TRIGGER SPACE WEATHER</span>
+                        <div class="weather-btn-grid">
+                            <button class="btn btn-secondary btn-xs" id="btn-weather-solar">☀️ SOLAR ACTIVITY</button>
+                            <button class="btn btn-secondary btn-xs" id="btn-weather-meteor">☄️ METEOR SHOWER</button>
+                            <button class="btn btn-secondary btn-xs" id="btn-weather-flare">🔥 SOLAR FLARE</button>
+                            <button class="btn btn-secondary btn-xs" id="btn-weather-radiation">☢️ RAD SPIKE</button>
+                        </div>
+                    </div>
+                    <div class="freeplay-failures-deck">
+                        <span class="switch-title">SIMULATED FAILURES TRIGGER</span>
+                        <div class="failure-btn-grid">
+                            <button class="btn btn-danger btn-xs" id="btn-fail-engine">ENGINE OVERHEAT</button>
+                            <button class="btn btn-danger btn-xs" id="btn-fail-comm">COMM LOSS</button>
+                            <button class="btn btn-danger btn-xs" id="btn-fail-power">POWER GLITCH</button>
+                            <button class="btn btn-danger btn-xs" id="btn-fail-fuel">FUEL LEAK</button>
+                            <button class="btn btn-danger btn-xs" id="btn-fail-nav">NAV ERROR</button>
+                            <button class="btn btn-danger btn-xs" id="btn-fail-thermal">THERMAL WRN</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fictional Countdown Display Panel (Common to Core dashboard) -->
+                <div class="card countdown-card" data-ws="mission freeplay">
                     <div class="panel-header">
                         <span class="header-icon">⏱️</span>
                         <h3>COUNTDOWN STATUS</h3>
@@ -187,8 +290,8 @@
                     </div>
                 </div>
 
-                <!-- Flight Stage Tracker -->
-                <div class="card stages-card">
+                <!-- Flight Stage Tracker (Common to Core) -->
+                <div class="card stages-card" data-ws="mission freeplay">
                     <div class="panel-header">
                         <span class="header-icon">📡</span>
                         <h3>FLIGHT SEQUENCES</h3>
@@ -199,25 +302,27 @@
                 </div>
             </section>
 
-            <!-- CENTER COLUMN: Orbital Telemetry Theater / Dome -->
+            <!-- CENTER COLUMN: Orbital Telemetry Theater / Dome & Local AI Diagnostics -->
             <section class="space-col-center">
                 <div class="card theater-card">
                     <div class="theater-header">
                         <div class="header-tracking-block">
-                            <span class="pulse-tracker"></span>
-                            <h3>ORBITAL TELEMETRY DOME</h3>
+                            <span class="pulse-tracker" id="tracking-pulse"></span>
+                            <h3 id="viewport-title">ORBITAL TELEMETRY DOME</h3>
                         </div>
                         <!-- Camera & Graphics selection widget -->
                         <div class="theater-settings-row">
                             <div class="setting-item">
                                 <label for="camera-select" class="sr-only">Camera Viewport</label>
                                 <select id="camera-select" class="theme-dropdown" aria-label="Select camera view">
-                                    <option value="mission">Camera: MISSION VIEW</option>
-                                    <option value="orbit">Camera: ORBITAL PLOT</option>
-                                    <option value="earth">Camera: EARTH TRACK</option>
-                                    <option value="satellite">Camera: SATELLITE RANGE</option>
+                                    <option value="mission">Camera: MISSION CONTROL</option>
+                                    <option value="rocket">Camera: ROCKET VIEW</option>
+                                    <option value="orbit">Camera: EARTH ORBIT</option>
+                                    <option value="satellite">Camera: SATELLITE VIEW</option>
+                                    <option value="moon">Camera: MOON VIEW</option>
                                     <option value="deep">Camera: DEEP SPACE</option>
-                                    <option value="cinematic">Camera: CINEMATIC SENSOR</option>
+                                    <option value="planet">Camera: PLANET VIEW</option>
+                                    <option value="cinematic">Camera: CINEMATIC CAMERA</option>
                                 </select>
                             </div>
                             <div class="setting-item">
@@ -241,11 +346,6 @@
                         <div class="hud-layer pt-right" id="hud-vibration-factor">VIBRATION_HZ: nominal</div>
                         <div class="hud-layer pb-left" id="hud-flight-path">FLIGHT_PATH: ballistic</div>
                         <div class="hud-layer pb-right" id="hud-camera-altitude">ALTITUDE: ground level</div>
-
-                        <!-- Touchscreen Joystick overlay for mobile flight maneuver -->
-                        <div class="joystick-ring" id="joystick-pad" style="display: none;">
-                            <div class="joystick-handle" id="joystick-trigger"></div>
-                        </div>
                     </div>
 
                     <!-- On-Screen Manual Command Deck -->
@@ -259,8 +359,50 @@
                     </div>
                 </div>
 
+                <!-- MISSION AI ADVISORY MODULE (Part 2 - Highly interactive) -->
+                <div class="card ai-assistant-card" data-ws="mission satellite planet freeplay">
+                    <div class="ai-assistant-header">
+                        <span class="ai-pulse glow-purple"></span>
+                        <h3 class="ai-title">MISSION AI CO-PILOT DIAGNOSTICS</h3>
+                    </div>
+                    <div class="ai-assistant-body">
+                        <div class="ai-avatar-speech">🤖</div>
+                        <div class="ai-assistant-recommendation">
+                            <span class="rec-label">REAL-TIME TELEMETRY DIAGNOSIS:</span>
+                            <p class="rec-text" id="ai-recommendation-msg">Initializing local telemetry arrays. Systems running stable. Adjust engine power throttle to begin campaign climb sequence.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMPLETED MISSION HISTORY LIST (Archives Workspace Center Column) -->
+                <div class="card history-card" data-ws="archives" style="display: none;">
+                    <div class="panel-header">
+                        <span class="header-icon">📊</span>
+                        <h3>MISSION RUNS HISTORY</h3>
+                    </div>
+                    <div class="history-table-wrapper">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>MISSION ID</th>
+                                    <th>DURATION</th>
+                                    <th>ALTITUDE</th>
+                                    <th>RATING</th>
+                                    <th>ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mission-history-tbody">
+                                <!-- Populated dynamically -->
+                                <tr>
+                                    <td colspan="5" class="empty-msg">No flight statistics documented in local systems.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Desktop / Keyboard guide warning box -->
-                <div class="card guide-panel" aria-label="Flight Keyboard Shortcuts">
+                <div class="card guide-panel" aria-label="Flight Keyboard Shortcuts" data-ws="mission freeplay">
                     <h3 class="guide-title">⌨️ AEROSPACE FLIGHT DECK BINDINGS</h3>
                     <div class="guide-grid">
                         <div class="guide-col">
@@ -276,7 +418,7 @@
                         <div class="guide-col">
                             <span><kbd>C</kbd> Toggle Comm Link Ping</span>
                             <span><kbd>A</kbd> Trigger Emergency Abort</span>
-                            <span><kbd>D</kbd> Direct Orbit Viewport</span>
+                            <span><kbd>D</kbd> Solar Array Toggle</span>
                         </div>
                     </div>
                 </div>
@@ -284,7 +426,9 @@
 
             <!-- RIGHT COLUMN: Continuous Telemetry Stats, Circular Gauges & Tabbed Graphs -->
             <section class="space-col-right" aria-label="Telemetry Parameters Panel">
-                <div class="card telemetry-card">
+
+                <!-- 1. LIVE TELEMETRY STATISTICS & GAUGES -->
+                <div class="card telemetry-card" data-ws="mission freeplay">
                     <div class="panel-header">
                         <span class="header-icon">📈</span>
                         <h3>FLIGHT TELEMETRY DATA</h3>
@@ -370,8 +514,118 @@
                     </div>
                 </div>
 
-                <!-- Advanced SVG / Canvas Telemetry Tabbed Charts Panel -->
-                <div class="card charts-card">
+                <!-- 2. SATELLITE DETAILS & CONTROLS MODULE -->
+                <div class="card telemetry-card" data-ws="satellite" style="display: none;">
+                    <div class="panel-header">
+                        <span class="header-icon">🛰️</span>
+                        <h3 id="sat-detail-name">ADEEB-SAT 01</h3>
+                    </div>
+                    <div class="telemetry-stats">
+                        <div class="stat-row">
+                            <span class="lbl">ORBIT PATH</span>
+                            <span class="val" id="sat-detail-orbit">LOW EARTH ORBIT (LEO)</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">ALTITUDE</span>
+                            <span class="val text-glow-blue" id="sat-detail-alt">320.00 km</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">SPEED</span>
+                            <span class="val text-glow-teal" id="sat-detail-speed">27,500 km/h</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">BATTERY BUFFER</span>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill progress-blue" id="sat-detail-battery-bar" style="width: 100%;"></div>
+                            </div>
+                            <span class="val font-mono" id="sat-detail-battery">100%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">SIGNAL CHANNEL</span>
+                            <span class="val text-glow-green" id="sat-detail-signal">100%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">INTERNAL TEMP</span>
+                            <span class="val font-mono" id="sat-detail-temp">15.0°C</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">MODULE STATUS</span>
+                            <span class="status-badge glow-green" id="sat-detail-status">NOMINAL</span>
+                        </div>
+                    </div>
+
+                    <!-- Satellite Control Panel Actions -->
+                    <div class="satellite-controls-deck">
+                        <span class="switch-title">SATELLITE ACTUATORS</span>
+                        <div class="sat-actuators-grid">
+                            <button class="btn btn-secondary btn-sm" id="btn-sat-orbit-up">ADJUST ORBIT +</button>
+                            <button class="btn btn-secondary btn-sm" id="btn-sat-orbit-dn">ADJUST ORBIT -</button>
+                            <button class="btn btn-secondary btn-sm" id="btn-sat-rotate-l">ROTATE LEFT</button>
+                            <button class="btn btn-secondary btn-sm" id="btn-sat-rotate-r">ROTATE RIGHT</button>
+                            <button class="btn btn-secondary btn-sm" id="btn-sat-power">TOGGLE POWER</button>
+                            <button class="btn btn-secondary btn-sm" id="btn-sat-comm">COMM RELAY</button>
+                            <button class="btn btn-secondary btn-sm" id="btn-sat-deploy" style="grid-column: span 2;">TOGGLE DEPLOY MODE</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. PLANET ATMOSPHERIC & EXCURSION DATA MODULE -->
+                <div class="card telemetry-card" data-ws="planet" style="display: none;">
+                    <div class="panel-header">
+                        <span class="header-icon">🪐</span>
+                        <h3 id="planet-detail-name">AURELIA</h3>
+                    </div>
+                    <div class="telemetry-stats">
+                        <div class="stat-row">
+                            <span class="lbl">TRANSIT DISTANCE</span>
+                            <span class="val" id="planet-detail-dist">3.4 AU</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">GRAV FORCE</span>
+                            <span class="val" id="planet-detail-gravity">0.88 G</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">SURFACE TEMP</span>
+                            <span class="val" id="planet-detail-temp">-14.0°C</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">ATMOSPHERE</span>
+                            <span class="val" id="planet-detail-atmo">N2/CO2 Dense</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">LOCAL RESOURCES</span>
+                            <span class="val" id="planet-detail-resources">Helium-3, Water</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="lbl">EXPLORATION PROGRESS</span>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill progress-blue" id="planet-detail-exploration-bar" style="width: 14%;"></div>
+                            </div>
+                            <span class="val font-mono" id="planet-detail-exploration">14%</span>
+                        </div>
+                    </div>
+
+                    <!-- Exploration Actuators -->
+                    <div class="planet-exploration-deck">
+                        <span class="switch-title">EXPLORATION MATRIX</span>
+                        <button class="btn btn-primary btn-block" id="btn-planet-scan">SCAN PLANET SURFACE</button>
+                        <button class="btn btn-secondary btn-block" id="btn-planet-land">DEPLOY SURFACE ROVER</button>
+                    </div>
+                </div>
+
+                <!-- 4. ACHIEVEMENTS GALLERY MODULE (Archives Workspace Right Column) -->
+                <div class="card achievements-card" data-ws="archives" style="display: none;">
+                    <div class="panel-header">
+                        <span class="header-icon">🏆</span>
+                        <h3>ACHIEVEMENTS GALLERY</h3>
+                    </div>
+                    <div class="achievements-gallery" id="achievements-gallery-container">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Advanced SVG / Canvas Telemetry Tabbed Charts Panel (Common) -->
+                <div class="card charts-card" data-ws="mission freeplay">
                     <div class="panel-header-tabs">
                         <span class="header-icon">📊</span>
                         <div class="graph-tabs">
@@ -393,7 +647,7 @@
 
         </div>
 
-        <!-- BOTTOM PANEL: Control Console, Throttle Deck and live EVENT STREAM -->
+        <!-- BOTTOM PANEL: Control Console, Throttle Deck, character-bars panel and live EVENT STREAM -->
         <section class="space-bottom-panel card">
             <div class="control-console-container">
                 <div class="console-left">
@@ -402,7 +656,9 @@
                     </div>
                 </div>
                 <div class="console-center">
-                    <div class="throttle-deck">
+
+                    <!-- Core Controls Panel (Common to Missions Ops) -->
+                    <div class="throttle-deck" data-ws="mission freeplay">
                         <span class="throttle-title">ENGINE POWER THROTTLE</span>
                         <div class="throttle-interactive-row">
                             <button class="throttle-step-btn" id="btn-throttle-down" aria-label="Decrease Throttle">THROTTLE -</button>
@@ -411,9 +667,42 @@
                         </div>
                         <div class="throttle-feedback">ACTIVE POWER: <span id="throttle-display-val">0%</span></div>
                     </div>
+
+                    <!-- DETAILED MANUAL CONTROL PANEL (Part 2 Sliders with Progressive character bars) -->
+                    <div class="detailed-sliders-deck" data-ws="satellite planet archives freeplay" style="display: none;">
+                        <span class="throttle-title">SUB-SYSTEM CALIBRATORS (MANUAL CONTROL PANEL)</span>
+                        <div class="character-sliders-grid">
+                            <div class="char-slider-row">
+                                <label for="slider-manual-throttle" class="char-lbl">THROTTLE</label>
+                                <input type="range" id="slider-manual-throttle" min="0" max="100" value="0" class="char-range-slider" aria-label="Manual throttle slider">
+                                <span class="char-progress" id="char-progress-throttle">[░░░░░░░░░░] 0%</span>
+                            </div>
+                            <div class="char-slider-row">
+                                <label for="slider-manual-power" class="char-lbl">POWER</label>
+                                <input type="range" id="slider-manual-power" min="0" max="100" value="100" class="char-range-slider" aria-label="Manual power system slider">
+                                <span class="char-progress" id="char-progress-power">[██████████] 100%</span>
+                            </div>
+                            <div class="char-slider-row">
+                                <label for="slider-manual-comm" class="char-lbl">COMM</label>
+                                <input type="range" id="slider-manual-comm" min="0" max="100" value="100" class="char-range-slider" aria-label="Manual comm link slider">
+                                <span class="char-progress" id="char-progress-comm">[██████████] 100%</span>
+                            </div>
+                            <div class="char-slider-row">
+                                <label for="slider-manual-nav" class="char-lbl">NAVIGATION</label>
+                                <input type="range" id="slider-manual-nav" min="0" max="100" value="50" class="char-range-slider" aria-label="Manual navigation system slider">
+                                <span class="char-progress" id="char-progress-nav">[█████░░░░░] 50%</span>
+                            </div>
+                            <div class="char-slider-row">
+                                <label for="slider-manual-cooling" class="char-lbl">COOLING</label>
+                                <input type="range" id="slider-manual-cooling" min="0" max="100" value="30" class="char-range-slider" aria-label="Manual cooling regulator slider">
+                                <span class="char-progress" id="char-progress-cooling">[███░░░░░░░] 30%</span>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="console-right">
-                    <div class="direction-deck">
+                    <div class="direction-deck" data-ws="mission freeplay">
                         <span class="dir-title">TRAJECTORY DEVIATION</span>
                         <div class="direction-arrows-grid">
                             <div></div>
@@ -461,6 +750,76 @@
         </section>
 
     </main>
+
+    <!-- SYSTEM ALERTS / RANDOM EVENTS & CRISIS DECISIONS PANEL (Part 2) -->
+    <div id="system-alert-modal" class="system-alert-overlay" style="display: none;" role="status">
+        <div class="alert-dialog-card animate-scale">
+            <div class="alert-dialog-header">
+                <span class="alert-pulsing-icon">⚠️</span>
+                <div class="alert-title-block">
+                    <h2 id="alert-title">SYSTEM EVENT ALERT</h2>
+                    <span class="alert-sub" id="alert-sub">CRITICAL EVENT IN PROGRESS</span>
+                </div>
+            </div>
+            <div class="alert-dialog-body">
+                <p id="alert-description">Engine core temperature bounds encountered thermal boundaries. High combustion risks.</p>
+                <span class="choice-title font-mono">GROUND CONTROL ACTION REQUIRED:</span>
+                <div class="alert-choice-grid" id="alert-choice-container">
+                    <!-- Loaded Dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MISSION STATISTICS PANEL (Shown on completing a mission) -->
+    <div id="mission-stats-modal" class="system-alert-overlay" style="display: none;" role="dialog" aria-modal="true">
+        <div class="stats-dialog-card animate-scale">
+            <div class="stats-dialog-header">
+                <span class="stats-icon">🏆</span>
+                <div class="stats-title-block">
+                    <h2>MISSION COMPLETED</h2>
+                    <span class="stats-sub">FLIGHT DATA STATISTICS LOGGED</span>
+                </div>
+            </div>
+            <div class="stats-dialog-body">
+                <p class="stats-intro" id="stats-congrats-text">Congratulations commander! The Cosmo orbital assets are successfully placed in circular trajectories.</p>
+
+                <div class="stats-rows-grid">
+                    <div class="stats-val-row">
+                        <span>MISSION TIME:</span>
+                        <strong id="stat-val-time">00:00:00</strong>
+                    </div>
+                    <div class="stats-val-row">
+                        <span>MAX ALTITUDE:</span>
+                        <strong id="stat-val-alt">0.00 km</strong>
+                    </div>
+                    <div class="stats-val-row">
+                        <span>MAX VELOCITY:</span>
+                        <strong id="stat-val-vel">0.00 km/h</strong>
+                    </div>
+                    <div class="stats-val-row">
+                        <span>FUEL USED:</span>
+                        <strong id="stat-val-fuel">0.00%</strong>
+                    </div>
+                    <div class="stats-val-row">
+                        <span>DISTANCE TRAVELED:</span>
+                        <strong id="stat-val-dist">0.00 km</strong>
+                    </div>
+                    <div class="stats-val-row">
+                        <span>DECISIONS MADE:</span>
+                        <strong id="stat-val-decisions">0</strong>
+                    </div>
+                </div>
+
+                <div class="stats-rating-block">
+                    <span>MISSION COMMANDER RATING:</span>
+                    <div class="rating-grade" id="stat-val-rating">A+</div>
+                </div>
+
+                <button class="btn btn-primary btn-block" id="btn-stats-dismiss" style="margin-top: 1.5rem;">DISMISS TELEMETRY ARCHIVE</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Emergency overlay alert banner -->
     <div id="abort-warning-overlay" class="emergency-warning-banner" style="display: none;" role="status">

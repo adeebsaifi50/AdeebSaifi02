@@ -1,6 +1,6 @@
-/* ==========================================
-   SPACE MISSION CONTROL PANEL STYLES - v2.0
-   ========================================== */
+/* ==========================================================================
+   SPACE MISSION CONTROL SIMULATION STYLES - v3.0 PART 2
+   ========================================================================== */
 
 /* Space Body Base */
 .space-body {
@@ -178,6 +178,39 @@
     transition: height 0.1s ease;
 }
 
+/* Tabbed workspaces selector */
+.space-workspace-tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding-bottom: 0.5rem;
+}
+
+.ws-tab-btn {
+    background: var(--bg-accent);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    font-family: var(--font-mono), monospace;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ws-tab-btn:hover {
+    background: var(--bg-accent-hover);
+    color: var(--text-primary);
+}
+
+.ws-tab-btn.active {
+    background: var(--color-accent, #8b5cf6);
+    border-color: var(--color-accent, #8b5cf6);
+    color: white;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+}
+
 /* Grid workspace */
 .space-dashboard-grid {
     display: grid;
@@ -237,7 +270,187 @@
     font-size: 1.1rem;
 }
 
-/* Tabbed header version for graph card */
+/* Dynamic Campaign Objectives UI elements */
+.mission-campaign-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.campaign-mission-node {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.campaign-mission-node:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.campaign-mission-node.active {
+    border-color: var(--color-primary, #8b5cf6);
+    background: rgba(139, 92, 246, 0.08);
+}
+
+.campaign-mission-node.completed {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.campaign-mission-node.locked {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.node-title {
+    font-weight: 700;
+}
+
+.node-status {
+    font-size: 0.65rem;
+    font-family: var(--font-mono), monospace;
+    font-weight: 700;
+}
+
+.node-status.complete { color: #10b981; }
+.node-status.locked { color: rgba(255, 255, 255, 0.4); }
+.node-status.ready { color: #3b82f6; }
+
+.mission-active-objective-card {
+    background: rgba(139, 92, 246, 0.03);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    border-radius: 10px;
+    padding: 0.85rem;
+}
+
+.obj-hdr {
+    font-size: 0.65rem;
+    font-family: var(--font-mono), monospace;
+    font-weight: 800;
+    color: var(--color-primary, #8b5cf6);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.obj-desc {
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin: 0 0 0.6rem 0;
+    line-height: 1.4;
+}
+
+.progress-bar-container-v2 {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar-fill-v2 {
+    height: 100%;
+    background: var(--color-primary, #8b5cf6);
+    box-shadow: 0 0 8px var(--color-primary, #8b5cf6);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.obj-footer-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.68rem;
+    font-family: var(--font-mono), monospace;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.obj-reward {
+    color: #f59e0b;
+    font-weight: 700;
+}
+
+/* Satellite selector and cards */
+.sat-selector-list, .planet-selector-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.sat-select-btn, .planet-select-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 0.75rem;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.sat-select-btn:hover, .planet-select-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.sat-select-btn.active, .planet-select-btn.active {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.08);
+}
+
+.sat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.sat-title, .planet-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: white;
+    display: block;
+}
+
+.sat-sub, .planet-status {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.45);
+    display: block;
+}
+
+.planet-icon-indicator {
+    font-size: 1.4rem;
+}
+
+/* Panel Intro helper */
+.panel-intro {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin: -0.5rem 0 1rem 0;
+    line-height: 1.4;
+}
+
+/* Satellite Control buttons */
+.satellite-controls-deck, .planet-exploration-deck {
+    margin-top: 1.25rem;
+    border-top: 1px dashed rgba(255, 255, 255, 0.08);
+    padding-top: 1rem;
+}
+
+.sat-actuators-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+}
+
+/* Panel header tabs version */
 .panel-header-tabs {
     display: flex;
     align-items: center;
@@ -334,6 +547,11 @@
     padding: 0.4rem 0.8rem !important;
     font-size: 0.75rem !important;
     font-weight: 700;
+}
+
+.btn-block {
+    width: 100%;
+    margin-bottom: 0.5rem;
 }
 
 /* Flight timeline stages tracking */
@@ -549,6 +767,95 @@
     cursor: not-allowed;
 }
 
+/* Fictional local Mission AI assistant card (Part 2) */
+.ai-assistant-card {
+    background: rgba(139, 92, 246, 0.03);
+    border: 1px solid rgba(139, 92, 246, 0.12);
+}
+
+.ai-assistant-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.ai-pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.ai-title {
+    font-family: var(--font-mono), monospace;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--color-primary, #8b5cf6);
+    margin: 0;
+}
+
+.ai-assistant-body {
+    display: flex;
+    gap: 0.85rem;
+    align-items: center;
+}
+
+.ai-avatar-speech {
+    font-size: 1.5rem;
+}
+
+.ai-assistant-recommendation {
+    display: flex;
+    flex-direction: column;
+}
+
+.rec-label {
+    font-size: 0.58rem;
+    font-family: var(--font-mono), monospace;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.rec-text {
+    font-size: 0.76rem;
+    font-family: var(--font-mono), monospace;
+    font-weight: 600;
+    margin: 0.15rem 0 0 0;
+    line-height: 1.4;
+    color: var(--text-primary, #f3f4f6);
+}
+
+/* Mission run history table */
+.history-table-wrapper {
+    overflow-x: auto;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+    font-family: var(--font-mono), monospace;
+}
+
+.history-table th {
+    text-align: left;
+    padding: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.history-table td {
+    padding: 0.6rem 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.history-table td.empty-msg {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.35);
+    padding: 1.5rem;
+}
+
 /* Keyboard guide panel */
 .guide-panel {
     padding: 1.25rem 1.5rem;
@@ -713,6 +1020,63 @@ kbd {
     padding: 0.5rem 0.75rem;
 }
 
+/* Achievements grid */
+.achievements-gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+}
+
+.achievement-node {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    opacity: 0.35;
+    transition: all 0.2s;
+}
+
+.achievement-node.unlocked {
+    opacity: 1;
+    border-color: rgba(245, 158, 11, 0.3);
+    background: rgba(245, 158, 11, 0.03);
+}
+
+.achievement-node .badge-icon {
+    font-size: 1.25rem;
+}
+
+.achievement-node .badge-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.achievement-node .badge-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: white;
+}
+
+.achievement-node .badge-desc {
+    font-size: 0.58rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Environment / Free Play buttons */
+.freeplay-switches {
+    margin-bottom: 1.25rem;
+}
+
+.weather-btn-grid, .failure-btn-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+}
+
 /* BOTTOM PANEL: Command Deck Console */
 .space-bottom-panel {
     grid-column: span 3;
@@ -847,6 +1211,62 @@ kbd {
     margin-top: 0.4rem;
 }
 
+/* Detailed manual control panel (Part 2 character sliders) */
+.detailed-sliders-deck {
+    text-align: center;
+    width: 100%;
+}
+
+.character-sliders-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+}
+
+.char-slider-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 140px;
+    align-items: center;
+    gap: 1rem;
+}
+
+.char-lbl {
+    font-family: var(--font-mono), monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: left;
+}
+
+.char-range-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.08);
+    height: 5px;
+    border-radius: 3px;
+    outline: none;
+}
+
+.char-range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+}
+
+.char-progress {
+    font-family: var(--font-mono), monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #10b981;
+    text-align: left;
+    white-space: nowrap;
+}
+
 /* Direction Arrows Pad */
 .direction-arrows-grid {
     display: grid;
@@ -979,6 +1399,157 @@ kbd {
     cursor: pointer;
     box-shadow: 0 0 12px var(--color-primary, #8b5cf6);
     position: absolute;
+}
+
+/* Fictional alert overlays & decisions */
+.system-alert-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 5, 8, 0.85);
+    backdrop-filter: blur(15px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000000;
+}
+
+.alert-dialog-card, .stats-dialog-card {
+    background: #0d0d14;
+    border: 2px solid rgba(139, 92, 246, 0.25);
+    border-radius: 20px;
+    width: 90%;
+    max-width: 520px;
+    padding: 2rem;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+}
+
+.alert-dialog-header, .stats-dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding-bottom: 1rem;
+}
+
+.alert-pulsing-icon, .stats-icon {
+    font-size: 2.75rem;
+}
+
+.alert-title-block h2, .stats-title-block h2 {
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: white;
+    margin: 0;
+    letter-spacing: 0.02em;
+}
+
+.alert-sub, .stats-sub {
+    font-size: 0.65rem;
+    font-family: var(--font-mono), monospace;
+    font-weight: 800;
+    color: var(--color-primary, #8b5cf6);
+    display: block;
+    margin-top: 0.15rem;
+}
+
+.alert-dialog-body p, .stats-dialog-body p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-secondary, #d1d5db);
+    margin: 0 0 1.5rem 0;
+}
+
+.choice-title {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.4);
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.alert-choice-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.choice-btn {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    padding: 0.85rem 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.choice-btn:hover {
+    background: rgba(139, 92, 246, 0.08);
+    border-color: var(--color-primary, #8b5cf6);
+}
+
+.choice-btn .choice-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: white;
+}
+
+.choice-btn .choice-sub {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.45);
+    margin-top: 0.15rem;
+}
+
+/* Stats Modal details */
+.stats-rows-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+    margin-bottom: 1.5rem;
+}
+
+.stats-val-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.04);
+    padding-bottom: 0.35rem;
+}
+
+.stats-val-row span {
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
+}
+
+.stats-val-row strong {
+    color: white;
+}
+
+.stats-rating-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(245, 158, 11, 0.05);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    padding: 0.85rem 1.25rem;
+    border-radius: 12px;
+}
+
+.stats-rating-block span {
+    font-size: 0.72rem;
+    font-family: var(--font-mono), monospace;
+    font-weight: 800;
+    color: #f59e0b;
+}
+
+.rating-grade {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #f59e0b;
+    text-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
 }
 
 /* Emergency banner indicator overlay */

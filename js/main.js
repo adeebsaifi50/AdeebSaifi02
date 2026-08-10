@@ -305,6 +305,12 @@ function initInteractiveEasterEggs() {
             e.preventDefault();
             window.location.href = "city.html";
         }
+
+        // Space Mission Control Simulation: Ctrl + Shift + K
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            window.location.href = "space.html";
+        }
     });
 
     // Konami Code Easter Egg: ArrowUp, ArrowUp, ArrowDown, ArrowDown, ArrowLeft, ArrowRight, ArrowLeft, ArrowRight, B, A

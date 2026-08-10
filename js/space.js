@@ -1,9 +1,55 @@
 /* ==========================================================================
-   SPACE MISSION CONTROL SIMULATION ENGINE — HIGH FIDELITY CORE v2.0
+   SPACE MISSION CONTROL SIMULATION ENGINE — HIGH FIDELITY CORE v3.0 PART 2
    ========================================================================== */
+
+// Global Campaign Missions list (Part 2)
+const CampaignMissions = [
+    { id: "01", name: "FIRST LAUNCH", objective: "Launch spacecraft and cross atmospheric Max-Q.", reward: "Booster Badge", threshold: 15.0, progress: 0, status: "READY" },
+    { id: "02", name: "ORBIT INSERTION", objective: "Climb above LEO boundary (160km) and reach circularization velocity.", reward: "Orbit Badge", threshold: 160.0, progress: 0, status: "LOCKED" },
+    { id: "03", name: "SATELLITE DEPLOYMENT", objective: "Unlock satellite systems and circularize orbital path.", reward: "Commander Badge", threshold: 240.0, progress: 0, status: "LOCKED" },
+    { id: "04", name: "MOON FLYBY", objective: "Extend trajectory to execute a high flyby around the lunar sphere.", reward: "Moon Pilot Badge", threshold: 350.0, progress: 0, status: "LOCKED" },
+    { id: "05", name: "DEEP SPACE", objective: "Trigger propulsion to achieve Earth escape velocity (38,000 km/h).", reward: "Pioneer Badge", threshold: 38000.0, progress: 0, status: "LOCKED" },
+    { id: "06", name: "PLANET EXPLORATION", objective: "Navigate coordinate matrices to select and explore fictional planets.", reward: "Galaxy Explorer Medal", threshold: 100.0, progress: 0, status: "LOCKED" }
+];
+
+// Fictional Satellites
+const SatelliteAssets = [
+    { id: "0", name: "ADEEB-SAT 01", orbit: "LOW EARTH ORBIT (LEO)", alt: 320.0, speed: 27500, battery: 100.0, signal: 100.0, temp: 15.0, status: "NOMINAL", deployMode: false },
+    { id: "1", name: "ADEEB-SAT 02", orbit: "MID EARTH ORBIT (MEO)", alt: 850.0, speed: 22100, battery: 90.0, signal: 94.0, temp: 12.0, status: "NOMINAL", deployMode: true },
+    { id: "2", name: "ADEEB-SAT 03", orbit: "GEOSTATIONARY (GEO)", alt: 35780.0, speed: 11050, battery: 100.0, signal: 88.0, temp: 8.0, status: "NOMINAL", deployMode: false }
+];
+
+// Fictional Planets
+const PlanetAssets = [
+    { id: "0", name: "AURELIA", dist: "3.4 AU", gravity: "0.88 G", temp: "-14.0°C", atmosphere: "N2/CO2 Dense", resources: "Helium-3, Water", exploration: 14 },
+    { id: "1", name: "VYRON", dist: "7.1 AU", gravity: "1.42 G", temp: "155.0°C", atmosphere: "Methane Cloud", resources: "Heavy Metals, Quartz", exploration: 0 },
+    { id: "2", name: "NOVA-7", dist: "15.9 AU", gravity: "0.15 G", temp: "-225.0°C", atmosphere: "Vacuum", resources: "Frozen Neon, Xenon", exploration: 0 }
+];
+
+// Fictional Achievements
+const AchievementsList = [
+    { key: "first_launch", title: "🏆 First Launch", desc: "Initiate engine liftoff sequence", unlocked: false },
+    { key: "orbit_achieved", title: "🏆 Orbit Achieved", desc: "Cross the circular low Earth boundary", unlocked: false },
+    { key: "sat_commander", title: "🏆 Satellite Commander", desc: "Deploy solar arrays or adjust orbits", unlocked: false },
+    { key: "moon_explorer", title: "🏆 Moon Explorer", desc: "Reach lunar transit distances", unlocked: false },
+    { key: "deep_space_pioneer", title: "🏆 Deep Space Pioneer", desc: "Cruising into Deep Space Mode", unlocked: false },
+    { key: "perfect_mission", title: "🏆 Perfect Mission", desc: "No critical warnings logged", unlocked: false },
+    { key: "crisis_manager", title: "🏆 Crisis Manager", desc: "Recover from random system warnings", unlocked: false }
+];
 
 // Global state container
 const SpaceState = {
+    // Current Active Workspace Tab
+    activeWorkspace: "mission", // mission, satellite, planet, archives, freeplay
+
+    // Campaign Details
+    currentMissionIndex: 0,
+    activeSatIndex: 0,
+    activePlanetIndex: 0,
+    decisionsCount: 0,
+    warningsCount: 0,
+    isFreePlay: false,
+
     // Mission profile details
     missionName: "ADEEB-01",
     missionId: "COSMO-760228",
@@ -32,8 +78,20 @@ const SpaceState = {
     stageSeparated: false,
     solarArraysDeployed: false,
 
+    // Detailed manual calibrators sliders (Part 2)
+    calibrators: {
+        throttle: 0,
+        power: 100,
+        comm: 100,
+        nav: 50,
+        cooling: 30
+    },
+
+    // Space Weather Metrics (Part 2)
+    spaceWeather: "SUN NOMINAL", // SUN NOMINAL, SOLAR STIMULUS, METEOR SHOWER, SOLAR FLARE, RADIATION SPIKE
+
     // Graphics, Selected Views & Preferences
-    cameraMode: "mission", // mission, orbit, earth, satellite, deep, cinematic
+    cameraMode: "mission", // mission, rocket, orbit, satellite, moon, deep, planet, cinematic
     currentScale: 0.85, // for smooth camera transitions
     currentCameraY: 290, // for smooth camera transitions
     currentCameraX: 400, // for smooth camera transitions
@@ -248,6 +306,7 @@ function setFlightStage(stageId) {
         triggerAIOfficerMessage("BOOSTER IGNITION SEQUENCE CONFIRMED. STEERING GIMBAL ALIGNING.");
         logEvent("Booster engine ignition sequence nominal.", "nominal");
     } else if (stageId === "LIFTOFF") {
+        unlockAchievement("first_launch");
         playSynthBeep(440, 1.0, "sine", 0.2);
         playSynthBeep(880, 0.5, "sine", 0.1);
         triggerAIOfficerMessage("LIFTOFF! WE HAVE A LIFTOFF OF THE COSMO SATELLITE ORBITER.");
@@ -266,12 +325,14 @@ function setFlightStage(stageId) {
         triggerAIOfficerMessage("ENTERING VACUUM ORBIT PATH. STEERING APOGEE CIRCULARIZATION.");
         logEvent("Approaching transfer orbital apogee.", "system");
     } else if (stageId === "ORBIT") {
+        unlockAchievement("orbit_achieved");
         playSynthBeep(523.25, 0.4, "sine", 0.12);
         setTimeout(() => playSynthBeep(659.25, 0.4, "sine", 0.12), 150);
         setTimeout(() => playSynthBeep(783.99, 0.7, "sine", 0.12), 300);
         triggerAIOfficerMessage("STABLE EARTH ORBIT ACHIEVED! DEPLOYING SOLAR MATRIX ANTENNAS.");
         logEvent("Stable orbit established. Solar tracking array deployed.", "nominal");
     } else if (stageId === "DEEP SPACE") {
+        unlockAchievement("deep_space_pioneer");
         triggerAIOfficerMessage("ESCAPING LOW EARTH ORBIT. DEEP SPACE CRUISE ENGAGED.");
         logEvent("Earth escape velocity achieved. Cruising deep-space telemetry plot.", "nominal");
     } else if (stageId === "MISSION COMPLETE") {
@@ -281,6 +342,9 @@ function setFlightStage(stageId) {
         });
         triggerAIOfficerMessage("COSMO-760228 PAYLOAD HAS BEEN DELIVERED. MISSION COMPLETED!");
         logEvent("Payload deployment fully secured. All systems green.", "nominal");
+
+        // Open Statistics Dialog Modal (Part 2)
+        showMissionStatsDialog();
     }
 
     const stageBtn = document.getElementById("btn-manual-stage");
@@ -348,10 +412,13 @@ function updatePhysics(dT) {
     // Incremental clock time
     SpaceState.missionTime += dT;
 
+    // Sub-system calibrators affects (Part 2)
+    const effectiveThrottle = Math.max(SpaceState.throttle, SpaceState.calibrators.throttle);
+
     // Fuel usage mechanics
     let currentMass = PhysicsConstants.rocketMassDry;
     if (SpaceState.fuel > 0) {
-        const fuelUsed = PhysicsConstants.burnRate * (SpaceState.throttle / 100) * dT;
+        const fuelUsed = PhysicsConstants.burnRate * (effectiveThrottle / 100) * dT;
         SpaceState.fuel = Math.max(0.0, SpaceState.fuel - fuelUsed);
         currentMass += (PhysicsConstants.rocketMassWet - PhysicsConstants.rocketMassDry) * (SpaceState.fuel / 100);
     } else {
@@ -365,8 +432,8 @@ function updatePhysics(dT) {
 
     // Thrust vector calculation
     let thrustAccel = 0;
-    if (SpaceState.engineIgnited && SpaceState.throttle > 0 && SpaceState.fuel > 0) {
-        thrustAccel = (SpaceState.throttle / 100) * PhysicsConstants.maxThrust * (PhysicsConstants.rocketMassWet / currentMass);
+    if (SpaceState.engineIgnited && effectiveThrottle > 0 && SpaceState.fuel > 0) {
+        thrustAccel = (effectiveThrottle / 100) * PhysicsConstants.maxThrust * (PhysicsConstants.rocketMassWet / currentMass);
     }
 
     const currentGravity = PhysicsConstants.g0 * Math.pow(PhysicsConstants.re / (PhysicsConstants.re + SpaceState.altitude), 2);
@@ -403,31 +470,44 @@ function updatePhysics(dT) {
     const distanceGain = Math.abs(velHorizKmH / 3600.0) * dT;
     SpaceState.distance += Math.sqrt(altitudeGain * altitudeGain + distanceGain * distanceGain);
 
-    // Thermal limits
-    const targetTemp = 24.0 + (SpaceState.throttle / 100) * 1150 + (airDensity * Math.pow(SpaceState.velocity / 1000, 2) * 75);
+    // Thermal limits modified by Cooling regulator (Part 2)
+    const coolingFactor = SpaceState.calibrators.cooling / 30.0;
+    const targetTemp = 24.0 + (effectiveThrottle / 100) * 1150 + (airDensity * Math.pow(SpaceState.velocity / 1000, 2) * 75);
     if (SpaceState.temp < targetTemp) {
-        SpaceState.temp = Math.min(PhysicsConstants.maxTemp, SpaceState.temp + (130 * dT));
+        SpaceState.temp = Math.min(PhysicsConstants.maxTemp, SpaceState.temp + (130 * dT / coolingFactor));
     } else {
-        SpaceState.temp = Math.max(24.0, SpaceState.temp - (PhysicsConstants.coolingRate * dT));
+        SpaceState.temp = Math.max(24.0, SpaceState.temp - (PhysicsConstants.coolingRate * dT * coolingFactor));
+    }
+
+    // Space weather impacts on Telemetry (Part 2)
+    if (SpaceState.spaceWeather === "SOLAR FLARE") {
+        SpaceState.temp = Math.min(PhysicsConstants.maxTemp, SpaceState.temp + (15 * dT));
+        SpaceState.signal = Math.max(5, SpaceState.signal - (8 * dT));
+    } else if (SpaceState.spaceWeather === "RADIATION SPIKE") {
+        SpaceState.battery = Math.max(0, SpaceState.battery - (4 * dT));
+        SpaceState.signal = Math.max(2, SpaceState.signal - (15 * dT));
     }
 
     // Warn of thermal warning threshold
     if (SpaceState.temp > 1200 && Math.random() < 0.01) {
+        SpaceState.warningsCount++;
         logEvent("WARNING: Heavy compressional friction. Core thermal boundaries reached.", "critical");
     }
 
     SpaceState.cabinPressure = Math.max(0, 101.32 * Math.exp(-SpaceState.altitude / PhysicsConstants.atmScaleHeight));
 
-    // Solar Arrays & battery
+    // Solar Arrays & battery matching Power Slider
+    const powerLevelFactor = SpaceState.calibrators.power / 100.0;
     if (SpaceState.solarArraysDeployed) {
-        SpaceState.battery = Math.min(100.0, SpaceState.battery + (PhysicsConstants.solarChargeRate * dT));
+        SpaceState.battery = Math.min(100.0, SpaceState.battery + (PhysicsConstants.solarChargeRate * dT * powerLevelFactor));
     } else {
-        SpaceState.battery = Math.max(0.0, SpaceState.battery - (PhysicsConstants.batteryDrainRate * dT));
+        SpaceState.battery = Math.max(0.0, SpaceState.battery - (PhysicsConstants.batteryDrainRate * dT / powerLevelFactor));
     }
 
-    // Communication signal decay
+    // Communication signal decay matching Comm Slider
+    const commLevelFactor = SpaceState.calibrators.comm / 100.0;
     const signalLoss = (SpaceState.distance / 1500.0);
-    SpaceState.signal = SpaceState.commActive ? Math.max(8, 100 - signalLoss) : 0;
+    SpaceState.signal = SpaceState.commActive ? Math.max(8, (100 - signalLoss) * commLevelFactor) : 0;
 
     // Automatic flight progression levels
     if (SpaceState.status === "LIFTOFF" && SpaceState.altitude > 0.5) {
@@ -448,8 +528,421 @@ function updatePhysics(dT) {
         setFlightStage("MISSION COMPLETE");
     }
 
+    // Campaign Objectives Progress update (Part 2)
+    if (!SpaceState.isFreePlay) {
+        updateCampaignProgress();
+    }
+
+    // Local rule-based Mission AI recommendations (Part 2)
+    updateAICoPilotDiagnostics();
+
+    // Random failure injector (Part 2)
+    if (Math.random() < 0.0015 && SpaceState.status !== "PRE-LAUNCH" && SpaceState.status !== "COUNTDOWN" && SpaceState.status !== "MISSION COMPLETE" && !SpaceState.isPaused) {
+        triggerRandomSystemEvent();
+    }
+
     updateEngineSound();
     saveHistoryStats();
+}
+
+/* ==========================================================================
+   PART 2 CAMPAIGN OBJECTIVE PROGRESS UPDATES
+   ========================================================================== */
+
+function updateCampaignProgress() {
+    const activeMission = CampaignMissions[SpaceState.currentMissionIndex];
+    let rawProg = 0;
+
+    if (SpaceState.currentMissionIndex === 0) {
+        // FIRST LAUNCH: Cross atmospheric drag threshold
+        rawProg = (SpaceState.altitude / activeMission.threshold) * 100;
+    } else if (SpaceState.currentMissionIndex === 1) {
+        // ORBIT INSERTION: Climb above 160km Low Earth Orbit
+        rawProg = (SpaceState.altitude / activeMission.threshold) * 100;
+    } else if (SpaceState.currentMissionIndex === 2) {
+        // SATELLITE DEPLOYMENT: Cross 240km altitude apogee
+        rawProg = (SpaceState.altitude / activeMission.threshold) * 100;
+    } else if (SpaceState.currentMissionIndex === 3) {
+        // MOON FLYBY: Cross 350km altitude
+        rawProg = (SpaceState.altitude / activeMission.threshold) * 100;
+    } else if (SpaceState.currentMissionIndex === 4) {
+        // DEEP SPACE: Climb speed up to 38000 km/h
+        rawProg = (SpaceState.velocity / activeMission.threshold) * 100;
+    } else if (SpaceState.currentMissionIndex === 5) {
+        // PLANET EXPLORATION: Scan Aurelia planet progress
+        rawProg = PlanetAssets[0].exploration;
+    }
+
+    activeMission.progress = Math.min(100, Math.max(0, Math.floor(rawProg)));
+
+    // Auto-advance unlock of next mission node
+    if (activeMission.progress >= 100 && activeMission.status !== "COMPLETED") {
+        activeMission.status = "COMPLETED";
+        logEvent(`CAMPAIGN MISSION ${activeMission.id} SECURED! REWARD UNLOCKED: ${activeMission.reward}.`, "nominal");
+        playSynthBeep(880, 0.4, "sine");
+
+        // Unlock next campaign mission node
+        if (SpaceState.currentMissionIndex + 1 < CampaignMissions.length) {
+            CampaignMissions[SpaceState.currentMissionIndex + 1].status = "READY";
+        }
+
+        renderCampaignMissionsList();
+    }
+
+    // Draw progression variables on Left Panel
+    const progBar = document.getElementById("active-objective-progress-bar");
+    if (progBar) progBar.style.width = `${activeMission.progress}%`;
+    const pctLbl = document.getElementById("active-objective-pct");
+    if (pctLbl) pctLbl.innerText = `${activeMission.progress}%`;
+}
+
+function selectCampaignMissionNode(index) {
+    if (CampaignMissions[index].status === "LOCKED") {
+        playSynthBeep(220, 0.25, "sawtooth");
+        logEvent("WARNING: Secure preceding campaign orbit tracks to unlock mission telemetry.", "warning");
+        return;
+    }
+
+    SpaceState.currentMissionIndex = index;
+    const mission = CampaignMissions[index];
+
+    // Set UI displays
+    document.getElementById("mission-name").innerText = `COSMO-${mission.id}`;
+    document.getElementById("active-objective-text").innerText = mission.objective;
+    document.getElementById("active-objective-reward").innerText = `REWARD: ${mission.reward}`;
+
+    renderCampaignMissionsList();
+    playSynthBeep(580, 0.1);
+    logEvent(`Active orbital objective synchronized: ${mission.name}`, "system");
+}
+
+function renderCampaignMissionsList() {
+    const container = document.getElementById("campaign-list-container");
+    if (!container) return;
+
+    container.innerHTML = "";
+    CampaignMissions.forEach((m, idx) => {
+        const node = document.createElement("button");
+        node.className = `campaign-mission-node ${idx === SpaceState.currentMissionIndex ? "active" : ""} ${m.status === "COMPLETED" ? "completed" : ""} ${m.status === "LOCKED" ? "locked" : ""}`;
+
+        let subText = "Locked Matrix";
+        if (m.status === "COMPLETED") subText = "Objective Secured";
+        else if (m.status === "READY") subText = `Objective Unlocked • ${m.progress}%`;
+
+        node.innerHTML = `
+            <span class="node-title">${m.id}. ${m.name}</span>
+            <span class="node-status ${m.status.toLowerCase()}">${m.status}</span>
+        `;
+
+        if (m.status !== "LOCKED") {
+            node.addEventListener("click", () => selectCampaignMissionNode(idx));
+        }
+
+        container.appendChild(node);
+    });
+}
+
+/* ==========================================================================
+   PART 2 LOCAL AI DIAGNOSTICS LOGIC
+   ========================================================================== */
+
+function updateAICoPilotDiagnostics() {
+    const msgEl = document.getElementById("ai-recommendation-msg");
+    if (!msgEl) return;
+
+    let advice = "Simulation metrics nominal. Pitch deviation within safe vectors. Continue core burns.";
+
+    if (SpaceState.hasAborted) {
+        advice = "EMERGENCY: Escape towers active. Safe ground reset in progress.";
+    } else if (SpaceState.temp > 1200) {
+        advice = "CRITICAL: Engine core heating exponentially! Action: Drag down cooling regulator or throttle back power immediately!";
+    } else if (SpaceState.fuel < 15 && SpaceState.status !== "MISSION COMPLETE") {
+        advice = "ALERT: Propulsion fuel below emergency limits (15%). Thrust capability depleting.";
+    } else if (SpaceState.gForce > 6.0) {
+        advice = "WARNING: Aerodynamic G-force loads high! Recommend throttle power back to 60% for passenger integrity.";
+    } else if (SpaceState.signal < 30 && SpaceState.commActive) {
+        advice = "COMM DELAY: Direct telemetry signals weakening. Reroute power to backups or switch on backup Relays.";
+    } else if (SpaceState.battery < 20) {
+        advice = "POWER FLIGHT: Internal power low! Activate Solar Array Deployment Mode <kbd>D</kbd> instantly.";
+    } else if (SpaceState.spaceWeather === "SOLAR FLARE") {
+        advice = "WEATHER ALERT: Extreme solar flare active. Reroute backup Cooling cells to protect thermal boundaries.";
+    } else if (SpaceState.status === "STAGE SEPARATION" && !SpaceState.stageSeparated) {
+        advice = "SEQUENCE TRIGGER: Booster fuel spent. Activate Manual decoupling stage rocket trigger immediately!";
+    } else if (SpaceState.status === "ORBIT") {
+        advice = "ORBIT NOMINAL: Circular trajectories stable. Mission payloads deployment ready.";
+    }
+
+    msgEl.innerHTML = advice;
+}
+
+/* ==========================================================================
+   PART 2 RANDOM EVENTS & SAFE FAILURE DECISION MAKER
+   ========================================================================== */
+
+const SimulatedFailures = [
+    {
+        title: "⚠️ ENGINE TEMPERATURE HIGH",
+        desc: "Booster combustion core boundaries overheating rapidly! Danger of nozzle melt.",
+        choices: [
+            { text: "REDUCE THROTTLE POWER (60%)", outcome: "Nominal thermal decline. Minor climb delay.", effect: () => { SpaceState.throttle = Math.min(60, SpaceState.throttle); SpaceState.temp -= 250; } },
+            { text: "ACTIVATE EMERGENCY COOLING CELLS", outcome: "Cooling system stabilized. Minor battery drain.", effect: () => { SpaceState.temp -= 400; SpaceState.battery = Math.max(10, SpaceState.battery - 15); } },
+            { text: "IGNORE SYSTEM WARNING", outcome: "Core thermal limit breached. Minor structural leakage.", effect: () => { SpaceState.temp += 100; SpaceState.warningsCount++; } }
+        ]
+    },
+    {
+        title: "⚠️ COMMUNICATION LINE DELAY",
+        desc: "Ionospheric solar winds are distorting direct ground telemetry. Command signals dropping.",
+        choices: [
+            { text: "RESTART CENTRAL ROUTER RELAYS", outcome: "Comm line recalibrated. Telemetry nominal.", effect: () => { SpaceState.signal = Math.min(100, SpaceState.signal + 25); } },
+            { text: "SWITCH TO BACKUP FREQUENCY", outcome: "Frequency hop complete. Power grids loaded.", effect: () => { SpaceState.signal = Math.min(100, SpaceState.signal + 40); SpaceState.battery = Math.max(10, SpaceState.battery - 10); } },
+            { text: "ABORT MISSION SEQUENCE", outcome: "Abort aborted. Signal remained unstable.", effect: () => { triggerAbortSequence(); } }
+        ]
+    },
+    {
+        title: "⚠️ POWER FLIGHT SYSTEM UNSTABLE",
+        desc: "Main generator cells experienced transient grid faults. Auxiliary battery drain detected.",
+        choices: [
+            { text: "REROUTE SOLAR PANEL CORES", outcome: "Power grid bypass nominal. Minor comm interference.", effect: () => { SpaceState.battery = Math.min(100, SpaceState.battery + 20); SpaceState.signal = Math.max(10, SpaceState.signal - 15); } },
+            { text: "CYCLE AUXILIARY BUS BREAKER", outcome: "Voltage transient secured.", effect: () => { SpaceState.battery = Math.min(100, SpaceState.battery + 10); } }
+        ]
+    }
+];
+
+function triggerRandomSystemEvent() {
+    if (SpaceState.hasAborted || SpaceState.status === "MISSION COMPLETE") return;
+
+    SpaceState.decisionsCount++;
+    const idx = Math.floor(Math.random() * SimulatedFailures.length);
+    const failure = SimulatedFailures[idx];
+
+    const modal = document.getElementById("system-alert-modal");
+    if (!modal) return;
+
+    document.getElementById("alert-title").innerText = failure.title;
+    document.getElementById("alert-description").innerText = failure.desc;
+
+    const choiceContainer = document.getElementById("alert-choice-container");
+    choiceContainer.innerHTML = "";
+
+    failure.choices.forEach(c => {
+        const btn = document.createElement("button");
+        btn.className = "choice-btn";
+        btn.innerHTML = `
+            <span class="choice-label">${c.text}</span>
+            <span class="choice-sub">PROBABLE EFFECT: ${c.outcome}</span>
+        `;
+        btn.addEventListener("click", () => {
+            // Apply decision effects
+            c.effect();
+            modal.style.display = "none";
+            logEvent(`DECISION EXECUTED: ${c.text}. Result: ${c.outcome}`, "nominal");
+            playSynthBeep(440, 0.15);
+            unlockAchievement("crisis_manager");
+        });
+        choiceContainer.appendChild(btn);
+    });
+
+    playSynthBeep(330, 0.8, "sawtooth", 0.15);
+    modal.style.display = "flex";
+}
+
+/* ==========================================================================
+   PART 2 SATELLITE ASSET MANAGER & ACTIONS
+   ========================================================================== */
+
+function selectSatelliteAsset(index) {
+    SpaceState.activeSatIndex = index;
+    const sat = SatelliteAssets[index];
+
+    // Restore buttons active highlights
+    for (let i = 0; i < 3; i++) {
+        const btn = document.getElementById(`btn-sat-${i}`);
+        if (btn) btn.classList.remove("active");
+    }
+    const activeBtn = document.getElementById(`btn-sat-${index}`);
+    if (activeBtn) activeBtn.classList.add("active");
+
+    // Sync Right Panel displays
+    document.getElementById("sat-detail-name").innerText = sat.name;
+    document.getElementById("sat-detail-orbit").innerText = sat.orbit;
+    document.getElementById("sat-detail-alt").innerText = `${sat.alt.toFixed(2)} km`;
+    document.getElementById("sat-detail-speed").innerText = `${sat.speed.toLocaleString()} km/h`;
+    document.getElementById("sat-detail-battery").innerText = `${sat.battery.toFixed(0)}%`;
+    document.getElementById("sat-detail-battery-bar").style.width = `${sat.battery}%`;
+    document.getElementById("sat-detail-signal").innerText = `${sat.signal.toFixed(0)}%`;
+    document.getElementById("sat-detail-temp").innerText = `${sat.temp.toFixed(1)}°C`;
+    document.getElementById("sat-detail-status").innerText = sat.status;
+
+    playSynthBeep(600, 0.08);
+}
+
+function adjustSatelliteOrbit(direction) {
+    const sat = SatelliteAssets[SpaceState.activeSatIndex];
+    if (direction === "up") {
+        sat.alt += 45;
+        sat.speed = Math.max(5000, sat.speed - 350);
+        logEvent(`SATELLITE ACTUATOR: ${sat.name} circular orbit altitude elevated.`, "nominal");
+    } else {
+        sat.alt = Math.max(160, sat.alt - 45);
+        sat.speed += 350;
+        logEvent(`SATELLITE ACTUATOR: ${sat.name} orbital boundary declined.`, "warning");
+    }
+    selectSatelliteAsset(SpaceState.activeSatIndex);
+    unlockAchievement("sat_commander");
+}
+
+function rotateSatellite() {
+    const sat = SatelliteAssets[SpaceState.activeSatIndex];
+    sat.temp = Math.min(85, sat.temp + 2.5);
+    logEvent(`SATELLITE ACTUATOR: ${sat.name} reaction wheels rotated 15 deg East.`, "nominal");
+    selectSatelliteAsset(SpaceState.activeSatIndex);
+}
+
+function toggleSatellitePower() {
+    const sat = SatelliteAssets[SpaceState.activeSatIndex];
+    sat.deployMode = !sat.deployMode;
+    sat.battery = sat.deployMode ? Math.min(100, sat.battery + 10) : Math.max(10, sat.battery - 15);
+    logEvent(`SATELLITE ACTUATOR: ${sat.name} solar core trackers toggled. Battery level: ${sat.battery.toFixed(0)}%`, "nominal");
+    selectSatelliteAsset(SpaceState.activeSatIndex);
+}
+
+/* ==========================================================================
+   PART 2 PLANET EXPLORATION COMPONENT
+   ========================================================================== */
+
+function selectPlanetAsset(index) {
+    SpaceState.activePlanetIndex = index;
+    const planet = PlanetAssets[index];
+
+    // Highlight left panels buttons
+    for (let i = 0; i < 3; i++) {
+        const btn = document.getElementById(`btn-planet-${i}`);
+        if (btn) btn.classList.remove("active");
+    }
+    const activeBtn = document.getElementById(`btn-planet-${index}`);
+    if (activeBtn) activeBtn.classList.add("active");
+
+    // Sync Right Panel displays
+    document.getElementById("planet-detail-name").innerText = planet.name;
+    document.getElementById("planet-detail-dist").innerText = planet.dist;
+    document.getElementById("planet-detail-gravity").innerText = planet.gravity;
+    document.getElementById("planet-detail-temp").innerText = planet.temp;
+    document.getElementById("planet-detail-atmo").innerText = planet.atmosphere;
+    document.getElementById("planet-detail-resources").innerText = planet.resources;
+    document.getElementById("planet-detail-exploration").innerText = `${planet.exploration}%`;
+    document.getElementById("planet-detail-exploration-bar").style.width = `${planet.exploration}%`;
+
+    playSynthBeep(650, 0.08);
+}
+
+function scanPlanetSurface() {
+    const planet = PlanetAssets[SpaceState.activePlanetIndex];
+    if (planet.exploration >= 100) {
+        logEvent(`PLANET SCANNER: Aurelia surface 100% catalogued. Resources archived.`, "nominal");
+        return;
+    }
+
+    planet.exploration = Math.min(100, planet.exploration + 15);
+    logEvent(`PLANET SCANNER: Mapping surface anomalies of ${planet.name}. Exploration at ${planet.exploration}%.`, "nominal");
+    selectPlanetAsset(SpaceState.activePlanetIndex);
+    playSynthBeep(880, 0.15, "triangle");
+}
+
+function deployPlanetRover() {
+    const planet = PlanetAssets[SpaceState.activePlanetIndex];
+    logEvent(`SURFACE ROVER: Landed crawler telemetry established on ${planet.name}. Surface coordinates latent.`, "nominal");
+    playSynthBeep(520, 0.4, "sine");
+}
+
+/* ==========================================================================
+   PART 2 ACHIEVEMENTS PERSISTENCE & POPULATION
+   ========================================================================== */
+
+function unlockAchievement(key) {
+    const item = AchievementsList.find(a => a.key === key);
+    if (item && !item.unlocked) {
+        item.unlocked = true;
+        logEvent(`🏆 ACHIEVEMENT SECURED: ${item.title}. ${item.desc}.`, "nominal");
+        renderAchievementsGallery();
+        saveMissionStateToDisk();
+    }
+}
+
+function renderAchievementsGallery() {
+    const container = document.getElementById("achievements-gallery-container");
+    if (!container) return;
+
+    container.innerHTML = "";
+    AchievementsList.forEach(a => {
+        const node = document.createElement("div");
+        node.className = `achievement-node ${a.unlocked ? "unlocked" : ""}`;
+        node.innerHTML = `
+            <div class="badge-icon">${a.unlocked ? "⭐" : "🔒"}</div>
+            <div class="badge-details">
+                <span class="badge-title">${a.title}</span>
+                <span class="badge-desc">${a.desc}</span>
+            </div>
+        `;
+        container.appendChild(node);
+    });
+}
+
+/* ==========================================================================
+   PART 2 MISSION STATISTICS MODAL
+   ========================================================================== */
+
+function showMissionStatsDialog() {
+    const modal = document.getElementById("mission-stats-modal");
+    if (!modal) return;
+
+    // Load statistics fields
+    document.getElementById("stat-val-time").innerText = formatTimeSpan(SpaceState.missionTime);
+    document.getElementById("stat-val-alt").innerText = `${SpaceState.altitude.toFixed(2)} km`;
+    const maxV = Math.max(...(SpaceState.history.velocity.length > 0 ? SpaceState.history.velocity : [SpaceState.velocity]));
+    document.getElementById("stat-val-vel").innerText = `${maxV.toFixed(1)} km/h`;
+
+    const maxFuelUsed = 100.0 - SpaceState.fuel;
+    document.getElementById("stat-val-fuel").innerText = `${maxFuelUsed.toFixed(1)}%`;
+    document.getElementById("stat-val-dist").innerText = `${SpaceState.distance.toFixed(2)} km`;
+    document.getElementById("stat-val-decisions").innerText = SpaceState.decisionsCount;
+
+    // Commander Rating Formula
+    let grade = "A+";
+    if (SpaceState.warningsCount > 4) grade = "B-";
+    else if (SpaceState.warningsCount > 2) grade = "B";
+    else if (SpaceState.warningsCount > 0) grade = "A";
+
+    if (SpaceState.warningsCount === 0 && maxFuelUsed < 80) {
+        grade = "S (PERFECT)";
+        unlockAchievement("perfect_mission");
+    }
+
+    document.getElementById("stat-val-rating").innerText = grade;
+
+    // Append to Mission History archives log
+    saveMissionToHistoryTable(grade);
+
+    modal.style.display = "flex";
+}
+
+function saveMissionToHistoryTable(rating) {
+    const tbody = document.getElementById("mission-history-tbody");
+    if (!tbody) return;
+
+    // Clear empty messages if any
+    const emptyRow = tbody.querySelector(".empty-msg");
+    if (emptyRow) tbody.innerHTML = "";
+
+    const tr = document.createElement("tr");
+    const mId = `COSMO-${Math.floor(Math.random() * 900000 + 100000)}`;
+    tr.innerHTML = `
+        <td>${mId}</td>
+        <td>${formatTimeSpan(SpaceState.missionTime)}</td>
+        <td>${SpaceState.altitude.toFixed(1)} km</td>
+        <td style="color:#f59e0b;font-weight:bold;">${rating}</td>
+        <td><button class="btn btn-secondary btn-xs" onclick="window.location.reload();">REPLAY</button></td>
+    `;
+    tbody.appendChild(tr);
 }
 
 /* ==========================================================================
@@ -603,8 +1096,9 @@ function initStars() {
     }
 
     // Establish simulated satellites in geo orbit loops
-    satellitePaths.push({ angle: 0, radius: 290, speed: 0.002, color: "#a855f7" });
-    satellitePaths.push({ angle: Math.PI / 3, radius: 335, speed: -0.0015, color: "#14b8a6" });
+    satellitePaths.push({ angle: 0, radius: 240, speed: 0.002, color: "#a855f7" });
+    satellitePaths.push({ angle: Math.PI / 3, radius: 290, speed: -0.0015, color: "#14b8a6" });
+    satellitePaths.push({ angle: Math.PI / 1.5, radius: 335, speed: 0.001, color: "#f59e0b" });
 }
 
 function drawSpaceTheater(canvas, ctx) {
@@ -625,6 +1119,11 @@ function drawSpaceTheater(canvas, ctx) {
     });
     ctx.globalAlpha = 1.0;
 
+    // Part 2 Deep Space Mode Gaseous Nebula Renderings
+    if (SpaceState.altitude > 280.0 || SpaceState.status === "DEEP SPACE" || SpaceState.cameraMode === "deep") {
+        drawNebulaCinematic(ctx, w, h);
+    }
+
     // Handle viewport camera projections
     let targetScale = 1.0;
     let targetCameraX = w / 2;
@@ -642,16 +1141,26 @@ function drawSpaceTheater(canvas, ctx) {
     if (SpaceState.cameraMode === "mission") {
         targetScale = 0.85;
         targetCameraY = h / 2 + 50;
+    } else if (SpaceState.cameraMode === "rocket") {
+        targetScale = 2.2;
+        const angleRad = (SpaceState.trajectoryAngle * Math.PI) / 180.0;
+        const orbitalRadius = 170 + SpaceState.altitude;
+        targetCameraX = w / 2 - (orbitalRadius * Math.sin(angleRad) * targetScale);
+        targetCameraY = h / 2 - ((180 - orbitalRadius * Math.cos(angleRad)) * targetScale);
     } else if (SpaceState.cameraMode === "orbit") {
         targetScale = 0.48;
-    } else if (SpaceState.cameraMode === "earth") {
-        targetScale = 1.1;
-        targetCameraY = h / 2 + 180;
     } else if (SpaceState.cameraMode === "satellite") {
         targetScale = 0.65;
         targetCameraY = h / 2 + 20;
+    } else if (SpaceState.cameraMode === "moon") {
+        targetScale = 1.6;
+        targetCameraX = w / 2 - 330 * targetScale;
+        targetCameraY = h / 2 + 220 * targetScale;
     } else if (SpaceState.cameraMode === "deep") {
         targetScale = 0.32;
+    } else if (SpaceState.cameraMode === "planet") {
+        targetScale = 1.8;
+        targetCameraY = h / 2 + 10;
     } else if (SpaceState.cameraMode === "cinematic") {
         // Smooth sine panning sweeps
         targetScale = 0.75 + Math.sin(Date.now() / 3000) * 0.15;
@@ -690,6 +1199,17 @@ function drawSpaceTheater(canvas, ctx) {
             sat.angle += sat.speed;
         });
     }
+}
+
+function drawNebulaCinematic(ctx, w, h) {
+    ctx.save();
+    const grad = ctx.createRadialGradient(w/2, h/2, 20, w/2, h/2, w);
+    grad.addColorStop(0, "rgba(139, 92, 246, 0.05)");
+    grad.addColorStop(0.5, "rgba(20, 184, 166, 0.03)");
+    grad.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,w,h);
+    ctx.restore();
 }
 
 function drawOrbitPaths(ctx) {
@@ -954,12 +1474,13 @@ function drawSpacecraftPointer(ctx) {
 
     // Render modern tactical telemetry HUD pointer (No illustrative rocket body)
     // 1. Engine flare vector
-    if (SpaceState.engineIgnited && SpaceState.throttle > 0 && !SpaceState.isPaused) {
+    const effectiveThrottle = Math.max(SpaceState.throttle, SpaceState.calibrators.throttle);
+    if (SpaceState.engineIgnited && effectiveThrottle > 0 && !SpaceState.isPaused) {
         ctx.strokeStyle = "#ef4444";
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(0, 5);
-        ctx.lineTo(0, 5 + (SpaceState.throttle / 100) * 15 + Math.random() * 5);
+        ctx.lineTo(0, 5 + (effectiveThrottle / 100) * 15 + Math.random() * 5);
         ctx.stroke();
 
         // Thrust particle ring glows
@@ -1053,7 +1574,12 @@ function saveMissionStateToDisk() {
             soundMuted: SpaceState.soundMuted,
             cameraMode: SpaceState.cameraMode,
             quality: SpaceState.quality,
-            activeTab: SpaceState.activeTab
+            activeTab: SpaceState.activeTab,
+            currentMissionIndex: SpaceState.currentMissionIndex,
+            activeSatIndex: SpaceState.activeSatIndex,
+            activePlanetIndex: SpaceState.activePlanetIndex,
+            achievements: AchievementsList.map(a => ({ key: a.key, unlocked: a.unlocked })),
+            campaign: CampaignMissions.map(m => ({ id: m.id, status: m.status, progress: m.progress }))
         };
         localStorage.setItem("COSMO_SAVE_STATE", JSON.stringify(payload));
     } catch (e) {}
@@ -1062,7 +1588,11 @@ function saveMissionStateToDisk() {
 function loadMissionStateFromDisk() {
     try {
         const raw = localStorage.getItem("COSMO_SAVE_STATE");
-        if (!raw) return;
+        if (!raw) {
+            renderCampaignMissionsList();
+            renderAchievementsGallery();
+            return;
+        }
 
         const data = JSON.parse(raw);
         SpaceState.status = data.status || "PRE-LAUNCH";
@@ -1077,6 +1607,29 @@ function loadMissionStateFromDisk() {
         SpaceState.cameraMode = data.cameraMode || "mission";
         SpaceState.quality = data.quality || "high";
         SpaceState.activeTab = data.activeTab || "altitude";
+
+        SpaceState.currentMissionIndex = data.currentMissionIndex || 0;
+        SpaceState.activeSatIndex = data.activeSatIndex || 0;
+        SpaceState.activePlanetIndex = data.activePlanetIndex || 0;
+
+        // Restore achievements
+        if (data.achievements) {
+            data.achievements.forEach(saved => {
+                const item = AchievementsList.find(a => a.key === saved.key);
+                if (item) item.unlocked = saved.unlocked;
+            });
+        }
+
+        // Restore Campaign levels
+        if (data.campaign) {
+            data.campaign.forEach(saved => {
+                const item = CampaignMissions.find(m => m.id === saved.id);
+                if (item) {
+                    item.status = saved.status;
+                    item.progress = saved.progress;
+                }
+            });
+        }
 
         // Restore tab buttons active classes
         const tabs = ["alt", "vel", "fuel", "temp", "sig"];
@@ -1108,6 +1661,17 @@ function loadMissionStateFromDisk() {
         }
 
         renderStagesTimeline();
+        renderCampaignMissionsList();
+        renderAchievementsGallery();
+        selectSatelliteAsset(SpaceState.activeSatIndex);
+        selectPlanetAsset(SpaceState.activePlanetIndex);
+
+        // Update active objective details
+        const activeMission = CampaignMissions[SpaceState.currentMissionIndex];
+        document.getElementById("mission-name").innerText = `COSMO-${activeMission.id}`;
+        document.getElementById("active-objective-text").innerText = activeMission.objective;
+        document.getElementById("active-objective-reward").innerText = `REWARD: ${activeMission.reward}`;
+
         logEvent("COSMO-760228 telemetry save matrix restored from Disk.", "system");
     } catch (e) {}
 }
@@ -1183,6 +1747,47 @@ function formatTimeSpan(seconds) {
     const m = Math.floor((seconds % 3600) / 60);
     const s = Math.floor(seconds % 60);
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+/* ==========================================================================
+   PART 2 CHARACTER-BASED PROGRESS SLIDER DRAWING
+   ========================================================================== */
+
+function setupCharacterSliders() {
+    const keys = ["throttle", "power", "comm", "nav", "cooling"];
+    keys.forEach(key => {
+        const slider = document.getElementById(`slider-manual-${key}`);
+        const text = document.getElementById(`char-progress-${key}`);
+        if (slider && text) {
+            slider.addEventListener("input", (e) => {
+                const val = parseInt(e.target.value);
+                SpaceState.calibrators[key] = val;
+
+                // Generate character blocks [█████░░░░░]
+                const blocksCount = Math.floor(val / 10);
+                const solid = "█".repeat(blocksCount);
+                const empty = "░".repeat(10 - blocksCount);
+                text.innerText = `[${solid}${empty}] ${val}%`;
+
+                // Handle actual physics couplings
+                if (key === "throttle") {
+                    SpaceState.throttle = val;
+                    if (val > 0 && !SpaceState.engineIgnited) {
+                        SpaceState.engineIgnited = true;
+                    } else if (val === 0) {
+                        SpaceState.engineIgnited = false;
+                    }
+                    const mainSlider = document.getElementById("throttle-input");
+                    if (mainSlider) mainSlider.value = val;
+                    const mainLbl = document.getElementById("throttle-display-val");
+                    if (mainLbl) mainLbl.innerText = `${val}%`;
+                    updateEngineSound();
+                }
+
+                playSynthBeep(600 + val, 0.05);
+            });
+        }
+    });
 }
 
 /* ==========================================================================
@@ -1404,6 +2009,209 @@ function setupInputs() {
                 initAudio();
                 updateEngineSound();
             }
+        });
+    }
+
+    // Part 2 Workspaces switcher navigation
+    const wsButtons = ["mission", "satellite", "planet", "archives", "freeplay"];
+    wsButtons.forEach(wsId => {
+        const btn = document.getElementById(`tab-ws-${wsId}`);
+        if (btn) {
+            btn.addEventListener("click", () => {
+                // Remove active classes
+                wsButtons.forEach(id => {
+                    const b = document.getElementById(`tab-ws-${id}`);
+                    if (b) b.classList.remove("active");
+                });
+                btn.classList.add("active");
+                SpaceState.activeWorkspace = wsId;
+                SpaceState.isFreePlay = (wsId === "freeplay");
+
+                // Toggle visibility in DOM depending on selected workspace
+                const cards = document.querySelectorAll(".card");
+                cards.forEach(card => {
+                    const wsAttr = card.getAttribute("data-ws");
+                    if (wsAttr) {
+                        const targets = wsAttr.split(" ");
+                        if (targets.includes(wsId)) {
+                            card.style.display = "block";
+                        } else {
+                            card.style.display = "none";
+                        }
+                    }
+                });
+
+                // Toggle Bottom Manual Sub-system slider deck (Part 2)
+                const charSlidersDeck = document.querySelector(".detailed-sliders-deck");
+                const defaultThrottleDeck = document.querySelector(".throttle-deck");
+                if (wsId === "satellite" || wsId === "planet" || wsId === "freeplay") {
+                    if (charSlidersDeck) charSlidersDeck.style.display = "block";
+                    if (defaultThrottleDeck) defaultThrottleDeck.style.display = "none";
+                } else {
+                    if (charSlidersDeck) charSlidersDeck.style.display = "none";
+                    if (defaultThrottleDeck) defaultThrottleDeck.style.display = "block";
+                }
+
+                playSynthBeep(700, 0.1);
+                logEvent(`Aerospace Ground Console Workspace changed: ${wsId.toUpperCase()}`, "system");
+            });
+        }
+    });
+
+    // Part 2 Satellite click handlers
+    for (let i = 0; i < 3; i++) {
+        const btn = document.getElementById(`btn-sat-${i}`);
+        if (btn) {
+            btn.addEventListener("click", () => selectSatelliteAsset(i));
+        }
+    }
+
+    // Part 2 Satellites actions
+    const sOrbitUp = document.getElementById("btn-sat-orbit-up");
+    const sOrbitDn = document.getElementById("btn-sat-orbit-dn");
+    const sRotateL = document.getElementById("btn-sat-rotate-l");
+    const sRotateR = document.getElementById("btn-sat-rotate-r");
+    const sPower = document.getElementById("btn-sat-power");
+    const sComm = document.getElementById("btn-sat-comm");
+    const sDeploy = document.getElementById("btn-sat-deploy");
+
+    if (sOrbitUp) sOrbitUp.addEventListener("click", () => adjustSatelliteOrbit("up"));
+    if (sOrbitDn) sOrbitDn.addEventListener("click", () => adjustSatelliteOrbit("down"));
+    if (sRotateL || sRotateR) {
+        const handler = () => rotateSatellite();
+        if (sRotateL) sRotateL.addEventListener("click", handler);
+        if (sRotateR) sRotateR.addEventListener("click", handler);
+    }
+    if (sPower) sPower.addEventListener("click", () => toggleSatellitePower());
+    if (sComm) {
+        sComm.addEventListener("click", () => {
+            logEvent("SATELLITE ACTUATOR: Satellite data packets successfully relayed to ground core.", "nominal");
+            playSynthBeep(920, 0.1, "sine");
+        });
+    }
+    if (sDeploy) {
+        sDeploy.addEventListener("click", () => {
+            const sat = SatelliteAssets[SpaceState.activeSatIndex];
+            sat.deployMode = !sat.deployMode;
+            logEvent(`SATELLITE ACTUATOR: Solar array deploy mode: ${sat.deployMode ? "DEPLOYED" : "STOWED"} on ${sat.name}.`, "nominal");
+            selectSatelliteAsset(SpaceState.activeSatIndex);
+        });
+    }
+
+    // Part 2 Planet click handlers
+    for (let i = 0; i < 3; i++) {
+        const btn = document.getElementById(`btn-planet-${i}`);
+        if (btn) {
+            btn.addEventListener("click", () => selectPlanetAsset(i));
+        }
+    }
+
+    // Part 2 Planet scan/rover action listeners
+    const btnPlanetScan = document.getElementById("btn-planet-scan");
+    const btnPlanetLand = document.getElementById("btn-planet-land");
+    if (btnPlanetScan) btnPlanetScan.addEventListener("click", () => scanPlanetSurface());
+    if (btnPlanetLand) btnPlanetLand.addEventListener("click", () => deployPlanetRover());
+
+    // Part 2 Archives action buttons
+    const btnSaveDisk = document.getElementById("btn-save-mission");
+    const btnResumeDisk = document.getElementById("btn-resume-mission");
+    const btnNewCam = document.getElementById("btn-new-mission");
+    const btnResetDisk = document.getElementById("btn-reset-data");
+
+    if (btnSaveDisk) {
+        btnSaveDisk.addEventListener("click", () => {
+            saveMissionStateToDisk();
+            playSynthBeep(880, 0.2);
+            logEvent("Fictional system flight state successfully written to LocalStorage matrix.", "nominal");
+        });
+    }
+    if (btnResumeDisk) {
+        btnResumeDisk.addEventListener("click", () => {
+            loadMissionStateFromDisk();
+            playSynthBeep(880, 0.2);
+        });
+    }
+    if (btnNewCam) {
+        btnNewCam.addEventListener("click", () => {
+            performFullReset();
+            SpaceState.currentMissionIndex = 0;
+            CampaignMissions.forEach((m, idx) => {
+                m.status = idx === 0 ? "READY" : "LOCKED";
+                m.progress = 0;
+            });
+            renderCampaignMissionsList();
+            logEvent("New Campaign initiated. Ready for launch.", "nominal");
+        });
+    }
+    if (btnResetDisk) {
+        btnResetDisk.addEventListener("click", () => {
+            const conf = confirm("WARNING: Confirming will securely wipe all Achievements, saves, and Campaign tracks. Proceed?");
+            if (conf) {
+                localStorage.clear();
+                window.location.reload();
+            }
+        });
+    }
+
+    // Part 2 Free Play space weather and manual overrides triggers
+    const wSolar = document.getElementById("btn-weather-solar");
+    const wMeteor = document.getElementById("btn-weather-meteor");
+    const wFlare = document.getElementById("btn-weather-flare");
+    const wRad = document.getElementById("btn-weather-radiation");
+
+    const applyWeather = (weatherType) => {
+        SpaceState.spaceWeather = weatherType;
+        playSynthBeep(320, 0.4, "triangle");
+        logEvent(`SPACE ENVIRONMENT UPDATE: Atmospheric and radiation parameters altered. Weather: ${weatherType}.`, "warning");
+    };
+
+    if (wSolar) wSolar.addEventListener("click", () => applyWeather("SUN NOMINAL"));
+    if (wMeteor) wMeteor.addEventListener("click", () => applyWeather("METEOR SHOWER"));
+    if (wFlare) wFlare.addEventListener("click", () => applyWeather("SOLAR FLARE"));
+    if (wRad) wRad.addEventListener("click", () => applyWeather("RADIATION SPIKE"));
+
+    // Part 2 manual simulated failures triggers
+    const fEngine = document.getElementById("btn-fail-engine");
+    const fComm = document.getElementById("btn-fail-comm");
+    const fPower = document.getElementById("btn-fail-power");
+    const fFuel = document.getElementById("btn-fail-fuel");
+    const fNav = document.getElementById("btn-fail-nav");
+    const fThermal = document.getElementById("btn-fail-thermal");
+
+    const injectFailure = (title, desc, actionText) => {
+        SpaceState.warningsCount++;
+        const modal = document.getElementById("system-alert-modal");
+        if (!modal) return;
+        document.getElementById("alert-title").innerText = title;
+        document.getElementById("alert-description").innerText = desc;
+        const choiceContainer = document.getElementById("alert-choice-container");
+        choiceContainer.innerHTML = `
+            <button class="choice-btn" id="btn-modal-recover">
+                <span class="choice-label">${actionText}</span>
+                <span class="choice-sub">PROBABLE EFFECT: Re-establish nominal parameters</span>
+            </button>
+        `;
+        document.getElementById("btn-modal-recover").addEventListener("click", () => {
+            modal.style.display = "none";
+            logEvent(`SYSTEM FAIL RECOVERY SECURED: ${actionText}`, "nominal");
+            playSynthBeep(880, 0.1);
+        });
+        modal.style.display = "flex";
+        playSynthBeep(180, 0.8, "sawtooth");
+    };
+
+    if (fEngine) fEngine.addEventListener("click", () => injectFailure("🚨 ENGINE OVERHEAT WARNING", "Booster nozzle core bounds melting! Danger of combustion blowout.", "REROUTE HYDRAULICS & REDUCE THROTTLE"));
+    if (fComm) fComm.addEventListener("click", () => injectFailure("🚨 TELEMETRY DISRUPTION", "Signal carriers dropped completely. Telemetry link offline.", "CYCLE ANTENNA TRANSCIEVER"));
+    if (fPower) fPower.addEventListener("click", () => injectFailure("🚨 GRID TRANSIENT TRIP", "Auxiliary power grid bypassed. High solar cell failures.", "BREAKER TRIP CORRECTION CYCLE"));
+    if (fFuel) fFuel.addEventListener("click", () => injectFailure("🚨 FUEL LEVEL FAILURE", "Nitrogen pressure valves experienced pressure decays.", "TRIGGER PRESSURE COMPENSATOR VALVE"));
+    if (fNav) fNav.addEventListener("click", () => injectFailure("🚨 NAVIGATION ANOMALY", "Inertial gyros drifted. Path angle matrix offset.", "CALIBRATE INERTIAL STARS SENSORS"));
+    if (fThermal) fThermal.addEventListener("click", () => injectFailure("🚨 CRYOGENIC TEMPERATURE LEAK", "Thermodynamic heat pipes freezing auxiliary grids.", "SWITCH ON INTERSTAGED THERMAL DUCTS"));
+
+    // Dismiss stats modal
+    const statsDismiss = document.getElementById("btn-stats-dismiss");
+    if (statsDismiss) {
+        statsDismiss.addEventListener("click", () => {
+            document.getElementById("mission-stats-modal").style.display = "none";
         });
     }
 
@@ -1635,6 +2443,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.__spaceSimulatorInitialized = true;
 
     setupInputs();
+    setupCharacterSliders();
     initStars();
 
     const canvas = document.getElementById("space-canvas");
