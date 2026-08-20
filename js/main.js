@@ -254,56 +254,105 @@ function initMobileNav() {
 }
 
 /* ==========================================
+   CENTRAL SHORTCUT REGISTRY
+   ========================================== */
+window.GLOBAL_SHORTCUTS = [
+    { name: "Toggle Theme", combo: "Alt + T", description: "Switch Theme (Dark/Light/Cyberpunk)", target: "Action: Toggle Theme", enabled: true },
+    { name: "Live Search", combo: "/", description: "Focus live search input", target: "Action: Focus Search", enabled: true },
+    { name: "Developer Mode", combo: "Ctrl + Shift + D", description: "Toggle Developer Telemetry Dashboard", target: "Action: Dev Dashboard", enabled: true },
+    { name: "Hacker Mode", combo: "Ctrl + Shift + H", description: "Cybernetic Terminal Simulation", target: "hacker.html", enabled: true },
+    { name: "Firewall Defense", combo: "Ctrl + Shift + F", description: "Cybersecurity Firewall Defense Simulator", target: "firewall.html", enabled: true },
+    { name: "Global Network NOC", combo: "Ctrl + Shift + N", description: "Network Operations Center Simulation", target: "network.html", enabled: true },
+    { name: "Open World Simulation", combo: "Ctrl + Shift + O", description: "2D Open World City Exploration", target: "city.html", enabled: true },
+    { name: "System Update Simulation", combo: "Ctrl + Shift + U", description: "Cinematic OS Update Simulator", target: "systemupdate.html", enabled: true },
+    { name: "Space Mission Control", combo: "Ctrl + Shift + K", description: "Interactive Space Mission Control Simulator", target: "space.html", enabled: true }
+];
+
+/* ==========================================
+   8. MOBILE NAVIGATION BURGER TRIGGER
+   ========================================== */
+function initMobileNav() {
+    const burger = document.querySelector(".mobile-nav-toggle");
+    const menu = document.querySelector(".nav-menu");
+    if (!burger || !menu) return;
+
+    const closeMenu = () => {
+        menu.classList.remove("active");
+        burger.setAttribute("aria-expanded", "false");
+    };
+
+    burger.addEventListener("click", () => {
+        const isActive = menu.classList.toggle("active");
+        burger.setAttribute("aria-expanded", isActive ? "true" : "false");
+    });
+
+    // Close menu when clicked outside or on links
+    document.addEventListener("click", (e) => {
+        if (menu.classList.contains("active") && !burger.contains(e.target) && !menu.contains(e.target)) {
+            closeMenu();
+        }
+    });
+
+    // Close menu on Escape key press
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && menu.classList.contains("active")) {
+            closeMenu();
+        }
+    });
+}
+
+/* ==========================================
    9. INTERACTIVE EASTER EGGS, SHORTCUTS, DEV DASHBOARD
    ========================================== */
 function initInteractiveEasterEggs() {
-    // Keyboard Shortcuts
+    // Keyboard Shortcuts based on Central Registry
     document.addEventListener("keydown", (e) => {
+        const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName) || document.activeElement.isContentEditable;
+
         // Toggle Dark Mode: Alt + T
         if (e.altKey && e.key.toLowerCase() === 't') {
             e.preventDefault();
             const toggleBtn = document.querySelector(".theme-toggle");
             if (toggleBtn) toggleBtn.click();
+            return;
         }
 
         // Search Focus: '/' key (unless in input / textarea)
-        if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+        if (e.key === '/' && !isInput) {
             e.preventDefault();
-            const searchInput = document.querySelector(".nav-search-input") || document.querySelector(".page-search-input");
+            const searchInput = document.querySelector(".nav-search-input") || document.querySelector(".page-search-input") || document.querySelector("#hub-search-input");
             if (searchInput) {
                 searchInput.focus();
                 searchInput.select();
             }
+            return;
         }
 
-        // Developer Mode: Ctrl + Shift + D
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'd') {
-            e.preventDefault();
-            toggleDevMode();
-        }
-
-        // System Update Shortcut: Ctrl + Shift + U
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'u') {
-            e.preventDefault();
-            window.location.href = "systemupdate.html";
-        }
-
-        // Firewall Mode Shortcut: Ctrl + Shift + F
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'f') {
-            e.preventDefault();
-            window.location.href = "firewall.html";
-        }
-
-        // Global Network Operations Center: Ctrl + Shift + N
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'n') {
-            e.preventDefault();
-            window.location.href = "network.html";
-        }
-
-        // Open World City Simulation: Ctrl + Shift + C or O
-        if (e.ctrlKey && e.shiftKey && (e.key.toLowerCase() === 'c' || e.key.toLowerCase() === 'o')) {
-            e.preventDefault();
-            window.location.href = "city.html";
+        // Ctrl + Shift Shortcuts
+        if (e.ctrlKey && e.shiftKey) {
+            const key = e.key.toLowerCase();
+            if (key === 'd') {
+                e.preventDefault();
+                toggleDevMode();
+            } else if (key === 'u') {
+                e.preventDefault();
+                window.location.href = "systemupdate.html";
+            } else if (key === 'f') {
+                e.preventDefault();
+                window.location.href = "firewall.html";
+            } else if (key === 'n') {
+                e.preventDefault();
+                window.location.href = "network.html";
+            } else if (key === 'c' || key === 'o') {
+                e.preventDefault();
+                window.location.href = "city.html";
+            } else if (key === 'k') {
+                e.preventDefault();
+                window.location.href = "space.html";
+            } else if (key === 'h') {
+                e.preventDefault();
+                triggerHackerUnlock();
+            }
         }
     });
 
@@ -701,15 +750,7 @@ function triggerHackerUnlock() {
 }
 
 function initHackerUnlock() {
-    // 1. Keyboard Shortcut: Ctrl + Shift + H for Hacker Mode
-    document.addEventListener("keydown", (e) => {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'h') {
-            e.preventDefault();
-            triggerHackerUnlock();
-        }
-    });
-
-    // 2. Mobile Long Press Handlers for Camera 📷 Icon
+    // Mobile Long Press Handlers for Camera 📷 Icon
     const cameraBtns = document.querySelectorAll(".camera-toggle");
     if (cameraBtns.length === 0) return;
 
