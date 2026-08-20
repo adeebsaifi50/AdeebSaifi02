@@ -1,20 +1,225 @@
 /* ==========================================
-   FEATURES HUB INTERACTIVE LOGIC (LEVEL 2, 3, 4)
+   FEATURES HUB INTERACTIVE LOGIC (DIRECTORY, SEARCH, SANDBOX)
    ========================================== */
 
+// Directory Data mapping all 12 actual HTML pages in repo
+const REPO_DIRECTORY = [
+    {
+        icon: "🏠",
+        name: "Home",
+        category: "core",
+        path: "index.html",
+        description: "Portfolio hero landing, career milestones, achievements, and contact collaboration portal.",
+        status: "ONLINE",
+        shortcut: null
+    },
+    {
+        icon: "🗺️",
+        name: "Travel Map",
+        category: "core",
+        path: "travel.html",
+        description: "Interactive SVG world map tracing international travel destinations, photography logs, and coordinates.",
+        status: "ONLINE",
+        shortcut: null
+    },
+    {
+        icon: "📝",
+        name: "Technical Blog",
+        category: "core",
+        path: "blog.html",
+        description: "Engineering design insights, frameworkless architecture articles, and Lighthouse optimization guides.",
+        status: "ONLINE",
+        shortcut: null
+    },
+    {
+        icon: "🖼️",
+        name: "Visual Gallery",
+        category: "core",
+        path: "gallery.html",
+        description: "Masonry photography collection, image lightboxes, and high-resolution creative art portfolio.",
+        status: "ONLINE",
+        shortcut: null
+    },
+    {
+        icon: "🛠️",
+        name: "Developer Hub",
+        category: "dev",
+        path: "features.html",
+        description: "Central directory for all site pages, simulations, keybindings registry, AI sandboxes, and startup deck.",
+        status: "ONLINE",
+        shortcut: null
+    },
+    {
+        icon: "🌆",
+        name: "Open World City",
+        category: "sim",
+        path: "city.html",
+        description: "2D Canvas open world simulation with collision-avoiding traffic, NPC citizen system, weather, and dynamic day/night cycles.",
+        status: "ONLINE",
+        shortcut: "Ctrl + Shift + O"
+    },
+    {
+        icon: "🚀",
+        name: "Space Mission Control",
+        category: "sim",
+        path: "space.html",
+        description: "Interactive space flight simulator with Euler orbital physics, real-time canvas telemetry, Web Audio sound engine, and 6 campaign missions.",
+        status: "ONLINE",
+        shortcut: "Ctrl + Shift + K"
+    },
+    {
+        icon: "🛡️",
+        name: "Firewall Defense",
+        category: "sim",
+        path: "firewall.html",
+        description: "Cybersecurity defense radar simulation with active threat telemetry counters, threat logs terminal, and audio synthesizers.",
+        status: "ONLINE",
+        shortcut: "Ctrl + Shift + F"
+    },
+    {
+        icon: "🌐",
+        name: "Global Network NOC",
+        category: "sim",
+        path: "network.html",
+        description: "2D Canvas world map telemetry simulator with fluctuating traffic metrics, cyberpunk themes, and scrolling operational logs.",
+        status: "ONLINE",
+        shortcut: "Ctrl + Shift + N"
+    },
+    {
+        icon: "🟢",
+        name: "Hacker Terminal",
+        category: "sim",
+        path: "hacker.html",
+        description: "Standalone cybernetic command-line terminal simulation featuring interactive matrix streams, diagnostic commands, and Easter eggs.",
+        status: "ONLINE",
+        shortcut: "Ctrl + Shift + H"
+    },
+    {
+        icon: "🔄",
+        name: "System Update",
+        category: "sim",
+        path: "systemupdate.html",
+        description: "Cinematic OS update simulation auto-detecting user OS (Windows, macOS, Linux, iOS, Android) with Web Audio sound effects.",
+        status: "ONLINE",
+        shortcut: "Ctrl + Shift + U"
+    },
+    {
+        icon: "⚠️",
+        name: "404 Error Shell",
+        category: "dev",
+        path: "404.html",
+        description: "Custom Node Disconnected error recovery page with offline diagnostics and fallback navigation triggers.",
+        status: "ONLINE",
+        shortcut: null
+    }
+];
+
 document.addEventListener("DOMContentLoaded", () => {
+    // 0. Render Directory Cards & Central Shortcut Registry List
+    renderDirectoryCards("all", "");
+    renderShortcutsList();
+
     // 1. Initialize multi-tab logic
     initHubTabs();
 
-    // 2. Initialize App Sandbox (Level 2)
+    // 2. Initialize Directory Search & Filters
+    initDirectorySearch();
+
+    // 3. Initialize App Sandbox (Level 2)
     initAppSandbox();
 
-    // 3. Initialize AI Playgrounds (Level 3)
+    // 4. Initialize AI Playgrounds (Level 3)
     initAiPlaygrounds();
 
-    // 4. Initialize Startup & Subscription Deck (Level 4)
+    // 5. Initialize Startup & Subscription Deck (Level 4)
     initStartupDeck();
 });
+
+/* ==========================================
+   0. DIRECTORY CARDS & SHORTCUTS RENDERER
+   ========================================== */
+function renderDirectoryCards(categoryFilter = "all", searchQuery = "") {
+    const container = document.getElementById("directory-cards-container");
+    if (!container) return;
+
+    const query = searchQuery.toLowerCase().trim();
+
+    const filtered = REPO_DIRECTORY.filter(item => {
+        const matchesCategory = (categoryFilter === "all") || (item.category === categoryFilter);
+        const matchesQuery = !query ||
+            item.name.toLowerCase().includes(query) ||
+            item.description.toLowerCase().includes(query) ||
+            (item.shortcut && item.shortcut.toLowerCase().includes(query)) ||
+            item.path.toLowerCase().includes(query);
+
+        return matchesCategory && matchesQuery;
+    });
+
+    if (filtered.length === 0) {
+        container.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; background: var(--bg-surface-solid); border: 1px dashed var(--border-color); border-radius: 18px;">
+                <p style="font-size: 1.2rem; color: var(--text-muted); margin-bottom: 0.5rem;">🔍 No matching pages or tools found</p>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Try clearing your search query or switching category filters.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = filtered.map(item => {
+        const statusClass = item.status === "ONLINE" ? "status-online" : "status-exp";
+        const statusIcon = item.status === "ONLINE" ? "● ONLINE" : "🧪 EXPERIMENTAL";
+        const shortcutTag = item.shortcut ? `<span class="dir-shortcut-badge">${item.shortcut}</span>` : `<span class="dir-shortcut-badge" style="opacity:0.5;">No Shortcut</span>`;
+
+        return `
+            <div class="dir-card">
+                <div>
+                    <div class="dir-card-header">
+                        <div class="dir-card-title-group">
+                            <span class="dir-card-icon">${item.icon}</span>
+                            <h3 class="dir-card-name">${item.name}</h3>
+                        </div>
+                        <span class="dir-status-badge ${statusClass}">${statusIcon}</span>
+                    </div>
+                    <p class="dir-card-desc">${item.description}</p>
+                </div>
+                <div class="dir-card-footer">
+                    ${shortcutTag}
+                    <a href="${item.path}" class="btn btn-primary dir-open-btn">Open ↗</a>
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
+function renderShortcutsList() {
+    const list = document.getElementById("hub-shortcuts-list");
+    if (!list) return;
+
+    const shortcuts = window.GLOBAL_SHORTCUTS || [
+        { name: "Toggle Theme", combo: "Alt + T", description: "Switch Theme (Dark/Light/Cyberpunk)" },
+        { name: "Live Search", combo: "/", description: "Focus live search input" },
+        { name: "Developer Mode", combo: "Ctrl + Shift + D", description: "Toggle Developer Telemetry Dashboard" },
+        { name: "Hacker Mode", combo: "Ctrl + Shift + H", description: "Cybernetic Terminal Simulation" },
+        { name: "Firewall Defense", combo: "Ctrl + Shift + F", description: "Cybersecurity Firewall Defense Simulator" },
+        { name: "Global Network NOC", combo: "Ctrl + Shift + N", description: "Network Operations Center Simulation" },
+        { name: "Open World Simulation", combo: "Ctrl + Shift + O", description: "2D Open World City Exploration" },
+        { name: "System Update Simulation", combo: "Ctrl + Shift + U", description: "Cinematic OS Update Simulator" },
+        { name: "Space Mission Control", combo: "Ctrl + Shift + K", description: "Interactive Space Mission Control Simulator" }
+    ];
+
+    list.innerHTML = shortcuts.map(sc => {
+        const keys = sc.combo.split(" + ").map(k => `<kbd>${k}</kbd>`).join(" + ");
+        return `
+            <li class="kbd-guide-item">
+                <div>
+                    <strong style="color:var(--text-primary); display:block; font-size:0.95rem;">${sc.name}</strong>
+                    <span style="font-size:0.8rem; color:var(--text-muted);">${sc.description}</span>
+                </div>
+                <div class="kbd-combo">${keys}</div>
+            </li>
+        `;
+    }).join("");
+}
 
 /* ==========================================
    1. MULTI-TAB NAVIGATION
@@ -44,7 +249,34 @@ function initHubTabs() {
 }
 
 /* ==========================================
-   2. APP SANDBOX INTERACTIVE TRIGGERS (LEVEL 2)
+   2. DIRECTORY SEARCH & FILTERING
+   ========================================== */
+function initDirectorySearch() {
+    const searchInput = document.getElementById("hub-search-input");
+    const catBtns = document.querySelectorAll(".dir-cat-btn");
+
+    let currentCategory = "all";
+    let currentQuery = "";
+
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            currentQuery = e.target.value;
+            renderDirectoryCards(currentCategory, currentQuery);
+        });
+    }
+
+    catBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            catBtns.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentCategory = btn.getAttribute("data-cat");
+            renderDirectoryCards(currentCategory, currentQuery);
+        });
+    });
+}
+
+/* ==========================================
+   3. APP SANDBOX INTERACTIVE TRIGGERS (LEVEL 2)
    ========================================== */
 function initAppSandbox() {
     // Sandbox Auth & Role Selector
@@ -277,7 +509,7 @@ function initAppSandbox() {
 }
 
 /* ==========================================
-   3. AI PLAYGROUNDS WORKFLOWS (LEVEL 3)
+   4. AI PLAYGROUNDS WORKFLOWS (LEVEL 3)
    ========================================== */
 function initAiPlaygrounds() {
     // AI Chat Bot
@@ -391,7 +623,7 @@ function initAiPlaygrounds() {
 }
 
 /* ==========================================
-   4. STARTUP DECK & PAYMENTS (LEVEL 4)
+   5. STARTUP DECK & PAYMENTS (LEVEL 4)
    ========================================== */
 function initStartupDeck() {
     // Pricing Toggle Monthly / Annual

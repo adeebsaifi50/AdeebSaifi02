@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Explore keyboard shortcuts, Developer mode dashboards, offline cached status, and active easter egg instructions for Adeeb Saifi portfolio.">
-    <meta name="keywords" content="Developer Sandbox, AI Playgrounds, SaaS Pricing, Payments Mock, API Keys, Adeeb Saifi, Portfolio">
+    <meta name="description" content="Explore page directory, keyboard shortcuts, Developer mode dashboards, offline cached status, and active simulations for Adeeb Saifi portfolio.">
+    <meta name="keywords" content="Developer Directory, Simulations, Developer Sandbox, AI Playgrounds, SaaS Pricing, Payments Mock, API Keys, Adeeb Saifi, Portfolio">
     <meta name="author" content="Adeeb Saifi">
     <link rel="canonical" href="https://adeebsaifi.github.io/features.html">
 
@@ -12,7 +12,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://adeebsaifi.github.io/features.html">
     <meta property="og:title" content="Developer & Startup Hub | Adeeb Saifi">
-    <meta property="og:description" content="Interactive developer sandbox, AI neural generation, and SaaS startup pricing models designed inside premium frameworkless aesthetics.">
+    <meta property="og:description" content="Interactive page directory, developer sandbox, AI neural generation, and SaaS startup pricing models designed inside premium frameworkless aesthetics.">
     <meta property="og:image" content="https://picsum.photos/1200/630?random=features-og">
 
     <!-- Schema.org JSON-LD Structured Data -->
@@ -28,7 +28,7 @@
     }
     </script>
 
-    <title>Developer Hub, AI & Startup Sandbox | Adeeb Saifi</title>
+    <title>Developer Hub, Directory & AI Sandbox | Adeeb Saifi</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,10 +47,11 @@
             border: 1px solid var(--border-color);
             padding: 0.4rem;
             border-radius: 9999px;
-            max-width: 750px;
-            margin: 0 auto 3rem auto;
+            max-width: 850px;
+            margin: 0 auto 2.5rem auto;
             gap: 0.25rem;
             box-shadow: var(--glass-shadow);
+            flex-wrap: wrap;
         }
 
         .hub-tab-btn {
@@ -59,11 +60,12 @@
             color: var(--text-secondary);
             font-size: 0.95rem;
             font-weight: 600;
-            padding: 0.75rem 1.5rem;
+            padding: 0.75rem 1.25rem;
             border-radius: 9999px;
             cursor: pointer;
             transition: all var(--transition-fast);
             flex: 1;
+            min-width: 130px;
             text-align: center;
             display: flex;
             align-items: center;
@@ -90,6 +92,175 @@
 
         .hub-panel.active {
             display: block;
+        }
+
+        /* Directory Search & Filter Controls */
+        .dir-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .dir-search-box {
+            position: relative;
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .dir-search-box input {
+            width: 100%;
+            padding: 0.85rem 1.25rem 0.85rem 2.8rem;
+            background: var(--bg-surface-solid);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all var(--transition-fast);
+        }
+
+        .dir-search-box input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-primary-glow);
+        }
+
+        .dir-search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .dir-category-filters {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .dir-cat-btn {
+            background: var(--bg-accent);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .dir-cat-btn:hover, .dir-cat-btn.active {
+            color: #ffffff;
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+
+        /* Directory Cards Grid */
+        .directory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .dir-card {
+            background: var(--bg-surface-solid);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all var(--transition-normal);
+            position: relative;
+        }
+
+        .dir-card:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-4px);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .dir-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .dir-card-title-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .dir-card-icon {
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+
+        .dir-card-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .dir-status-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.25rem 0.6rem;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-online {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-exp {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .dir-card-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.25rem;
+            line-height: 1.5;
+        }
+
+        .dir-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 0.75rem;
+            margin-top: auto;
+        }
+
+        .dir-shortcut-badge {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: var(--bg-accent);
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .dir-open-btn {
+            padding: 0.45rem 1rem;
+            font-size: 0.85rem;
+            border-radius: 10px;
         }
 
         .features-grid {
@@ -350,10 +521,7 @@
                     <li class="nav-item"><a href="blog.html">Blog</a></li>
                     <li class="nav-item"><a href="gallery.html">Gallery</a></li>
                     <li class="nav-item active"><a href="features.html">Developer Hub</a></li>
-                    <li class="nav-item"><a href="systemupdate.html" class="nav-update-link">🔄 System Update <span class="update-badge">NEW</span></a></li>
-                    <li class="nav-item"><a href="firewall.html" class="nav-update-link">🛡 Firewall Defense <span class="update-badge">NEW</span></a></li>
-                    <li class="nav-item"><a href="city.html" class="nav-update-link">🌆 Open World <span class="update-badge">NEW</span></a></li>
-                    <li class="nav-item"><a href="space.html" class="nav-update-link">🚀 Space Mission <span class="update-badge">NEW</span></a></li>
+                    <li class="nav-item"><a href="index.html#contact">Contact</a></li>
                 </ul>
             </nav>
 
@@ -376,16 +544,19 @@
         <div style="text-align: center; max-width: 800px; margin: 0 auto 3rem auto;">
             <div class="hero-tag">
                 <div class="hero-tag-dot" style="background-color: var(--color-accent); box-shadow:0 0 8px var(--color-accent)"></div>
-                <span>CONSOLE CORE & STARTUP ENGINE</span>
+                <span>CENTRAL DIRECTORY & DEVELOPER ENGINE</span>
             </div>
             <h1 class="hero-title" style="font-size: 3rem;">Developer & <span>Startup Hub</span></h1>
-            <p class="hero-desc">Interactive dashboard exposing developer shortcuts, advanced web app simulators, live AI engines, and SaaS subscription metrics.</p>
+            <p class="hero-desc">Discover all website pages, interactive simulations, central keyboard shortcuts, live AI playrooms, and SaaS startup tools.</p>
         </div>
 
         <!-- Premium Hub Navigation Tabs -->
         <div class="hub-tabs" role="tablist" aria-label="Developer and Startup Hub Tabs">
-            <button class="hub-tab-btn active" role="tab" aria-selected="true" aria-controls="panel-dev" id="tab-dev">
-                🛠️ Dev Core
+            <button class="hub-tab-btn active" role="tab" aria-selected="true" aria-controls="panel-dir" id="tab-dir">
+                📂 Page Directory
+            </button>
+            <button class="hub-tab-btn" role="tab" aria-selected="false" aria-controls="panel-dev" id="tab-dev">
+                🛠️ Shortcuts & Core
             </button>
             <button class="hub-tab-btn" role="tab" aria-selected="false" aria-controls="panel-sandbox" id="tab-sandbox">
                 📱 App Sandbox
@@ -398,49 +569,38 @@
             </button>
         </div>
 
-        <!-- ================= PANEL 1: DEV CORE ================= -->
-        <div class="hub-panel active" id="panel-dev" role="tabpanel" aria-labelledby="tab-dev">
-            <div class="features-grid">
-                <!-- Shortcuts guide column -->
-                <div class="card">
-                    <h2 style="font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">⌨️ Interactive Keybindings</h2>
-                    <p>Maximize your navigation efficiency across this portfolio with custom key combinations:</p>
+        <!-- ================= PANEL 0: PAGE DIRECTORY ================= -->
+        <div class="hub-panel active" id="panel-dir" role="tabpanel" aria-labelledby="tab-dir">
+            <!-- Search & Filter Controls -->
+            <div class="dir-controls">
+                <div class="dir-search-box">
+                    <span class="dir-search-icon">🔍</span>
+                    <input type="search" id="hub-search-input" placeholder="Search pages, simulations, shortcuts (Type '/' to focus)..." aria-label="Search directory">
+                </div>
+                <div class="dir-category-filters">
+                    <button class="dir-cat-btn active" data-cat="all">All Pages</button>
+                    <button class="dir-cat-btn" data-cat="core">Core Website</button>
+                    <button class="dir-cat-btn" data-cat="sim">Simulations</button>
+                    <button class="dir-cat-btn" data-cat="dev">Developer Tools</button>
+                </div>
+            </div>
 
-                    <ul class="kbd-guide-list">
-                        <li class="kbd-guide-item">
-                            <span>Toggle Color Mode</span>
-                            <div class="kbd-combo">
-                                <kbd>Alt</kbd>
-                                <span>+</span>
-                                <kbd>T</kbd>
-                            </div>
-                        </li>
-                        <li class="kbd-guide-item">
-                            <span>Focus Live Search</span>
-                            <div class="kbd-combo">
-                                <kbd>/</kbd>
-                            </div>
-                        </li>
-                        <li class="kbd-guide-item">
-                            <span>Toggle Developer Stats</span>
-                            <div class="kbd-combo">
-                                <kbd>Ctrl</kbd>
-                                <span>+</span>
-                                <kbd>Shift</kbd>
-                                <span>+</span>
-                                <kbd>D</kbd>
-                            </div>
-                        </li>
-                        <li class="kbd-guide-item">
-                            <span style="display: flex; align-items: center; gap: 0.4rem;">🛰️ <a href="network.html" style="color: inherit; text-decoration: underline;">Global Network NOC</a> <span style="font-size:0.65rem; background: var(--color-primary-glow); padding: 0.1rem 0.35rem; border-radius:4px; font-weight:bold; color: var(--color-primary);">SECURE</span></span>
-                            <div class="kbd-combo">
-                                <kbd>Ctrl</kbd>
-                                <span>+</span>
-                                <kbd>Shift</kbd>
-                                <span>+</span>
-                                <kbd>N</kbd>
-                            </div>
-                        </li>
+            <!-- Page Directory Grid -->
+            <div class="directory-grid" id="directory-cards-container">
+                <!-- Cards dynamically populated via JS or pre-rendered -->
+            </div>
+        </div>
+
+        <!-- ================= PANEL 1: DEV CORE & SHORTCUTS ================= -->
+        <div class="hub-panel" id="panel-dev" role="tabpanel" aria-labelledby="tab-dev">
+            <div class="features-grid">
+                <!-- Central Shortcuts Registry Card -->
+                <div class="card">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">⌨️ Central Keyboard Registry</h2>
+                    <p>All active system keybindings powered by the unified global shortcut engine:</p>
+
+                    <ul class="kbd-guide-list" id="hub-shortcuts-list">
+                        <!-- Populated dynamically via features-hub.js -->
                     </ul>
                 </div>
 
@@ -821,34 +981,38 @@
                 <p>Designing digital environments that combine high aesthetics with supreme engineering standards.</p>
             </div>
             <div class="footer-col">
-                <h3>Navigation</h3>
+                <h3>Main Navigation</h3>
                 <ul>
                     <li><a href="index.html">Home</a></li>
                     <li><a href="travel.html">Travel Map</a></li>
                     <li><a href="blog.html">Technical Blog</a></li>
                     <li><a href="gallery.html">Visual Gallery</a></li>
-                    <li><a href="firewall.html">🛡 Firewall Defense</a></li>
-                    <li><a href="city.html">🌆 Open World Simulation</a></li>
-                    <li><a href="space.html">🚀 Space Mission</a></li>
+                    <li><a href="features.html">Developer Hub</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h3>Social Hub</h3>
-                <div class="social-links">
-                    <a href="https://github.com/adeebsaifi" class="social-link" aria-label="GitHub Profile">GH</a>
-                    <a href="#" class="social-link" aria-label="LinkedIn Profile">LN</a>
-                    <a href="#" class="social-link" aria-label="Twitter / X Profile">TW</a>
-                </div>
+                <h3>Developer / Simulations</h3>
+                <ul>
+                    <li><a href="city.html">🌆 Open World</a></li>
+                    <li><a href="space.html">🚀 Space Mission</a></li>
+                    <li><a href="firewall.html">🛡 Firewall Defense</a></li>
+                    <li><a href="network.html">🌐 Global Network</a></li>
+                    <li><a href="hacker.html">🟢 Hacker Terminal</a></li>
+                    <li><a href="systemupdate.html">🔄 System Update</a></li>
+                </ul>
             </div>
             <div class="footer-col">
                 <h3>Keyboard Shortcuts</h3>
                 <ul style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.8;">
                     <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Alt + T</kbd> Theme Mode</li>
-                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">/</kbd> Instant Search</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">/</kbd> Live Search</li>
                     <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+D</kbd> Dev Mode</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+H</kbd> Hacker Mode</li>
                     <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+F</kbd> Firewall Mode</li>
                     <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+N</kbd> Network Mode</li>
                     <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+O</kbd> Open World</li>
+                    <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+U</kbd> System Update</li>
                     <li><kbd style="background:var(--bg-accent); border:1px solid var(--border-color); padding: 0.1rem 0.3rem; border-radius:4px;">Ctrl+Shift+K</kbd> Space Mission</li>
                 </ul>
             </div>
