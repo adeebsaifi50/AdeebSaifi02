@@ -260,6 +260,7 @@ window.GLOBAL_SHORTCUTS = [
     { name: "Toggle Theme", combo: "Alt + T", description: "Switch Theme (Dark/Light/Cyberpunk)", target: "Action: Toggle Theme", enabled: true },
     { name: "Live Search", combo: "/", description: "Focus live search input", target: "Action: Focus Search", enabled: true },
     { name: "Developer Mode", combo: "Ctrl + Shift + D", description: "Toggle Developer Telemetry Dashboard", target: "Action: Dev Dashboard", enabled: true },
+    { name: "Human Simulator", combo: "Ctrl + Shift + P", description: "Human Simulation — From Birth to Death", target: "human.html", enabled: true },
     { name: "Hacker Mode", combo: "Ctrl + Shift + H", description: "Cybernetic Terminal Simulation", target: "hacker.html", enabled: true },
     { name: "Firewall Defense", combo: "Ctrl + Shift + F", description: "Cybersecurity Firewall Defense Simulator", target: "firewall.html", enabled: true },
     { name: "Global Network NOC", combo: "Ctrl + Shift + N", description: "Network Operations Center Simulation", target: "network.html", enabled: true },
@@ -349,6 +350,9 @@ function initInteractiveEasterEggs() {
             } else if (key === 'k') {
                 e.preventDefault();
                 window.location.href = "space.html";
+            } else if (key === 'p') {
+                e.preventDefault();
+                window.location.href = "human.html";
             } else if (key === 'h') {
                 e.preventDefault();
                 triggerHackerUnlock();

@@ -13,6 +13,7 @@ const ASSETS_TO_CACHE = [
     "./network.html",
     "./city.html",
     "./space.html",
+    "./human.html",
     "./css/main.css",
     "./css/animations.css",
     "./css/hacker.css",
@@ -21,6 +22,7 @@ const ASSETS_TO_CACHE = [
     "./css/network.css",
     "./css/city.css",
     "./css/space.css",
+    "./css/human.css",
     "./js/main.js",
     "./js/travel-map.js",
     "./js/gallery.js",
@@ -40,6 +42,7 @@ const ASSETS_TO_CACHE = [
     "./js/ui.js",
     "./js/city.js",
     "./js/space.js",
+    "./js/human.js",
     "./manifest.json",
     "./Images/photos.json"
 ];

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- SEO Metadata -->
+    <meta name="description" content="Immersive interactive Human Simulator — From Birth to Death. Experience human development, survival needs, historical eras, relationships, decision-making, and aging.">
+    <meta name="keywords" content="Human Simulator, Life Cycle, Human Needs, Survival Simulation, Historical Eras, Human Evolution, Interactive Sandbox">
+    <meta name="author" content="Adeeb Saifi">
+    <link rel="canonical" href="https://adeebsaifi.github.io/human.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://adeebsaifi.github.io/human.html">
+    <meta property="og:title" content="Human Simulator — From Birth to Death | Interactive Experience">
+    <meta property="og:description" content="Step into an interactive human simulation covering lifecycle stages, dynamic survival needs, historical eras, decisions, and evolution foundations.">
+    <meta property="og:image" content="https://picsum.photos/1200/630?random=human-og">
+
+    <!-- PWA -->
+    <meta name="theme-color" content="#030712">
+    <link rel="manifest" href="manifest.json">
+
+    <title>Human Simulator — From Birth to Death</title>
+
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/human.css">
+</head>
+<body class="human-body theme-cyberpunk">
+
+    <!-- Scroll Progress -->
+    <div class="scroll-progress" aria-hidden="true"></div>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" aria-hidden="true"></div>
+    <div class="custom-cursor-dot" aria-hidden="true"></div>
+
+    <!-- MAIN SIMULATION CONTAINER -->
+    <main class="human-main-container">
+
+        <!-- Top Command Header Bar -->
+        <header class="human-command-bar card">
+            <div class="command-bar-left">
+                <span class="system-badge glow-neon-purple">HUMAN_SIMULATOR_CORE_v1.0</span>
+                <h1 class="main-title">HUMAN SIMULATION ENGINE</h1>
+                <div class="nav-back-link-wrapper">
+                    <a href="index.html" class="nav-back-link">← RETURN TO MAIN GRID</a>
+                </div>
+            </div>
+
+            <!-- Era & Controls Module -->
+            <div class="command-bar-center era-control-module">
+                <div class="era-selector-wrapper">
+                    <label for="era-selector" class="control-label">HISTORICAL ERA:</label>
+                    <select id="era-selector" class="theme-dropdown" aria-label="Select Historical Era">
+                        <option value="ancient">Ancient World (~2000 BCE)</option>
+                        <option value="medieval">Medieval Period (~1200 CE)</option>
+                        <option value="early_modern">Early Modern Era (~1650 CE)</option>
+                        <option value="industrial">Industrial Era (~1880 CE)</option>
+                        <option value="modern">Modern Era (~1970 CE)</option>
+                        <option value="present" selected>Present Day (2026 CE)</option>
+                        <option value="future">Hypothetical Future (~2100 CE)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="command-bar-right">
+                <!-- Speed & Simulation Controls -->
+                <div class="sim-speed-controls">
+                    <button id="btn-pause" class="sim-ctrl-btn" title="Pause Simulation">⏸</button>
+                    <button id="btn-speed-1" class="sim-ctrl-btn active" title="1x Speed">1x</button>
+                    <button id="btn-speed-2" class="sim-ctrl-btn" title="2x Speed">2x</button>
+                    <button id="btn-speed-5" class="sim-ctrl-btn" title="5x Speed">5x</button>
+                    <button id="btn-restart" class="sim-ctrl-btn btn-danger" title="New Human Life">🔄 NEW LIFE</button>
+                    <button id="btn-open-evolution" class="sim-ctrl-btn btn-accent" title="Human Evolution & Civilization">🧬 EVOLUTION</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Header Status Strip -->
+        <div class="human-status-strip card">
+            <div class="strip-item">
+                <span class="strip-label">SUBJECT:</span>
+                <span class="strip-value" id="hdr-char-name">Alex Vance</span>
+            </div>
+            <div class="strip-item">
+                <span class="strip-label">LIFE STAGE:</span>
+                <span class="stage-badge" id="hdr-life-stage">BABY</span>
+            </div>
+            <div class="strip-item">
+                <span class="strip-label">AGE:</span>
+                <span class="strip-value font-mono" id="hdr-char-age">0 Years, 2 Months</span>
+            </div>
+            <div class="strip-item">
+                <span class="strip-label">TIME OF DAY:</span>
+                <span class="strip-value" id="hdr-time-of-day">🌅 MORNING</span>
+            </div>
+            <div class="strip-item">
+                <span class="strip-label">ACTIVE CAREER:</span>
+                <span class="strip-value" id="hdr-active-job">Dependent Infant</span>
+            </div>
+            <div class="strip-item">
+                <span class="strip-label">ERA TECH LEVEL:</span>
+                <span class="strip-value color-accent" id="hdr-era-tech">Present Day Information Age</span>
+            </div>
+        </div>
+
+        <!-- Simulation Main Grid -->
+        <div class="human-simulator-grid">
+
+            <!-- LEFT COLUMN: Human Needs & Status System + Family/Social -->
+            <section class="human-col-left">
+                <!-- Human Status Panel -->
+                <div class="card status-card">
+                    <div class="panel-header">
+                        <span class="header-icon">📊</span>
+                        <h3>HUMAN STATUS & NEEDS</h3>
+                    </div>
+                    <p class="panel-subtitle">Dynamic bio-psycho-social parameters interacting in real-time.</p>
+
+                    <div class="meters-container">
+                        <!-- Health -->
+                        <div class="meter-group">
+                            <div class="meter-lbl-row">
+                                <span>❤️ Health</span>
+                                <span class="meter-val" id="val-health">100%</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill bar-health" id="fill-health" style="width: 100%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Hunger -->
+                        <div class="meter-group">
+                            <div class="meter-lbl-row">
+                                <span>🍲 Hunger (Satiety)</span>
+                                <span class="meter-val" id="val-hunger">90%</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill bar-hunger" id="fill-hunger" style="width: 90%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Thirst -->
+                        <div class="meter-group">
+                            <div class="meter-lbl-row">
+                                <span>💧 Thirst (Hydration)</span>
+                                <span class="meter-val" id="val-thirst">95%</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill bar-thirst" id="fill-thirst" style="width: 95%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Energy -->
+                        <div class="meter-group">
+                            <div class="meter-lbl-row">
+                                <span>⚡ Energy</span>
+                                <span class="meter-val" id="val-energy">85%</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill bar-energy" id="fill-energy" style="width: 85%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Sleep -->
+                        <div class="meter-group">
+                            <div class="meter-lbl-row">
+                                <span>🌙 Sleep Quality</span>
+                                <span class="meter-val" id="val-sleep">90%</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill bar-sleep" id="fill-sleep" style="width: 90%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Happiness -->
+                        <div class="meter-group">
+                            <div class="meter-lbl-row">
+                                <span>😊 Happiness</span>
+                                <span class="meter-val" id="val-happiness">80%</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill bar-happiness" id="fill-happiness" style="width: 80%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Knowledge -->
+                        <div class="meter-group">
+                            <div class="meter-lbl-row">
+                                <span>🧠 Knowledge & Cognitive</span>
+                                <span class="meter-val" id="val-knowledge">5%</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill bar-knowledge" id="fill-knowledge" style="width: 5%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Social Connection -->
+                        <div class="meter-group">
+                            <div class="meter-lbl-row">
+                                <span>🤝 Social Connection</span>
+                                <span class="meter-val" id="val-social">85%</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill bar-social" id="fill-social" style="width: 85%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Safety -->
+                        <div class="meter-group">
+                            <div class="meter-lbl-row">
+                                <span>🛡️ Safety & Security</span>
+                                <span class="meter-val" id="val-safety">95%</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill bar-safety" id="fill-safety" style="width: 95%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Nutrition -->
+                        <div class="meter-group">
+                            <div class="meter-lbl-row">
+                                <span>🥗 Nutrition Balance</span>
+                                <span class="meter-val" id="val-nutrition">85%</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill bar-nutrition" id="fill-nutrition" style="width: 85%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Physical Condition -->
+                        <div class="meter-group">
+                            <div class="meter-lbl-row">
+                                <span>💪 Physical Condition</span>
+                                <span class="meter-val" id="val-physical">80%</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill bar-physical" id="fill-physical" style="width: 80%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Wealth / Resources -->
+                        <div class="meter-group">
+                            <div class="meter-lbl-row">
+                                <span>💰 Wealth / Resources</span>
+                                <span class="meter-val font-mono" id="val-money">$0</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill bar-money" id="fill-money" style="width: 10%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Family & Social System Card -->
+                <div class="card family-card">
+                    <div class="panel-header">
+                        <span class="header-icon">👨‍👩‍👧‍👦</span>
+                        <h3>FAMILY & RELATIONSHIPS</h3>
+                    </div>
+                    <div class="family-list" id="family-list-container">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- CENTER COLUMN: Visual Environment Viewport + Activities & Decisions Deck -->
+            <section class="human-col-center">
+                <!-- Simulation Viewport -->
+                <div class="card viewport-card">
+                    <div class="viewport-header">
+                        <div class="hdr-left">
+                            <span class="blinking-dot"></span>
+                            <h3 id="env-zone-title">RESIDENTIAL INFANT NURSERY</h3>
+                        </div>
+                        <div class="hdr-right">
+                            <span class="env-tag" id="env-weather-tag">☀️ Fair Weather (22°C)</span>
+                        </div>
+                    </div>
+
+                    <div class="canvas-viewport-container" id="canvas-container-box">
+                        <canvas id="human-canvas" width="800" height="420"></canvas>
+
+                        <!-- HUD Overlays inside Canvas -->
+                        <div class="hud-overlay top-left" id="hud-activity-text">ACTIVE: Resting peacefully in crib</div>
+                        <div class="hud-overlay top-right" id="hud-stage-limits">LIMITATIONS: Cannot walk or communicate verbally</div>
+                        <div class="hud-overlay bottom-left" id="hud-era-info">ERA: Present Day (2026 CE) — Electricity & Modern Medicine</div>
+
+                        <!-- Toast Event Overlay -->
+                        <div id="event-toast" class="event-toast-box hidden">
+                            <span class="toast-icon" id="toast-icon">⚡</span>
+                            <div class="toast-body">
+                                <strong id="toast-title">First Steps Taken!</strong>
+                                <p id="toast-desc">Alex took their first unassisted steps in the nursery.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Activities & Action Control Deck -->
+                <div class="card actions-card">
+                    <div class="panel-header">
+                        <span class="header-icon">🎯</span>
+                        <h3>DAILY ACTIVITIES & DECISION DECK</h3>
+                    </div>
+
+                    <!-- Stage Abilities & Notice -->
+                    <div class="stage-notice" id="stage-notice-box">
+                        <strong>Baby Stage Abilities:</strong> Basic needs care, breast/bottle feeding, sleeping, bonding with caregivers.
+                    </div>
+
+                    <!-- Primary Actions Buttons Grid -->
+                    <div class="actions-grid" id="actions-buttons-grid">
+                        <button class="act-btn" id="act-eat" data-act="eat">🍲 Eat Food</button>
+                        <button class="act-btn" id="act-drink" data-act="drink">💧 Drink Water</button>
+                        <button class="act-btn" id="act-sleep" data-act="sleep">🌙 Rest / Sleep</button>
+                        <button class="act-btn" id="act-learn" data-act="learn">📚 Learn / Study</button>
+                        <button class="act-btn" id="act-work" data-act="work">💼 Work / Labor</button>
+                        <button class="act-btn" id="act-exercise" data-act="exercise">🏋️ Exercise</button>
+                        <button class="act-btn" id="act-socialize" data-act="socialize">💬 Socialize</button>
+                        <button class="act-btn" id="act-explore" data-act="explore">🗺️ Explore</button>
+                    </div>
+
+                    <!-- Career & Job Selection Dropdown -->
+                    <div class="career-selection-row" id="career-select-wrapper" style="margin-top: 1rem; display: none;">
+                        <label for="career-dropdown" class="control-label">SELECT CAREER / OCCUPATION:</label>
+                        <select id="career-dropdown" class="theme-dropdown" style="width: 100%;">
+                            <!-- Populated dynamically based on Age & Era -->
+                        </select>
+                    </div>
+
+                    <!-- Life Decisions Panel -->
+                    <div class="decisions-container" style="margin-top: 1rem;">
+                        <div class="decisions-header">
+                            <span class="header-icon">🔀</span>
+                            <h4>STRATEGIC LIFE DECISIONS</h4>
+                        </div>
+                        <div class="decision-box card-glow" id="active-decision-box">
+                            <p class="decision-prompt" id="decision-prompt-text">Focus on early cognitive development or physical sensory play?</p>
+                            <div class="decision-options" id="decision-options-container">
+                                <button class="btn btn-secondary btn-sm decision-btn" data-choice="0">Focus on Sensory Play</button>
+                                <button class="btn btn-primary btn-sm decision-btn" data-choice="1">Focus on Language Listening</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT COLUMN: Life Timeline + Survival System + Live Log Feed -->
+            <section class="human-col-right">
+                <!-- Visual Life Timeline Panel -->
+                <div class="card timeline-card">
+                    <div class="panel-header">
+                        <span class="header-icon">📜</span>
+                        <h3>LIFE TIMELINE</h3>
+                    </div>
+                    <p class="panel-subtitle">Automatic chronicle of major milestones and achievements.</p>
+                    <div class="timeline-scroll-container" id="life-timeline-list">
+                        <!-- Appended dynamically -->
+                    </div>
+                </div>
+
+                <!-- Survival System & Environment Panel -->
+                <div class="card survival-card">
+                    <div class="panel-header">
+                        <span class="header-icon">⛺</span>
+                        <h3>SURVIVAL & ENVIRONMENT CONDITIONS</h3>
+                    </div>
+
+                    <div class="survival-status-grid">
+                        <div class="surv-item">
+                            <span class="lbl">SHELTER:</span>
+                            <span class="val text-glow-blue" id="surv-shelter">Modern Insulated Home</span>
+                        </div>
+                        <div class="surv-item">
+                            <span class="lbl">CLOTHING:</span>
+                            <span class="val" id="surv-clothing">Thermal Fabrics</span>
+                        </div>
+                        <div class="surv-item">
+                            <span class="lbl">TOOLS & TECH:</span>
+                            <span class="val" id="surv-tools">Smart Devices & Electricity</span>
+                        </div>
+                        <div class="surv-item">
+                            <span class="lbl">FOOD SOURCE:</span>
+                            <span class="val" id="surv-food">Agricultural Grid / Grocery</span>
+                        </div>
+                        <div class="surv-item">
+                            <span class="lbl">MEDICINE:</span>
+                            <span class="val text-glow-green" id="surv-medicine">Antibiotics & Vaccines</span>
+                        </div>
+                        <div class="surv-item">
+                            <span class="lbl">ENVIRONMENT RISKS:</span>
+                            <span class="val color-warning" id="surv-risks">Sedentary Lifestyle</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Command Logger Terminal Feed -->
+                <div class="card logger-card">
+                    <div class="logger-header">
+                        <div class="hdr-left">
+                            <span class="blinking-dot"></span>
+                            <h3>LIFE LOG FEED</h3>
+                        </div>
+                        <button class="btn-clear-logger" id="btn-clear-logs">CLEAR</button>
+                    </div>
+                    <div class="logger-body" id="human-logger-feed">
+                        <div class="log-entry system"><span class="log-time">[Year 00]</span> Birth: Alex Vance born into Present Day Era. Simulation started.</div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+
+    <!-- POST-MORTEM LIFE REPORT MODAL -->
+    <div id="life-report-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Life Report Summary">
+        <div class="modal-box report-box">
+            <div class="modal-header">
+                <div class="title-wrapper">
+                    <span class="modal-icon">⚰️</span>
+                    <div>
+                        <h2>COMPLETE LIFE REPORT</h2>
+                        <span class="subtitle">Post-Mortem Telemetry & Chronicle</span>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="btn-close-report">&times;</button>
+            </div>
+
+            <div class="report-body">
+                <!-- Narrative Bio Summary -->
+                <div class="report-narrative-card card-glow">
+                    <h3>📖 Life Narrative Summary</h3>
+                    <p id="report-narrative-text">Alex Vance was born in the Present Day Era. They passed away at age 82 surrounded by loved ones after a fulfilling lifetime devoted to technology and education.</p>
+                </div>
+
+                <!-- Statistics Grid -->
+                <div class="report-stats-grid">
+                    <div class="report-stat-item">
+                        <span class="lbl">AGE AT DEATH</span>
+                        <span class="val text-glow-purple" id="rep-stat-age">82 Years</span>
+                    </div>
+                    <div class="report-stat-item">
+                        <span class="lbl">ERA LIVED</span>
+                        <span class="val" id="rep-stat-era">Present Day</span>
+                    </div>
+                    <div class="report-stat-item">
+                        <span class="lbl">FINAL WEALTH</span>
+                        <span class="val font-mono text-glow-green" id="rep-stat-wealth">$142,500</span>
+                    </div>
+                    <div class="report-stat-item">
+                        <span class="lbl">MAX KNOWLEDGE</span>
+                        <span class="val text-glow-blue" id="rep-stat-knowledge">94%</span>
+                    </div>
+                    <div class="report-stat-item">
+                        <span class="lbl">PEAK CAREER</span>
+                        <span class="val" id="rep-stat-career">Software Engineer</span>
+                    </div>
+                    <div class="report-stat-item">
+                        <span class="lbl">MAJOR ACHIEVEMENTS</span>
+                        <span class="val" id="rep-stat-achievements">12 Milestones</span>
+                    </div>
+                </div>
+
+                <!-- Complete Chronicle List -->
+                <div class="report-timeline-section">
+                    <h3>📜 Major Life Achievements & Events</h3>
+                    <div class="report-timeline-list" id="report-timeline-items">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btn-restart-from-report">Begin New Human Life 🔄</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HUMAN EVOLUTION & CIVILIZATION FOUNDATION MODAL -->
+    <div id="evolution-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Human Evolution and Civilization Connection">
+        <div class="modal-box evolution-box">
+            <div class="modal-header">
+                <div class="title-wrapper">
+                    <span class="modal-icon">🧬</span>
+                    <div>
+                        <h2>HUMAN EVOLUTION & CIVILIZATION ARCHITECTURE</h2>
+                        <span class="subtitle">Evidence-Based Foundation for Scientific Understanding & Civilization Scaling</span>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="btn-close-evolution">&times;</button>
+            </div>
+
+            <div class="evolution-body">
+                <!-- Scientific Evolutionary Pillars -->
+                <div class="evolution-pillars-grid">
+                    <div class="evo-card">
+                        <div class="evo-hdr">
+                            <span class="evo-icon">🦴</span>
+                            <h4>Early Hominins & Bipedalism</h4>
+                        </div>
+                        <p>Transition to habitual bipedalism ~4–7 million years ago (e.g. <em>Sahelanthropus</em>, <em>Australopithecus</em>). Bipedalism freed the forelimbs, allowing enhanced tool manipulation, carrying, and energetic efficiency in shifting savannah environments.</p>
+                    </div>
+
+                    <div class="evo-card">
+                        <div class="evo-hdr">
+                            <span class="evo-icon">🪨</span>
+                            <h4>Tool Use & Encephalization</h4>
+                        </div>
+                        <p>Oldowan and Acheulean stone tools expanded dietary access to bone marrow and protein. Nutrient-dense foods powered rapid brain enlargement (encephalization), particularly expanding the prefrontal cortex in <em>Homo habilis</em> and <em>Homo erectus</em>.</p>
+                    </div>
+
+                    <div class="evo-card">
+                        <div class="evo-hdr">
+                            <span class="evo-icon">🔥</span>
+                            <h4>Fire Control & Cooking Hypothesis</h4>
+                        </div>
+                        <p>Controlled use of fire (~1 million years ago) externalized digestion, reducing energetic gut demands and making cooked food safer and more caloric. Fire also fostered nighttime social gatherings, storytelling, and protection.</p>
+                    </div>
+
+                    <div class="evo-card">
+                        <div class="evo-hdr">
+                            <span class="evo-icon">🗣️</span>
+                            <h4>Cooperation & Symbolic Language</h4>
+                        </div>
+                        <p>Complex social hunting, infant care (alloparenting), and vocal tract adaptations favored rapid symbolic language development in <em>Homo sapiens</em> (~300,000 years ago), enabling shared mythologies and large-scale cooperation.</p>
+                    </div>
+                </div>
+
+                <!-- Scientific Nuance Disclaimer Notice -->
+                <div class="evo-notice-card card-glow">
+                    <h4>⚠️ Scientific Nuance & Non-Linear Evolution</h4>
+                    <p>Human evolution was NOT a simplistic straight-line progression from ape to human. It was a complex branching tree (bushy evolutionary tree) where multiple <em>Homo</em> species coexisted simultaneously (e.g., <em>Homo sapiens</em>, <em>Neanderthals</em>, <em>Denisovans</em>, and <em>Homo floresiensis</em>) and occasionally interbred.</p>
+                </div>
+
+                <!-- Connection Architecture to Humanity Simulation -->
+                <div class="evo-arch-section">
+                    <h3>🏛️ Connection Architecture to Future Humanity Simulation</h3>
+                    <p>The Human Simulator serves as the granular individual agent foundation for a scaled civilization matrix:</p>
+
+                    <div class="arch-flow-diagram">
+                        <div class="arch-node">
+                            <span class="node-icon">👤</span>
+                            <span class="node-title">HUMAN</span>
+                            <span class="node-desc">Individual Agent (Needs, Skills, Health)</span>
+                        </div>
+                        <div class="arch-arrow">➔</div>
+                        <div class="arch-node">
+                            <span class="node-icon">👨‍👩‍👧</span>
+                            <span class="node-title">FAMILY</span>
+                            <span class="node-desc">Kinship Network & Resource Sharing</span>
+                        </div>
+                        <div class="arch-arrow">➔</div>
+                        <div class="arch-node">
+                            <span class="node-icon">🏕️</span>
+                            <span class="node-title">COMMUNITY</span>
+                            <span class="node-desc">Cooperative Labor & Shared Defense</span>
+                        </div>
+                        <div class="arch-arrow">➔</div>
+                        <div class="arch-node">
+                            <span class="node-icon">🏡</span>
+                            <span class="node-title">SETTLEMENT</span>
+                            <span class="node-desc">Agriculture, Storage & Trade</span>
+                        </div>
+                        <div class="arch-arrow">➔</div>
+                        <div class="arch-node">
+                            <span class="node-icon">🌆</span>
+                            <span class="node-title">CITY</span>
+                            <span class="node-desc">Specialization, Governance & Tech</span>
+                        </div>
+                        <div class="arch-arrow">➔</div>
+                        <div class="arch-node">
+                            <span class="node-icon">🌐</span>
+                            <span class="node-title">CIVILIZATION</span>
+                            <span class="node-desc">Global Networks & Humanity Progression</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Safety Banner (Dedicated Simulation Minimal Footer) -->
+    <div class="safety-warning-banner" role="complementary">
+        <div class="warning-icon">🧬</div>
+        <p class="warning-text">Human Simulation Engine — Interactive Life Cycle, Survival Needs & Historical Era Sandbox. No personal data collected.</p>
+    </div>
+
+    <!-- Global Scripts & Human Simulator Engine -->
+    <script src="js/main.js"></script>
+    <script src="js/human.js"></script>
+</body>
+</html>
