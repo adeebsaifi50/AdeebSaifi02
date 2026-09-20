@@ -45,8 +45,8 @@
 .city-main-container {
     max-width: 1440px;
     margin: 0 auto;
-    padding: 6.5rem 1.5rem 2rem 1.5rem;
-    min-height: calc(100vh - 120px);
+    padding: 2rem 1.5rem 2rem 1.5rem;
+    min-height: 100vh;
 }
 
 /* Dashboard Header details */
@@ -952,7 +952,7 @@
 
 @media (max-width: 768px) {
     .city-main-container {
-        padding-top: 5.5rem;
+        padding-top: 1.5rem;
     }
     .city-header-section {
         flex-direction: column;

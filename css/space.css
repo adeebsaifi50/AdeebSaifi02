@@ -15,7 +15,7 @@
 .space-main-container {
     max-width: 1540px;
     margin: 0 auto;
-    padding: 7.5rem 1.5rem 4rem 1.5rem;
+    padding: 2rem 1.5rem 4rem 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
