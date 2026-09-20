@@ -59,6 +59,15 @@ const REPO_DIRECTORY = [
         shortcut: "Ctrl + Shift + O"
     },
     {
+        icon: "🧬",
+        name: "Human Simulator",
+        category: "sim",
+        path: "human.html",
+        description: "Interactive Human Simulation — From Birth to Death. Experience life stages, dynamic survival needs, historical eras, relationships, decisions, and evolution.",
+        status: "ONLINE",
+        shortcut: "Ctrl + Shift + P"
+    },
+    {
         icon: "🚀",
         name: "Space Mission Control",
         category: "sim",
